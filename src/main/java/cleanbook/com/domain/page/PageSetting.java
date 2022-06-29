@@ -18,7 +18,7 @@ public class PageSetting {
     @Column(columnDefinition = "boolean default false")
     private boolean noticeComment;
 
-    @Column(columnDefinition = "boolean varchar(20) ALL")
+    @Column(columnDefinition = "varchar(20) default 'ALL'")
     @Enumerated(EnumType.STRING)
     private SettingEnum readAuth;
 

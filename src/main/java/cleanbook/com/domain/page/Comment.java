@@ -27,13 +27,15 @@ public class Comment extends Timestamped {
     @NotNull
     private String content;
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(name = "orders", columnDefinition = "bigint default 0")
     private int order;
+
+    @Column(name = "groups")
     private int group;
 
     @Column(columnDefinition = "boolean default true")
     private boolean visible;
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "bigint default 0")
     private int warningCount;
 }

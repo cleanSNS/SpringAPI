@@ -15,11 +15,11 @@ public class UserSetting {
     @Column(columnDefinition = "boolean default false")
     private boolean noticeFollow;
 
-    @Column(columnDefinition = "varchar(15) default ALL")
+    @Column(columnDefinition = "varchar(15) default 'ALL'")
     @Enumerated(EnumType.STRING)
     private SettingEnum noticeComment;
 
-    @Column(columnDefinition = "varchar(15) default ALL")
+    @Column(columnDefinition = "varchar(15) default 'ALL'")
     @Enumerated(EnumType.STRING)
     private SettingEnum noticeLike;
 
