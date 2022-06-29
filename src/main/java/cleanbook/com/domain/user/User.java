@@ -37,14 +37,14 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Page> pageList;
 
-    @OneToMany
-    private List<User> followerList; // 나를 팔로우하는 사람
+    @OneToMany(mappedBy = "targetUser")
+    private List<Follow> followerList; // 나를 팔로우하는 사람
 
-    @OneToMany
-    private List<User> followeeList; // 내가 팔로우하는 사람
+    @OneToMany(mappedBy = "user")
+    private List<Follow> followeeList; // 내가 팔로우하는 사람
 
-    @OneToMany
-    private List<User> banUserList;
+    @OneToMany(mappedBy = "user")
+    private List<Ban> banUserList;
 
     @OneToMany(mappedBy = "user")
     private List<UserChatRoom> userChatRoomList;
