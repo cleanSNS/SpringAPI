@@ -1,19 +1,18 @@
-package cleanbook.com.domain.notice;
+package cleanbook.com.domain.user;
 
 import cleanbook.com.domain.Timestamped;
-import cleanbook.com.domain.user.User;
 import lombok.Getter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class Notice extends Timestamped {
+@Table(name = "likes")
+public class Like extends Timestamped {
 
     @Id @GeneratedValue
-    @Column(name = "notice_id")
+    @Column(name = "like_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,28 +23,19 @@ public class Notice extends Timestamped {
     @JoinColumn(name = "target_user_id")
     private User targetUser;
 
-    @NotEmpty
     @Enumerated(EnumType.STRING)
-    private NoticeType type;
-
     @NotEmpty
-    private String url;
-
-    @Column(columnDefinition = "timestamp default 'null'")
-    private LocalDateTime readDate;
+    private LikeType type;
 
     void setUser(User user) {
         this.user = user;
-        targetUser.getNoticeList().add(this);
     }
 
     void setTargetUser(User user) {
         this.targetUser = user;
     }
 
-    void setContents(NoticeType type, String url, LocalDateTime readDate) {
+    void setLikeType(LikeType type) {
         this.type = type;
-        this.url = url;
-        this.readDate = readDate;
     }
 }

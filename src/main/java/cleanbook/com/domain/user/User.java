@@ -5,8 +5,10 @@ import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.chat.UserChatRoom;
 import cleanbook.com.domain.page.Page;
 import lombok.Getter;
+import org.springframework.context.annotation.Profile;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity
@@ -18,18 +20,20 @@ public class User extends Timestamped {
     @Column(name = "user_id")
     private Long id;
 
+    @NotEmpty
     private String email;
+    @NotEmpty
     private String password;
-    private String name;
+
+    @Embedded
+    private UserProfile userProfile;
+
+    @Column(columnDefinition = "integer default 0")
     private int warningCount;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(columnDefinition = "varchar(10) default 'INACTIVE'")
     private AccountState accountState;
-
-    private String imgUrl;
-    private int age;
-    private int gender;
-    private String selfIntroduce;
 
     @Embedded
     private UserSetting userSetting;
@@ -52,4 +56,23 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "targetUser")
     private List<Notice> noticeList;
 
+    void setEmail(String email) {
+        this.email = email;
+    }
+
+    void setPassword(String password) {
+        this.password = password;
+    }
+
+    void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
+    void setAccountState(AccountState accountState) {
+        this.accountState = accountState;
+    }
+
+    void setUserSetting(UserSetting userSetting) {
+        this.userSetting = userSetting;
+    }
 }

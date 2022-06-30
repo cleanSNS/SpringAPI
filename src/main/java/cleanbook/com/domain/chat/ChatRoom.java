@@ -21,4 +21,8 @@ public class ChatRoom extends Timestamped {
 
     @OneToMany(mappedBy = "chatRoom")
     private List<UserChatRoom> userChatRoomList;
+
+    void setTitle(String title) {
+        this.title = title;
+    }
 }

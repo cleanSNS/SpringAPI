@@ -5,6 +5,7 @@ import cleanbook.com.domain.user.User;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity
@@ -19,9 +20,10 @@ public class Page extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotEmpty
     private String title;
+    @NotEmpty
     private String content;
-    private String imgUrl;
     private int warningCount;
 
     @Embedded
@@ -32,4 +34,17 @@ public class Page extends Timestamped {
 
     @OneToMany(mappedBy = "page")
     private List<PageHashtag> pageHashtagList;
+
+    @OneToMany(mappedBy = "page")
+    private List<PageImgUrl> pageImgUrlList;
+
+    void setUser(User user) {
+        this.user = user;
+        user.getPageList().add(this);
+    }
+
+    void setTitleAndContent(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

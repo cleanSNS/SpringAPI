@@ -19,4 +19,8 @@ public class Hashtag {
 
     @OneToMany(mappedBy = "page")
     private List<PageHashtag> pageHashtagList;
+
+    void setName(String name) {
+        this.name = name;
+    }
 }
