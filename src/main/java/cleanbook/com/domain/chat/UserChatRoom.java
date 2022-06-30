@@ -20,4 +20,14 @@ public class UserChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
+
+    void setUser(User user) {
+        this.user = user;
+        user.getUserChatRoomList().add(this);
+    }
+
+    void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+        chatRoom.getUserChatRoomList().add(this);
+    }
 }

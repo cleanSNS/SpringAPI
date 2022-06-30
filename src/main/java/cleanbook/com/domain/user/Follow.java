@@ -20,4 +20,14 @@ public class Follow extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taget_user_id")
     private User targetUser;
+
+    void setUser(User user) {
+        this.user = user;
+        user.getFolloweeList().add(this);
+    }
+
+    void setTargetUser(User user) {
+        this.targetUser = user;
+        user.getFolloweeList().add(this);
+    }
 }

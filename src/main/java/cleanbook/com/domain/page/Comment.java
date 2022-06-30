@@ -6,6 +6,7 @@ import com.sun.istack.NotNull;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Getter
@@ -15,16 +16,16 @@ public class Comment extends Timestamped {
     @Column(name = "comment_id")
     private Long id;
 
-    @NotNull
+    @NotEmpty
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @NotNull
+    @NotEmpty
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "page_id")
     private Page page;
 
-    @NotNull
+    @NotEmpty
     private String content;
 
     @Column(name = "orders", columnDefinition = "bigint default 0")
@@ -38,4 +39,20 @@ public class Comment extends Timestamped {
 
     @Column(columnDefinition = "bigint default 0")
     private int warningCount;
+
+    void setUser(User user) {
+        this.user = user;
+    }
+
+    void setPage(Page page) {
+        this.page = page;
+        page.getCommentList().add(this);
+    }
+
+    void setCommentContents(String content, int order, int group, boolean visible) {
+        this.content = content;
+        this.order = order;
+        this.group = group;
+        this.visible = visible;
+    }
 }

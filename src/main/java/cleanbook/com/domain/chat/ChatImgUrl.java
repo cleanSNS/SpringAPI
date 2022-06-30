@@ -1,0 +1,29 @@
+package cleanbook.com.domain.chat;
+
+import lombok.Getter;
+
+import javax.persistence.*;
+
+@Entity
+@Getter
+public class ChatImgUrl {
+
+    @Id @GeneratedValue
+    @Column(name = "chat_img_url")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
+
+    private String url;
+
+    void setChat(Chat chat) {
+        this.chat = chat;
+        chat.getChatImgUrlList().add(this);
+    }
+
+    void setUrl(String url) {
+        this.url = url;
+    }
+}

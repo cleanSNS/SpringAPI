@@ -19,4 +19,14 @@ public class PageHashtag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hashtag_id")
     private Hashtag hashtag;
+
+    void setPage(Page page) {
+        this.page = page;
+        page.getPageHashtagList().add(this);
+    }
+
+    void setHashtag(Hashtag hashtag) {
+        this.hashtag = hashtag;
+        hashtag.getPageHashtagList().add(this);
+    }
 }

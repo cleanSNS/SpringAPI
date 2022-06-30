@@ -5,6 +5,8 @@ import cleanbook.com.domain.user.User;
 import lombok.Getter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,7 +24,22 @@ public class Chat extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @NotEmpty
     private String content;
 
-    private String imgUrl;
+    @OneToMany(mappedBy = "chat")
+    private List<ChatImgUrl> chatImgUrlList;
+
+    void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+        chatRoom.getChatList().add(this);
+    }
+
+    void setUser(User user) {
+        this.user = user;
+    }
+
+    void setContent(String content) {
+        this.content = content;
+    }
 }
