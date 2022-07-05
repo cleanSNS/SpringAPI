@@ -22,9 +22,15 @@ public class Page extends Timestamped {
 
     @NotEmpty
     private String title;
+
     @NotEmpty
     private String content;
+
+    @Column(columnDefinition = "bigint default 0")
     private int warningCount;
+
+    @Column(columnDefinition = "bigint default 0")
+    private int likeCount;
 
     @Embedded
     private PageSetting pageSetting;

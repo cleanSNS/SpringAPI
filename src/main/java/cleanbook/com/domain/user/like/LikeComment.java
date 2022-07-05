@@ -1,6 +1,9 @@
-package cleanbook.com.domain.user;
+package cleanbook.com.domain.user.like;
 
 import cleanbook.com.domain.Timestamped;
+import cleanbook.com.domain.page.Comment;
+import cleanbook.com.domain.page.Page;
+import cleanbook.com.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +13,10 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Follow extends Timestamped {
+public class LikeComment extends Timestamped {
 
     @Id @GeneratedValue
-    @Column(name = "follow_id")
+    @Column(name = "like_comment_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,23 +24,19 @@ public class Follow extends Timestamped {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taget_user_id")
-    private User targetUser;
+    @JoinColumn(name = "Comment")
+    private Comment comment;
 
-    public Follow(User user, User targetUser) {
+    public LikeComment(User user, Comment comment) {
         this.user = user;
-        user.getFolloweeList().add(this);
-        this.targetUser = targetUser;
-        targetUser.getFollowerList().add(this);
+        this.comment = comment;
     }
 
 //    void setUser(User user) {
 //        this.user = user;
-//        user.getFolloweeList().add(this);
 //    }
 //
-//    void setTargetUser(User user) {
-//        this.targetUser = user;
-//        user.getFolloweeList().add(this);
+//    void setComment(Comment comment) {
+//        this.comment = comment;
 //    }
 }

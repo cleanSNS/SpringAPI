@@ -1,5 +1,5 @@
 package cleanbook.com.domain;
 
-public enum SettingEnum {
+public enum SettingType {
     ALL, FOLLOW_ONLY, NONE
 }
