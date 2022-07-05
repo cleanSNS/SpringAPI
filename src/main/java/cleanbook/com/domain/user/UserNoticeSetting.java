@@ -1,4 +1,4 @@
-package cleanbook.com.domain.page;
+package cleanbook.com.domain.user;
 
 import cleanbook.com.domain.SettingType;
 import org.hibernate.annotations.DynamicInsert;
@@ -10,26 +10,25 @@ import javax.persistence.Enumerated;
 
 @DynamicInsert
 @Embeddable
-public class PageSetting {
+public class UserNoticeSetting {
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeLike;
+    private boolean noticeFollow;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean noticeComment;
-
-    @Column(columnDefinition = "varchar(20) default 'ALL'")
+    @Column(columnDefinition = "varchar(15) default 'ALL'")
     @Enumerated(EnumType.STRING)
-    private SettingType readAuth;
+    private SettingType noticeComment;
+
+    @Column(columnDefinition = "varchar(15) default 'ALL'")
+    @Enumerated(EnumType.STRING)
+    private SettingType noticeLike;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean CommentReadAuth;
+    private boolean noticeFollowAccept;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean CommentWriteAuth;
+    private boolean noticeSingleChat;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean LikeReadAuth;
-
-
+    private boolean noticeGroupChat;
 }

@@ -2,7 +2,6 @@ package cleanbook.com.domain.page;
 
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.user.User;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -17,7 +16,7 @@ public class Comment extends Timestamped {
     private Long id;
 
     @NotEmpty
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @NotEmpty
@@ -39,6 +38,9 @@ public class Comment extends Timestamped {
 
     @Column(columnDefinition = "bigint default 0")
     private int warningCount;
+
+    @Column(columnDefinition = "bigint default 0")
+    private int likeCount;
 
     void setUser(User user) {
         this.user = user;

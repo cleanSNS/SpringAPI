@@ -1,4 +1,4 @@
-package cleanbook.com.domain.user;
+package cleanbook.com.domain.user.like;
 
 public enum LikeType {
     PAGE, COMMENT

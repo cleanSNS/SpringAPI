@@ -31,7 +31,7 @@ public class Notice extends Timestamped {
     @NotEmpty
     private String url;
 
-    @Column(columnDefinition = "timestamp default 'null'")
+    @Column(columnDefinition = "timestamp default null")
     private LocalDateTime readDate;
 
     void setUser(User user) {

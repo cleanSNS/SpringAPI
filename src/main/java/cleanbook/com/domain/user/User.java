@@ -4,16 +4,20 @@ import cleanbook.com.domain.notice.Notice;
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.chat.UserChatRoom;
 import cleanbook.com.domain.page.Page;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Timestamped {
 
     @Id @GeneratedValue
@@ -39,22 +43,22 @@ public class User extends Timestamped {
     private UserSetting userSetting;
 
     @OneToMany(mappedBy = "user")
-    private List<Page> pageList;
+    private List<Page> pageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetUser")
-    private List<Follow> followerList; // 나를 팔로우하는 사람
+    private List<Follow> followerList = new ArrayList<>(); // 나를 팔로우하는 사람
 
     @OneToMany(mappedBy = "user")
-    private List<Follow> followeeList; // 내가 팔로우하는 사람
+    private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
     @OneToMany(mappedBy = "user")
-    private List<Ban> banUserList;
+    private List<Ban> banUserList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<UserChatRoom> userChatRoomList;
+    private List<UserChatRoom> userChatRoomList = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetUser")
-    private List<Notice> noticeList;
+    private List<Notice> noticeList = new ArrayList<>();
 
     void setEmail(String email) {
         this.email = email;
@@ -74,5 +78,18 @@ public class User extends Timestamped {
 
     void setUserSetting(UserSetting userSetting) {
         this.userSetting = userSetting;
+    }
+
+    public User(String email, String password, UserProfile userProfile) {
+        this.email = email;
+        this.password = password;
+        this.userProfile = userProfile;
+    }
+
+    public User(Long id, String email, String password, UserProfile userProfile) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.userProfile = userProfile;
     }
 }
