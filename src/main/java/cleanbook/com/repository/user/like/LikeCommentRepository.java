@@ -1,4 +1,4 @@
-package cleanbook.com.repository.user;
+package cleanbook.com.repository.user.like;
 
 import cleanbook.com.domain.user.like.LikeComment;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -4,10 +4,10 @@ import cleanbook.com.domain.notice.Notice;
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.chat.UserChatRoom;
 import cleanbook.com.domain.page.Page;
+import cleanbook.com.domain.user.block.Block;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Profile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -52,7 +52,7 @@ public class User extends Timestamped {
     private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
     @OneToMany(mappedBy = "user")
-    private List<Ban> banUserList = new ArrayList<>();
+    private List<Block> blockUserList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<UserChatRoom> userChatRoomList = new ArrayList<>();
@@ -91,5 +91,9 @@ public class User extends Timestamped {
         this.email = email;
         this.password = password;
         this.userProfile = userProfile;
+    }
+
+    public void reported() {
+        this.warningCount++;
     }
 }

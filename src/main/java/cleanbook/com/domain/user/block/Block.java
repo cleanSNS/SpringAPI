@@ -1,7 +1,6 @@
-package cleanbook.com.domain.user.like;
+package cleanbook.com.domain.user.block;
 
 import cleanbook.com.domain.Timestamped;
-import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,10 +13,11 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class LikePage extends Timestamped {
+public class Block extends Timestamped {
 
-    @Id @GeneratedValue
-    @Column(name = "like_page_id")
+    @Id
+    @GeneratedValue
+    @Column(name = "block_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,11 +25,17 @@ public class LikePage extends Timestamped {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "page_id")
-    private Page page;
+    @JoinColumn(name = "target_user_id")
+    private User targetUser;
 
-    public LikePage(User user, Page page) {
+    public Block(User user, User targetUser) {
         this.user = user;
-        this.page = page;
+        this.targetUser = targetUser;
+    }
+
+    public static Block createBlock(User user, User targetUser) {
+        Block block = new Block(user, targetUser);
+        user.getBlockUserList().add(block);
+        return block;
     }
 }

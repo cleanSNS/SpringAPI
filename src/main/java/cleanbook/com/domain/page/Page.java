@@ -2,7 +2,9 @@ package cleanbook.com.domain.page;
 
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.user.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -10,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Page extends Timestamped {
 
     @Id @GeneratedValue
@@ -52,5 +55,16 @@ public class Page extends Timestamped {
     void setTitleAndContent(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public Page(Long id, User user, String title, String content) {
+        this.id = id;
+        this.user = user;
+        this.title = title;
+        this.content = content;
+    }
+
+    public void reported() {
+        this.warningCount++;
     }
 }

@@ -2,8 +2,10 @@ package cleanbook.com.domain.user.report;
 
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.page.Comment;
+import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.User;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ReportUser extends Timestamped {
 
     @Id @GeneratedValue
@@ -26,9 +29,16 @@ public class ReportUser extends Timestamped {
     @JoinColumn(name = "target_user_id")
     private User targetUser;
 
-    public ReportUser(User user, User targetUser) {
-        this.user = user;
-        this.targetUser = targetUser;
+    public static ReportUser createReportUser(User user, User targetUser) {
+        ReportUser reportUser = new ReportUser();
+        reportUser.user = user;
+        reportUser.targetUser = targetUser;
+        reportUser.report(targetUser);
+        return reportUser;
+    }
+
+    public void report(User user) {
+        user.reported();
     }
 
 }
