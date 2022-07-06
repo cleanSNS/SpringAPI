@@ -5,14 +5,19 @@ import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.*;
 import cleanbook.com.domain.user.like.LikeComment;
 import cleanbook.com.domain.user.like.LikePage;
+import cleanbook.com.domain.user.like.LikeType;
+import cleanbook.com.domain.user.report.ReportComment;
+import cleanbook.com.domain.user.report.ReportPage;
 import cleanbook.com.domain.user.report.ReportType;
+import cleanbook.com.domain.user.report.ReportUser;
 import cleanbook.com.exception.CommentNotFoundException;
 import cleanbook.com.exception.PageNotFoundException;
 import cleanbook.com.exception.UserNotFoundException;
 import cleanbook.com.repository.*;
-import cleanbook.com.repository.user.LikeCommentRepository;
-import cleanbook.com.repository.user.LikePageRepository;
-import cleanbook.com.repository.user.UserRepository;
+import cleanbook.com.repository.user.*;
+import cleanbook.com.repository.user.report.ReportCommentRepository;
+import cleanbook.com.repository.user.report.ReportPageRepository;
+import cleanbook.com.repository.user.report.ReportUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +34,9 @@ public class UserService {
     private final LikeCommentRepository likeCommentRepository;
     private final PageRepository pageRepository;
     private final LikePageRepository likePageRepository;
+    private final ReportUserRepository reportUserRepository;
+    private final ReportPageRepository reportPageRepository;
+    private final ReportCommentRepository reportCommentRepository;
 
     // 팔로우하기
     public Long followUser(Long userId, Long targetUserId) {
@@ -40,29 +48,37 @@ public class UserService {
         return follow.getId();
     }
 
-    // 댓글 좋아요
-    public void likeComment(Long userId, Long commentId) {
+    // 좋아요
+    public void likeComment(Long userId, Long targetId, LikeType type) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFoundException::new);
-        likeCommentRepository.save(new LikeComment(user, comment));
+
+        switch (type) {
+            case PAGE:
+                Page page = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+                likePageRepository.save(new LikePage(user, page));
+
+            case COMMENT:
+                Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+                likeCommentRepository.save(new LikeComment(user, comment));
+        }
     }
 
-    // 글 좋아요
-    public void likePage(Long userId, Long pageId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
-        likePageRepository.save(new LikePage(user, page));
-    }
-
-    // 유저 신고
-    public void report(Long userId, ReportType type, Long targetId) {
+    // 신고
+    public void report(Long userId, Long targetId, ReportType type) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         switch (type){
             case USER:
                 User targetUser = userRepository.findById(targetId).orElseThrow(UserNotFoundException::new);
+                reportUserRepository.save(new ReportUser(user, targetUser));
 
+            case PAGE:
+                Page targetPage = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+                reportPageRepository.save(new ReportPage(user, targetPage));
 
+            case COMMENT:
+                Comment targetComment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+                reportCommentRepository.save(new ReportComment(user, targetComment));
         }
     }
 }
