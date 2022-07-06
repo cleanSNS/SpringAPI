@@ -1,6 +1,9 @@
 package cleanbook.com.domain.user;
 
 import cleanbook.com.domain.SettingType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.Column;
@@ -10,6 +13,9 @@ import javax.persistence.Enumerated;
 
 @DynamicInsert
 @Embeddable
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserNoticeSetting {
 
     @Column(columnDefinition = "boolean default false")

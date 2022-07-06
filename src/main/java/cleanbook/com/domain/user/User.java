@@ -5,6 +5,7 @@ import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.chat.UserChatRoom;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.block.Block;
+import cleanbook.com.domain.user.filter.Filter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,15 +33,15 @@ public class User extends Timestamped {
     @Embedded
     private UserProfile userProfile;
 
+    @Embedded
+    private UserSetting userSetting;
+
     @Column(columnDefinition = "integer default 0")
     private int warningCount;
 
     @Enumerated(value = EnumType.STRING)
     @Column(columnDefinition = "varchar(10) default 'INACTIVE'")
     private AccountState accountState;
-
-    @Embedded
-    private UserSetting userSetting;
 
     @OneToMany(mappedBy = "user")
     private List<Page> pageList = new ArrayList<>();
@@ -51,6 +52,8 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
+    private List<Filter> filterUserList = new ArrayList<>(); // 내가 필터링하는 사람
+
     @OneToMany(mappedBy = "user")
     private List<Block> blockUserList = new ArrayList<>();
 
@@ -59,26 +62,6 @@ public class User extends Timestamped {
 
     @OneToMany(mappedBy = "targetUser")
     private List<Notice> noticeList = new ArrayList<>();
-
-    void setEmail(String email) {
-        this.email = email;
-    }
-
-    void setPassword(String password) {
-        this.password = password;
-    }
-
-    void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
-
-    void setAccountState(AccountState accountState) {
-        this.accountState = accountState;
-    }
-
-    void setUserSetting(UserSetting userSetting) {
-        this.userSetting = userSetting;
-    }
 
     public User(String email, String password, UserProfile userProfile) {
         this.email = email;
@@ -93,7 +76,31 @@ public class User extends Timestamped {
         this.userProfile = userProfile;
     }
 
+    public User(Long id, String email, String password, UserProfile userProfile, UserSetting userSetting) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.userProfile = userProfile;
+        this.userSetting = userSetting;
+    }
+
     public void reported() {
         this.warningCount++;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
+    public void changeUserNoticeSetting(UserNoticeSetting userNoticeSetting) {
+        this.userSetting.changeUserNoticeSetting(userNoticeSetting);
+    }
+
+    public void changeUserFilterSetting(UserFilterSetting userFilterSetting) {
+        this.userSetting.changeUserFilterSetting(userFilterSetting);
     }
 }

@@ -1,0 +1,113 @@
+package cleanbook.com.service;
+
+import cleanbook.com.domain.SettingType;
+import cleanbook.com.domain.page.Comment;
+import cleanbook.com.domain.page.Page;
+import cleanbook.com.domain.user.*;
+import cleanbook.com.repository.user.UserRepository;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceMyPageTest {
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks private UserService userService;
+
+    private User user;
+    private Long sequence = 0L;
+    private UserProfile newUserProfile;
+
+    @BeforeEach
+    void init() {
+        UserProfile userProfile = new UserProfile("a",1, GenderType.FEMALE);
+        newUserProfile = new UserProfile("lacram",25, GenderType.MALE);
+        UserSetting userSetting = new UserSetting(new UserNoticeSetting(), new UserFilterSetting());
+        user = new User(1L,"user", "aaa", userProfile, userSetting);
+    }
+
+    @Test
+    @DisplayName("프로필_편집")
+    void changeProfileTest() {
+    
+        //given
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        
+        
+        // when
+        userService.changeUserProfile(user.getId(), newUserProfile);
+        
+        
+        // then
+        assertThat(user.getUserProfile().getNickname()).isEqualTo("lacram");
+        assertThat(user.getUserProfile().getAge()).isEqualTo(25);
+        assertThat(user.getUserProfile().getGender()).isEqualTo(GenderType.MALE);
+    }
+
+    @Test
+    @DisplayName("푸쉬알림_설정")
+    void changeNoticeSettingTest() {
+
+        //given
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        UserNoticeSetting newSetting = new UserNoticeSetting(true, SettingType.FOLLOW_ONLY, SettingType.NONE, true, true, true);
+
+
+        // when
+        userService.changeUserNoticeSetting(user.getId(), newSetting);
+
+
+        // then
+        assertThat(user.getUserSetting().getUserNoticeSetting().isNoticeFollow()).isEqualTo(true);
+        assertThat(user.getUserSetting().getUserNoticeSetting().getNoticeLike()).isEqualTo(SettingType.NONE);
+
+    }
+
+    @Test
+    @DisplayName("비밀번호_변경")
+    void changePasswordTest() {
+
+        //given
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        String newPassword = "new";
+
+        // when
+        userService.changePassword(user.getId(), newPassword);
+
+
+        // then
+        assertThat(user.getPassword()).isEqualTo("new");
+
+    }
+
+    @Test
+    @DisplayName("필터링_설정")
+    void changeFilterSettingTest() {
+
+        //given
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        UserFilterSetting userFilterSetting = new UserFilterSetting(true, true, true);
+
+
+        // when
+        userService.changeUserFilterSetting(user.getId(), userFilterSetting);
+
+
+        // then
+        assertThat(user.getUserSetting().getUserFilterSetting().isFilterAll()).isEqualTo(true);
+
+    }
+}
