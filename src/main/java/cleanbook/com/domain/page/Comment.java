@@ -2,13 +2,16 @@ package cleanbook.com.domain.page;
 
 import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.user.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends Timestamped {
 
     @Id @GeneratedValue
@@ -42,6 +45,13 @@ public class Comment extends Timestamped {
     @Column(columnDefinition = "bigint default 0")
     private int likeCount;
 
+    public Comment(Long id, User user, Page page, String content) {
+        this.id = id;
+        this.user = user;
+        this.page = page;
+        this.content = content;
+    }
+
     void setUser(User user) {
         this.user = user;
     }
@@ -56,5 +66,9 @@ public class Comment extends Timestamped {
         this.order = order;
         this.group = group;
         this.visible = visible;
+    }
+
+    public void reported() {
+        this.warningCount++;
     }
 }

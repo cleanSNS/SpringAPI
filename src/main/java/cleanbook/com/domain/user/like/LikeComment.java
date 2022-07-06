@@ -5,6 +5,7 @@ import cleanbook.com.domain.page.Comment;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.User;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class LikeComment extends Timestamped {
 
     @Id @GeneratedValue
@@ -32,11 +34,4 @@ public class LikeComment extends Timestamped {
         this.comment = comment;
     }
 
-//    void setUser(User user) {
-//        this.user = user;
-//    }
-//
-//    void setComment(Comment comment) {
-//        this.comment = comment;
-//    }
 }

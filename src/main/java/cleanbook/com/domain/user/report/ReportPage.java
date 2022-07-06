@@ -4,6 +4,7 @@ import cleanbook.com.domain.Timestamped;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.User;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class ReportPage extends Timestamped {
 
     @Id @GeneratedValue
@@ -26,9 +28,15 @@ public class ReportPage extends Timestamped {
     @JoinColumn(name = "target_page_id")
     private Page targetPage;
 
-    public ReportPage(User user, Page targetPage) {
-        this.user = user;
-        this.targetPage = targetPage;
+    public static ReportPage createReportPage(User user, Page targetPage) {
+        ReportPage reportPage = new ReportPage();
+        reportPage.user = user;
+        reportPage.targetPage = targetPage;
+        reportPage.report(targetPage);
+        return reportPage;
     }
 
+    public void report(Page page) {
+        page.reported();
+    }
 }
