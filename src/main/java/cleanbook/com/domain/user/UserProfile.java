@@ -1,6 +1,7 @@
 package cleanbook.com.domain.user;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class UserProfile {
 
     @NotEmpty
@@ -29,5 +31,13 @@ public class UserProfile {
         this.nickname = nickname;
         this.age = age;
         this.gender = gender;
+    }
+
+    public void changeUserProfile(String nickname, int age, GenderType gender, String imgUrl, String selfIntroduce) {
+        this.nickname = nickname;
+        this.age = age;
+        this.gender = gender;
+        this.imgUrl = imgUrl;
+        this.selfIntroduce = selfIntroduce;
     }
 }

@@ -5,6 +5,8 @@ import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.*;
 import cleanbook.com.domain.user.block.Block;
 import cleanbook.com.domain.user.block.BlockedUserDto;
+import cleanbook.com.domain.user.filter.Filter;
+import cleanbook.com.domain.user.filter.FilteredUserDto;
 import cleanbook.com.domain.user.like.LikeComment;
 import cleanbook.com.domain.user.like.LikePage;
 import cleanbook.com.domain.user.like.LikeType;
@@ -27,6 +29,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cleanbook.com.domain.user.filter.Filter.createFilter;
 import static cleanbook.com.domain.user.block.Block.createBlock;
 import static cleanbook.com.domain.user.report.ReportComment.createReportComment;
 import static cleanbook.com.domain.user.report.ReportPage.createReportPage;
@@ -47,6 +50,7 @@ public class UserService {
     private final ReportPageRepository reportPageRepository;
     private final ReportCommentRepository reportCommentRepository;
     private final BlockRepository blockRepository;
+    private final FilterRepository filterRepository;
 
     // 팔로우하기
     public Long followUser(Long userId, Long targetUserId) {
@@ -127,5 +131,65 @@ public class UserService {
         }
     }
 
+    // 필터링하기
+    public Long filterUser(Long userId, Long targetUserId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
+
+        Filter filter = createFilter(user, targetUser);
+        return filterRepository.save(filter).getId();
+    }
+
+    // 필터링한 유저 전체조회
+    public List<FilteredUserDto> readFilteredUserList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return user.getFilterUserList()
+                .stream()
+                .map(filter -> new FilteredUserDto(filter.getTargetUser().getId(), filter.getTargetUser().getUserProfile().getNickname()))
+                .collect(Collectors.toList());
+    }
+
+    // 필터링한 유저 필터링해제
+    public void unfilterUser(Long userId, Long targetUserId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        for (Filter filter : user.getFilterUserList()) {
+            if (filter.getTargetUser().getId().equals(targetUserId)) {
+                user.getFilterUserList().remove(filter);
+                filterRepository.delete(filter);
+            }
+        }
+    }
+
+    // 마이페이지
+    // 프로필 편집
+    public void changeUserProfile(Long userId, UserProfile userProfile) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changeUserProfile(userProfile);
+    }
+
+    // 푸쉬알림 설정
+    public void changeUserNoticeSetting(Long userId, UserNoticeSetting userNoticeSetting) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changeUserNoticeSetting(userNoticeSetting);
+    }
+
+    // 비밀번호 변경
+    public void changePassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changePassword(password);
+    }
+    
+    // 필터링 설정
+    public void changeUserFilterSetting(Long userId, UserFilterSetting userFilterSetting) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.changeUserFilterSetting(userFilterSetting);
+    }
+
+    // 유저 검색
+
 
 }
+
+
+
+

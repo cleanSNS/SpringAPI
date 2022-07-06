@@ -277,7 +277,5 @@ class UserServiceTest {
         assertThat(blockedUserDtoList.get(0).getUserId()).isEqualTo(3L);
         assertThat(blockedUserDtoList.get(0).getNickname()).isEqualTo("c");
 
-
-
     }
 }
