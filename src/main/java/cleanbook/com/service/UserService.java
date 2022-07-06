@@ -79,6 +79,7 @@ public class UserService {
             case COMMENT:
                 Comment targetComment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
                 reportCommentRepository.save(new ReportComment(user, targetComment));
+
         }
     }
 }
