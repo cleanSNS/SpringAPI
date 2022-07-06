@@ -10,10 +10,11 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Follow extends Timestamped {
+public class UserUser extends Timestamped {
 
-    @Id @GeneratedValue
-    @Column(name = "follow_id")
+    @Id
+    @GeneratedValue
+    @Column(name = "user_user_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,20 +25,23 @@ public class Follow extends Timestamped {
     @JoinColumn(name = "taget_user_id")
     private User targetUser;
 
-    public Follow(User user, User targetUser) {
-        this.user = user;
-        user.getFolloweeList().add(this);
-        this.targetUser = targetUser;
-        targetUser.getFollowerList().add(this);
-    }
+    @Enumerated(EnumType.STRING)
+    private RelationType type;
 
-//    void setUser(User user) {
-//        this.user = user;
-//        user.getFolloweeList().add(this);
-//    }
-//
-//    void setTargetUser(User user) {
-//        this.targetUser = user;
-//        user.getFolloweeList().add(this);
-//    }
+    public UserUser(User user, User targetUser, RelationType type) {
+        this.user = user;
+        this.targetUser = targetUser;
+        this.type = type;
+
+        switch (type) {
+            case FOLLOW:
+                user.getFolloweeList().add(this);
+                targetUser.getFollowerList().add(this);
+
+            case BAN:
+                user.getBanUserList().add(this);
+
+            case REPORT:
+        }
+    }
 }
