@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,9 @@ public class Page extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
+    private List<PageImgUrl> imgUrlList = new ArrayList<>();
 
     @NotEmpty
     private String title;
@@ -38,14 +42,11 @@ public class Page extends Timestamped {
     @Embedded
     private PageSetting pageSetting;
 
-    @OneToMany(mappedBy = "page")
-    private List<Comment> commentList;
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "page")
-    private List<PageHashtag> pageHashtagList;
-
-    @OneToMany(mappedBy = "page")
-    private List<PageImgUrl> pageImgUrlList;
+    private List<PageHashtag> pageHashtagList = new ArrayList<>();
 
     void setUser(User user) {
         this.user = user;
@@ -53,6 +54,12 @@ public class Page extends Timestamped {
     }
 
     void setTitleAndContent(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public Page(User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
     }

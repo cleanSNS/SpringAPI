@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile {
 

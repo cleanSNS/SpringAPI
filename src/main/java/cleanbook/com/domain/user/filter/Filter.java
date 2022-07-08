@@ -35,7 +35,7 @@ public class Filter extends Timestamped {
 
     public static Filter createFilter(User user, User targetUser) {
         Filter filter = new Filter(user, targetUser);
-        user.getFilterUserList().add(filter);
+        user.getNotFilterUserList().add(filter);
         return filter;
     }
 }

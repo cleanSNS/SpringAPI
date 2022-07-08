@@ -16,14 +16,14 @@ public class PageImgUrl {
     @JoinColumn(name = "page_id")
     private Page page;
 
-    private String url;
+    private String imgUrl;
 
-    void setPage(Page page) {
-        this.page = page;
-        page.getPageImgUrlList().add(this);
-    }
+    public static PageImgUrl createPageImgUrl(Page page, String url) {
+        PageImgUrl pageImgUrl = new PageImgUrl();
+        pageImgUrl.page = page;
+        pageImgUrl.imgUrl = url;
+        page.getImgUrlList().add(pageImgUrl);
 
-    void setUrl(String url) {
-        this.url = url;
+        return pageImgUrl;
     }
 }

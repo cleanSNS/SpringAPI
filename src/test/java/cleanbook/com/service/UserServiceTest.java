@@ -16,7 +16,7 @@ import cleanbook.com.domain.user.report.ReportType;
 import cleanbook.com.domain.user.report.ReportUser;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
-import cleanbook.com.repository.PageRepository;
+import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.BlockRepository;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;

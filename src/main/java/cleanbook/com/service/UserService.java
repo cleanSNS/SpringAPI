@@ -6,15 +6,17 @@ import cleanbook.com.domain.user.*;
 import cleanbook.com.domain.user.block.Block;
 import cleanbook.com.domain.user.block.BlockedUserDto;
 import cleanbook.com.domain.user.filter.Filter;
-import cleanbook.com.domain.user.filter.FilteredUserDto;
+import cleanbook.com.domain.user.UserDto;
 import cleanbook.com.domain.user.like.LikeComment;
 import cleanbook.com.domain.user.like.LikePage;
 import cleanbook.com.domain.user.like.LikeType;
 import cleanbook.com.domain.user.report.ReportType;
 import cleanbook.com.exception.CommentNotFoundException;
+import cleanbook.com.exception.EmptyStringException;
 import cleanbook.com.exception.PageNotFoundException;
 import cleanbook.com.exception.UserNotFoundException;
 import cleanbook.com.repository.*;
+import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
@@ -23,8 +25,7 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ import static cleanbook.com.domain.user.block.Block.createBlock;
 import static cleanbook.com.domain.user.report.ReportComment.createReportComment;
 import static cleanbook.com.domain.user.report.ReportPage.createReportPage;
 import static cleanbook.com.domain.user.report.ReportUser.createReportUser;
+import static org.springframework.util.StringUtils.hasText;
 
 @Service
 @RequiredArgsConstructor
@@ -112,8 +114,10 @@ public class UserService {
     }
 
     // 차단한 유저 전체조회
+    @Transactional(readOnly = true)
     public List<BlockedUserDto> readBlockedUserList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
         return user.getBlockUserList()
                 .stream()
                 .map(block -> new BlockedUserDto(block.getTargetUser().getId(), block.getTargetUser().getUserProfile().getNickname()))
@@ -123,6 +127,7 @@ public class UserService {
     // 차단한 유저 차단해제
     public void unblockUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
         for (Block block : user.getBlockUserList()) {
             if (block.getTargetUser().getId().equals(targetUserId)) {
                 user.getBlockUserList().remove(block);
@@ -141,20 +146,23 @@ public class UserService {
     }
 
     // 필터링한 유저 전체조회
-    public List<FilteredUserDto> readFilteredUserList(Long userId) {
+    @Transactional(readOnly = true)
+    public List<UserDto> readFilteredUserList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return user.getFilterUserList()
+
+        return user.getNotFilterUserList()
                 .stream()
-                .map(filter -> new FilteredUserDto(filter.getTargetUser().getId(), filter.getTargetUser().getUserProfile().getNickname()))
+                .map(dto -> new UserDto(dto.getTargetUser().getId(), dto.getTargetUser().getUserProfile().getNickname(), dto.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
     }
 
     // 필터링한 유저 필터링해제
     public void unfilterUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        for (Filter filter : user.getFilterUserList()) {
+
+        for (Filter filter : user.getNotFilterUserList()) {
             if (filter.getTargetUser().getId().equals(targetUserId)) {
-                user.getFilterUserList().remove(filter);
+                user.getNotFilterUserList().remove(filter);
                 filterRepository.delete(filter);
             }
         }
@@ -176,7 +184,8 @@ public class UserService {
     // 비밀번호 변경
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.changePassword(password);
+        if(hasText(password)) user.changePassword(password);
+        else throw new EmptyStringException();
     }
     
     // 필터링 설정
@@ -186,7 +195,11 @@ public class UserService {
     }
 
     // 유저 검색
-
+    @Transactional(readOnly = true)
+    public List<UserDto> findUsersStartWithNickname(String nickname) {
+        if (hasText(nickname)) return userRepository.findUsersStartWithNickname(nickname);
+        else throw new EmptyStringException();
+    }
 
 }
 
