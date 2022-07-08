@@ -43,7 +43,7 @@ public class User extends Timestamped {
     @Column(columnDefinition = "varchar(10) default 'INACTIVE'")
     private AccountState accountState;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Page> pageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetUser")
@@ -52,7 +52,8 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
-    private List<Filter> filterUserList = new ArrayList<>(); // 내가 필터링하는 사람
+    @OneToMany(mappedBy = "user")
+    private List<Filter> notFilterUserList = new ArrayList<>(); // 내가 필터링하지 않을 사람
 
     @OneToMany(mappedBy = "user")
     private List<Block> blockUserList = new ArrayList<>();

@@ -6,7 +6,7 @@ import cleanbook.com.domain.user.GenderType;
 import cleanbook.com.domain.user.User;
 import cleanbook.com.domain.user.UserProfile;
 import cleanbook.com.domain.user.filter.Filter;
-import cleanbook.com.domain.user.filter.FilteredUserDto;
+import cleanbook.com.domain.user.UserDto;
 import cleanbook.com.repository.user.FilterRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,8 +65,8 @@ class UserServiceFilterTest {
 
 
         // then
-        assertThat(user.getFilterUserList().size()).isEqualTo(1);
-        assertThat(user.getFilterUserList().get(0).getTargetUser()).isEqualTo(targetUser);
+        assertThat(user.getNotFilterUserList().size()).isEqualTo(1);
+        assertThat(user.getNotFilterUserList().get(0).getTargetUser()).isEqualTo(targetUser);
 
     }
 
@@ -84,15 +83,15 @@ class UserServiceFilterTest {
         // when
         userService.filterUser(user.getId(), targetUser.getId());
         userService.filterUser(user.getId(), user3.getId());
-        List<FilteredUserDto> filteredUserDtoList = userService.readFilteredUserList(user.getId());
+        List<UserDto> userDtoList = userService.readFilteredUserList(user.getId());
 
 
         // then
-        assertThat(filteredUserDtoList.size()).isEqualTo(2);
-        assertThat(filteredUserDtoList.get(0).getUserId()).isEqualTo(2L);
-        assertThat(filteredUserDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(filteredUserDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(filteredUserDtoList.get(1).getNickname()).isEqualTo("c");
+        assertThat(userDtoList.size()).isEqualTo(2);
+        assertThat(userDtoList.get(0).getUserId()).isEqualTo(2L);
+        assertThat(userDtoList.get(1).getUserId()).isEqualTo(3L);
+        assertThat(userDtoList.get(0).getNickname()).isEqualTo("b");
+        assertThat(userDtoList.get(1).getNickname()).isEqualTo("c");
     }
 
     @Test
@@ -108,24 +107,24 @@ class UserServiceFilterTest {
         // when
         userService.filterUser(user.getId(), targetUser.getId());
         userService.filterUser(user.getId(), user3.getId());
-        List<FilteredUserDto> filteredUserDtoList = userService.readFilteredUserList(user.getId());
+        List<UserDto> userDtoList = userService.readFilteredUserList(user.getId());
 
 
         // then
-        assertThat(filteredUserDtoList.size()).isEqualTo(2);
-        assertThat(filteredUserDtoList.get(0).getUserId()).isEqualTo(2L);
-        assertThat(filteredUserDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(filteredUserDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(filteredUserDtoList.get(1).getNickname()).isEqualTo("c");
+        assertThat(userDtoList.size()).isEqualTo(2);
+        assertThat(userDtoList.get(0).getUserId()).isEqualTo(2L);
+        assertThat(userDtoList.get(1).getUserId()).isEqualTo(3L);
+        assertThat(userDtoList.get(0).getNickname()).isEqualTo("b");
+        assertThat(userDtoList.get(1).getNickname()).isEqualTo("c");
 
         // when
         userService.unfilterUser(user.getId(), targetUser.getId());
-        filteredUserDtoList = userService.readFilteredUserList(user.getId());
+        userDtoList = userService.readFilteredUserList(user.getId());
 
         // then
-        assertThat(filteredUserDtoList.size()).isEqualTo(1);
-        assertThat(filteredUserDtoList.get(0).getUserId()).isEqualTo(3L);
-        assertThat(filteredUserDtoList.get(0).getNickname()).isEqualTo("c");
+        assertThat(userDtoList.size()).isEqualTo(1);
+        assertThat(userDtoList.get(0).getUserId()).isEqualTo(3L);
+        assertThat(userDtoList.get(0).getNickname()).isEqualTo("c");
 
     }
 }

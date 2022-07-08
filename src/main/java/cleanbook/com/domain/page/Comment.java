@@ -18,11 +18,9 @@ public class Comment extends Timestamped {
     @Column(name = "comment_id")
     private Long id;
 
-    @NotEmpty
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @NotEmpty
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "page_id")
     private Page page;
@@ -44,6 +42,13 @@ public class Comment extends Timestamped {
 
     @Column(columnDefinition = "bigint default 0")
     private int likeCount;
+
+    public Comment(User user, Page page, String content) {
+        this.user = user;
+        this.page = page;
+        this.content = content;
+        page.getCommentList().add(this);
+    }
 
     public Comment(Long id, User user, Page page, String content) {
         this.id = id;
