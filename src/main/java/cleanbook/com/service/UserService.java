@@ -11,7 +11,7 @@ import cleanbook.com.domain.user.like.LikeComment;
 import cleanbook.com.domain.user.like.LikePage;
 import cleanbook.com.domain.user.like.LikeType;
 import cleanbook.com.domain.user.report.ReportType;
-import cleanbook.com.exception.*;
+import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.*;
 import cleanbook.com.repository.page.PageRepository;
@@ -30,11 +30,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

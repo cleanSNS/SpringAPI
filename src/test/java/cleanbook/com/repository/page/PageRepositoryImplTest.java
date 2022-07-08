@@ -4,7 +4,7 @@ import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.domain.ResultDto;
 import cleanbook.com.domain.page.*;
 import cleanbook.com.domain.user.*;
-import cleanbook.com.exception.NoMorePageException;
+import cleanbook.com.exception.exceptions.NoMorePageException;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,7 +6,7 @@ import cleanbook.com.domain.page.PageUpdateDto;
 import cleanbook.com.domain.user.GenderType;
 import cleanbook.com.domain.user.User;
 import cleanbook.com.domain.user.UserProfile;
-import cleanbook.com.exception.NoAuthroizationException;
+import cleanbook.com.exception.exceptions.NoAuthroizationException;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
