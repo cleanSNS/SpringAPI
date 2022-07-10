@@ -1,6 +1,8 @@
 package cleanbook.com.domain.page;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -8,19 +10,18 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Hashtag {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hashtag_id")
     private Long id;
 
     @NotEmpty
     private String name;
 
-    @OneToMany(mappedBy = "page")
-    private List<PageHashtag> pageHashtagList;
-
-    void setName(String name) {
+    public Hashtag(String name) {
         this.name = name;
     }
 }

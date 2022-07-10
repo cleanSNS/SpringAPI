@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Filter extends Timestamped {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "filter_id")
     private Long id;
 

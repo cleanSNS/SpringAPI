@@ -1,29 +1,21 @@
 package cleanbook.com.repository.page;
 
 import cleanbook.com.configuration.QuerydslConfig;
+import cleanbook.com.domain.ResultDto;
 import cleanbook.com.domain.page.*;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.domain.user.*;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import cleanbook.com.service.PageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.swing.text.html.parser.Entity;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
@@ -37,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PageRepositoryImplTest {
 
     @Autowired
+    private PageService pageService;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private PageRepository pageRepository;
@@ -46,25 +40,45 @@ class PageRepositoryImplTest {
     private PageImgUrlRepository pageImgUrlRepository;
     @Autowired
     private TestEntityManager em;
+//    @Autowired
+//    private EntityManager em;
 
     @BeforeEach
     void init() {
 
-        for (int i = 1; i < 11; i++) {
+        for (int i = 0; i < 10; i++) {
             UserProfile userProfile = new UserProfile(Integer.toString(i), i, GenderType.FEMALE);
             User user = new User("aa", "aa", userProfile);
             userRepository.save(user);
 
-            Page page = new Page(user, Integer.toString(i), Integer.toString(i));
-            createPageImgUrl(page, "aaa");
-            createPageImgUrl(page, "bbb");
-
-            for (int j = 0; j < 10; j++) {
-                new Comment(user, page, "댓글" + j);
+            for (int k = 0; k < 2; k++) {
+                Page page = new Page(user, Integer.toString(k), Integer.toString(k));
+                createPageImgUrl(page, Integer.toString(k)+"a");
+                createPageImgUrl(page, Integer.toString(k)+"b");
+                for (int j = 0; j < 10; j++) {
+                    new Comment(user, page, "댓글" + j);
+                }
+                pageRepository.save(page);
             }
-
-            pageRepository.save(page);
         }
+    }
+
+    @Test
+    void aaa() {
+
+
+        //given
+        User user = userRepository.findById(1L).get();
+        System.out.println("size " + user.getPageList().size());
+
+        // when
+        System.out.println("user.getId() = " + user.getId());
+        pageService.createPage(user.getId(), new PageCreateDto("제목","내용"));
+
+
+        // then
+        System.out.println("size " + user.getPageList().size());
+
 
     }
 
@@ -122,7 +136,8 @@ class PageRepositoryImplTest {
     
         // when
         Long pageId = pageRepository.findAll().get(0).getId();
-        List<CommentDto> commentDtoList = pageRepository.readPageCommentList(pageId);
+        ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(pageId, PageRequest.of(0,10));
+        List<CommentDto> commentDtoList = result.getData();
         for (CommentDto commentDto : commentDtoList) {
             System.out.println("commentDto = " + commentDto);
         }
@@ -151,6 +166,75 @@ class PageRepositoryImplTest {
 
 
     }
+
+    @Test
+    @DisplayName("팔로우한_유저_게시물_보기")
+    void readFollowerPageList() {
+
+        //given
+        User user = userRepository.findById(1L).get();
+        User user2 = userRepository.findById(2L).get();
+        User user3 = userRepository.findById(3L).get();
+        User user4 = userRepository.findById(4L).get();
+        em.persist(new Follow(user,user2));
+        em.persist(new Follow(user,user3));
+        em.persist(new Follow(user,user4));
+
+
+        // when
+        ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
+        List<MainPageDto> mainPageDtoList = result.getData();
+        Long startPageId = result.getStartPageId();
+        System.out.println("startPageId = " + startPageId);
+
+        // then
+        assertThat(mainPageDtoList.size()).isEqualTo(3);
+        assertThat(mainPageDtoList.get(0).getPageDto().getUserDto().getNickname()).isEqualTo(user4.getUserProfile().getNickname());
+        assertThat(mainPageDtoList.get(2).getPageDto().getUserDto().getNickname()).isEqualTo(user3.getUserProfile().getNickname());
+
+        // when
+        result = pageRepository.readFolloweePageList(user.getId(), startPageId, 3);
+        mainPageDtoList = result.getData();
+
+        // then
+        assertThat(mainPageDtoList.size()).isEqualTo(3);
+        assertThat(mainPageDtoList.get(0).getPageDto().getUserDto().getNickname()).isEqualTo(user3.getUserProfile().getNickname());
+        assertThat(mainPageDtoList.get(2).getPageDto().getUserDto().getNickname()).isEqualTo(user2.getUserProfile().getNickname());
+    }
+
+    @Test
+    @DisplayName("특정_유저_전체_게시글_보기")
+    void readUserPageListTest() {
+
+        //given
+        UserProfile userProfile = new UserProfile("nickname", 25, GenderType.FEMALE);
+        User user = new User("aa", "aa", userProfile);
+        userRepository.save(user);
+        for (int k = 0; k < 10; k++) {
+            Page page = new Page(user, Integer.toString(k), Integer.toString(k));
+            for (int i = 0; i < k; i++) {
+                createPageImgUrl(page, k +"a");
+            }
+
+            pageRepository.save(page);
+        }
+
+        // when
+        ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user.getId(), null, 2);
+        List<UserPageDto> userPageDtoList = result.getData();
+        Long pageStartIdx = result.getStartPageId();
+
+        // then
+        assertThat(userPageDtoList).extracting("title").containsExactly("9","8");
+
+        // when
+        result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 3);
+        userPageDtoList = result.getData();
+
+        // then
+        assertThat(userPageDtoList).extracting("title").containsExactly("7","6","5");
+    }
+
 }
 
 

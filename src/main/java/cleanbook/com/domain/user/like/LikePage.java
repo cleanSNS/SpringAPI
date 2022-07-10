@@ -16,7 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class LikePage extends Timestamped {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "like_page_id")
     private Long id;
 
