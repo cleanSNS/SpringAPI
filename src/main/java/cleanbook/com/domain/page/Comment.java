@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends Timestamped {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 
@@ -31,7 +31,7 @@ public class Comment extends Timestamped {
     @Column(name = "orders", columnDefinition = "bigint default 0")
     private int order;
 
-    @Column(name = "groups")
+    @Column(name = "comment_group")
     private int group;
 
     @Column(columnDefinition = "boolean default true")

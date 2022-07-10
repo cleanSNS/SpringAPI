@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Block extends Timestamped {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "block_id")
     private Long id;
 

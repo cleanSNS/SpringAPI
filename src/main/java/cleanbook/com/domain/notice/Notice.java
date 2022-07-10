@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class Notice extends Timestamped {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
     private Long id;
 

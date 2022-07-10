@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public class ChatRoom extends Timestamped {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
     private Long id;
 

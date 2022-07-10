@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter
 public class PageImgUrl {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "page_img_url_id")
     private Long id;
 

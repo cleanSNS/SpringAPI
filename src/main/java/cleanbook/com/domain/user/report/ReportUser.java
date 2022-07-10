@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class ReportUser extends Timestamped {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_user_id")
     private Long id;
 
