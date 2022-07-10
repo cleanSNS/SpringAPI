@@ -16,4 +16,9 @@ public class PageUpdateDto {
     private PageSetting pageSetting;
     private List<String> imgUrlList = new ArrayList<>();
     private List<String> pageHashtagList = new ArrayList<>();
+
+    public PageUpdateDto(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
