@@ -60,12 +60,14 @@ public class PageService {
     // 게시글 삭제
     public Long deletePage(Long userId, Long pageId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         // 권한이 없을 경우
         if (!page.getUser().getId().equals(userId)) {
             throw new NoAuthroizationException();
         }
 
+        user.getPageList().remove(page);
         pageRepository.delete(page);
         return pageId;
     }
