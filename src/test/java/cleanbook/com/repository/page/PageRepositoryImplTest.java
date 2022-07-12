@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PageRepositoryImplTest {
 
     @Autowired
-    private PageService pageService;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private PageRepository pageRepository;
@@ -42,6 +41,9 @@ class PageRepositoryImplTest {
     private TestEntityManager em;
 //    @Autowired
 //    private EntityManager em;
+
+    private User myUser;
+    private Page myPage;
 
     @BeforeEach
     void init() {
@@ -59,47 +61,32 @@ class PageRepositoryImplTest {
                     new Comment(user, page, "댓글" + j);
                 }
                 pageRepository.save(page);
+                if (i == 0 && k == 0) {
+                    myUser = user;
+                    myPage = page;
+                }
             }
         }
-    }
-
-    @Test
-    void aaa() {
-
-
-        //given
-        User user = userRepository.findById(1L).get();
-        System.out.println("size " + user.getPageList().size());
-
-        // when
-        System.out.println("user.getId() = " + user.getId());
-        pageService.createPage(user.getId(), new PageCreateDto("제목","내용"));
-
-
-        // then
-        System.out.println("size " + user.getPageList().size());
-
-
     }
 
     @Test
     void readPageDtoTest() {
 
         // when
-        Long pageId = pageRepository.findAll().get(0).getId();
+        Long pageId = myPage.getId();
         PageDto pageDto = pageRepository.readPageDto(pageId);
         System.out.println("pageDto " + pageDto.toString());
 
         // then
-        assertThat(pageDto.getUserDto().getNickname()).isEqualTo("1");
-        assertThat(pageDto.getTitle()).isEqualTo("1");
+        assertThat(pageDto.getUserDto().getNickname()).isEqualTo(myPage.getUser().getUserProfile().getNickname());
+        assertThat(pageDto.getTitle()).isEqualTo(myPage.getTitle());
     }
 
     @Test
     void readPageImgUrlListTest() {
 
         // when
-        Long pageId = pageRepository.findAll().get(0).getId();
+        Long pageId = myPage.getId();
         List<String> imgUrlList = pageRepository.readPageImgUrlList(pageId);
         for (String imgUrl : imgUrlList) {
             System.out.println("imgUrl = " + imgUrl);
@@ -107,7 +94,7 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(imgUrlList.size()).isEqualTo(2);
-        assertThat(imgUrlList).containsExactly("aaa", "bbb");
+        assertThat(imgUrlList).isEqualTo(myPage.getImgUrlList().stream().map(imgUrl -> imgUrl.getImgUrl()).collect(Collectors.toList()));
 
     }
 
@@ -130,17 +117,14 @@ class PageRepositoryImplTest {
         assertThat(imgUrlList.size()).isEqualTo(0);
 
     }
-    
+
     @Test
     void readPageCommentListTest() {
-    
+
         // when
-        Long pageId = pageRepository.findAll().get(0).getId();
+        Long pageId = myPage.getId();
         ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(pageId, PageRequest.of(0,10));
         List<CommentDto> commentDtoList = result.getData();
-        for (CommentDto commentDto : commentDtoList) {
-            System.out.println("commentDto = " + commentDto);
-        }
 
         // then
         assertThat(commentDtoList.size()).isEqualTo(10);
@@ -153,15 +137,15 @@ class PageRepositoryImplTest {
 
 
         // when
-        Long pageId = pageRepository.findAll().get(0).getId();
+        Long pageId = myPage.getId();
         PageDetailDto pageDetailDto = pageRepository.readPageDetail(pageId);
         UserDto userDto = pageDetailDto.getPageDto().getUserDto();
         List<CommentDto> commentDtoList = pageDetailDto.getCommentDtoList();
 
 
         // then
-        assertThat(userDto.getNickname()).isEqualTo("1");
-        assertThat(pageDetailDto.getPageDto().getTitle()).isEqualTo("1");
+        assertThat(userDto.getNickname()).isEqualTo("0");
+        assertThat(pageDetailDto.getPageDto().getTitle()).isEqualTo("0");
         assertThat(commentDtoList.size()).isEqualTo(10);
 
 
@@ -172,10 +156,11 @@ class PageRepositoryImplTest {
     void readFollowerPageList() {
 
         //given
-        User user = userRepository.findById(1L).get();
-        User user2 = userRepository.findById(2L).get();
-        User user3 = userRepository.findById(3L).get();
-        User user4 = userRepository.findById(4L).get();
+        List<User> userList = userRepository.findAll();
+        User user = userList.get(0);
+        User user2 = userList.get(1);
+        User user3 = userList.get(2);
+        User user4 = userList.get(3);
         em.persist(new Follow(user,user2));
         em.persist(new Follow(user,user3));
         em.persist(new Follow(user,user4));
