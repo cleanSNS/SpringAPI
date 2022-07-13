@@ -1,10 +1,9 @@
 package cleanbook.com.service;
 
+import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.domain.page.Comment;
 import cleanbook.com.domain.page.Page;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
+import cleanbook.com.domain.user.*;
 import cleanbook.com.domain.user.block.Block;
 import cleanbook.com.domain.user.block.BlockedUserDto;
 import cleanbook.com.domain.user.like.LikeComment;
@@ -14,6 +13,7 @@ import cleanbook.com.domain.user.report.ReportComment;
 import cleanbook.com.domain.user.report.ReportPage;
 import cleanbook.com.domain.user.report.ReportType;
 import cleanbook.com.domain.user.report.ReportUser;
+import cleanbook.com.exception.DuplicateUserException;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.page.PageRepository;
@@ -25,20 +25,28 @@ import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.report.ReportCommentRepository;
 import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+@Import(QuerydslConfig.class)
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -63,6 +71,8 @@ class UserServiceTest {
     private LikeCommentRepository likeCommentRepository;
     @Mock
     private BlockRepository blockRepository;
+    @Autowired
+    private EntityManager em;
 
     @InjectMocks
     private UserService userService;
@@ -84,6 +94,59 @@ class UserServiceTest {
         user3 = new User(3L,"user3", "aaa", userProfile3);
         page = new Page(1L, user, "제목", "내용");
         comment = new Comment(1L, user, page, "내용");
+    }
+
+    @Nested
+    @DisplayName("회원가입")
+    class signUpTest {
+
+        @Test
+        @DisplayName("중복X")
+        void noDuplicationTest() {
+
+            //given
+            given(userRepository.findUserByEmail(any(String.class))).willReturn(Optional.empty());
+            given(userRepository.save(any(User.class))).willReturn(new User("email", "password", new UserProfile("nickname",25,GenderType.FEMALE)));
+            UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+                    .email("email")
+                    .password("password")
+                    .nickname("nickname")
+                    .age(25)
+                    .gender(GenderType.FEMALE)
+                    .build();
+
+            // when
+            UserSignUpDto signUpDto = userService.signUp(userSignUpDto);
+
+
+            // then
+            assertThat(signUpDto.getEmail()).isEqualTo(userSignUpDto.getEmail());
+            assertThat(signUpDto.getPassword()).isEqualTo(userSignUpDto.getPassword());
+            assertThat(signUpDto.getNickname()).isEqualTo(userSignUpDto.getNickname());
+        }
+    
+        @Test
+        @DisplayName("중복O")
+        void duplicationTest() {
+
+            //given
+            given(userRepository.findUserByEmail(any(String.class))).willReturn(Optional.of(user));
+            UserSignUpDto userSignUpDto = UserSignUpDto.builder()
+                    .email("user")
+                    .password("password")
+                    .nickname("nickname")
+                    .age(25)
+                    .gender(GenderType.FEMALE)
+                    .build();
+
+
+            // when
+            // then
+            assertThrows(DuplicateUserException.class, () -> userService.signUp(userSignUpDto));
+
+        }
+        
+        
     }
 
     @Test

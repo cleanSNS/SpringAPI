@@ -6,9 +6,7 @@ import cleanbook.com.domain.chat.UserChatRoom;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.block.Block;
 import cleanbook.com.domain.user.filter.Filter;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -19,6 +17,7 @@ import java.util.List;
 @Getter
 @Table(name = "users")
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +41,9 @@ public class User extends Timestamped {
     @Enumerated(value = EnumType.STRING)
     @Column(columnDefinition = "varchar(10) default 'INACTIVE'")
     private AccountState accountState;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserAuthority> userAuthorityList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Page> pageList = new ArrayList<>();
@@ -68,6 +70,14 @@ public class User extends Timestamped {
         this.email = email;
         this.password = password;
         this.userProfile = userProfile;
+    }
+
+    @Builder
+    public User(String email, String password, UserProfile userProfile, AccountState accountState) {
+        this.email = email;
+        this.password = password;
+        this.userProfile = userProfile;
+        this.accountState = accountState;
     }
 
     public User(Long id, String email, String password, UserProfile userProfile) {

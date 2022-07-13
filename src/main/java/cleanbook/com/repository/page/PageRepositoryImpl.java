@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cleanbook.com.domain.page.QComment.comment;
 import static cleanbook.com.domain.page.QPage.page;
@@ -94,18 +95,62 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         for (Long pageId : pageIdList) {
             pageAndImgDtoList.add(new MainPageDto(readPageDto(pageId), readPageImgUrlList(pageId)));
         }
-        Long nextStartPageId = pageIdList.stream().mapToLong(x->x).min().getAsLong();
+        Long nextStartPageId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 
         return new ResultDto<>(pageAndImgDtoList, nextStartPageId);
     }
 
     // 특정 유저 게시글 전체조회(유저페이지)
+    // dto로 바로 조회
+//    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startPageId, int pageSize) {
+//
+//        // no offset방식
+//        // 페이지 pk 조회 및 페이징
+//        List<Long> pageIdList = queryFactory.query()
+//                .select(page.id)
+//                .from(page)
+//                .where(page.user.id.eq(userId), loePageId(startPageId))
+//                .orderBy(page.id.desc())
+//                .limit(pageSize)
+//                .fetch();
+//
+//        for (Long aLong : pageIdList) {
+//            System.out.println("aLong = " + aLong);
+//        }
+//
+//        // 조회를 전부 완료했을때
+//        if (pageIdList.isEmpty()) throw new NoMorePageException();
+//
+//        List<UserPageDto> userPageDtoList = queryFactory.query()
+//                .select(page.id, page.title, page.likeCount, pageImgUrl.imgUrl)
+//                .from(page)
+//                .leftJoin(page.imgUrlList, pageImgUrl)
+//                .where(page.id.in(pageIdList))
+//                .orderBy(page.id.desc())
+//                .transform(
+//                        groupBy(page.id).list(
+//                                Projections.constructor(UserPageDto.class,
+//                                        page.id, page.title, page.likeCount,
+//                                        list(pageImgUrl.imgUrl))
+//                        )
+//                );
+//
+//        for (UserPageDto userPageDto : userPageDtoList) {
+//            System.out.println("userPageDto.getPageId() = " + userPageDto.getPageId());
+//        }
+//
+//
+//        return new ResultDto<>(userPageDtoList, getNextPageId(userId, startPageId, pageSize));
+//    }
+
+    // 특정 유저 게시글 전체조회(유저페이지)
+    // 엔티티로 조회 후 dto로 변환
     public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startPageId, int pageSize) {
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
-        List<Long> pageIdList = queryFactory.query()
-                .select(page.id)
+        List<Page> pageList = queryFactory.query()
+                .select(page)
                 .from(page)
                 .where(page.user.id.eq(userId), loePageId(startPageId))
                 .orderBy(page.id.desc())
@@ -113,22 +158,12 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .fetch();
 
         // 조회를 전부 완료했을때
-        if (pageIdList.isEmpty()) throw new NoMorePageException();
+        if (pageList.isEmpty()) throw new NoMorePageException();
 
-        List<UserPageDto> userPageDtoList = queryFactory.query()
-                .select(page.id, page.title, page.likeCount, pageImgUrl.imgUrl)
-                .from(page)
-                .join(page.imgUrlList, pageImgUrl)
-                .where(page.id.in(pageIdList))
-                .orderBy(page.id.desc())
-                .transform(
-                        groupBy(page.id).list(
-                                Projections.constructor(UserPageDto.class,
-                                        page.id, page.title, page.likeCount,
-                                        list(pageImgUrl.imgUrl))
-                        )
-                );
-
+        List<UserPageDto> userPageDtoList = pageList.stream().map(
+                        p -> new UserPageDto(p.getId(), p.getTitle(), p.getLikeCount(),
+                                p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
+                .collect(Collectors.toList());
 
         return new ResultDto<>(userPageDtoList, getNextPageId(userId, startPageId, pageSize));
     }

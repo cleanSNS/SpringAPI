@@ -1,12 +1,12 @@
 package cleanbook.com.repository.page;
 
-import cleanbook.com.configuration.QuerydslConfig;
+import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.domain.ResultDto;
 import cleanbook.com.domain.page.*;
 import cleanbook.com.domain.user.*;
+import cleanbook.com.exception.NoMorePageException;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
-import cleanbook.com.service.PageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 @Import(QuerydslConfig.class)
@@ -152,7 +153,7 @@ class PageRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("팔로우한_유저_게시물_보기")
+    @DisplayName("메인페이지_게시물_보기")
     void readFollowerPageList() {
 
         //given
@@ -185,6 +186,13 @@ class PageRepositoryImplTest {
         assertThat(mainPageDtoList.size()).isEqualTo(3);
         assertThat(mainPageDtoList.get(0).getPageDto().getUserDto().getNickname()).isEqualTo(user3.getUserProfile().getNickname());
         assertThat(mainPageDtoList.get(2).getPageDto().getUserDto().getNickname()).isEqualTo(user2.getUserProfile().getNickname());
+
+        // 조회 완료시
+        // when
+        // then
+        assertThrows(NoMorePageException.class, () ->
+                pageRepository.readFolloweePageList(user.getId(), 0L, 3)
+        );
     }
 
     @Test
@@ -210,14 +218,33 @@ class PageRepositoryImplTest {
         Long pageStartIdx = result.getStartPageId();
 
         // then
+        assertThat(userPageDtoList.size()).isEqualTo(2);
         assertThat(userPageDtoList).extracting("title").containsExactly("9","8");
 
         // when
         result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 3);
         userPageDtoList = result.getData();
+        pageStartIdx = result.getStartPageId();
 
         // then
+        assertThat(userPageDtoList.size()).isEqualTo(3);
         assertThat(userPageDtoList).extracting("title").containsExactly("7","6","5");
+
+        // when
+        result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 6);
+        userPageDtoList = result.getData();
+        pageStartIdx = result.getStartPageId();
+
+        // then
+        assertThat(userPageDtoList.size()).isEqualTo(5);
+        assertThat(userPageDtoList).extracting("title").containsExactly("4","3","2","1","0");
+
+        // 조회 완료시
+        // when
+        // then
+        assertThrows(NoMorePageException.class, () ->
+                pageRepository.readUserPageList(user.getId(), 0L, 3)
+                );
     }
 
 }

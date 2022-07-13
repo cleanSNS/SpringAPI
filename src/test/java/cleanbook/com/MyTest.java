@@ -1,18 +1,19 @@
 package cleanbook.com;
 
-import cleanbook.com.configuration.QuerydslConfig;
+import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.domain.page.Comment;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.page.PageCreateDto;
-import cleanbook.com.domain.user.Follow;
 import cleanbook.com.domain.user.GenderType;
 import cleanbook.com.domain.user.User;
 import cleanbook.com.domain.user.UserProfile;
+import cleanbook.com.domain.user.UserSignUpDto;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.page.PageImgUrlRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.service.PageService;
+import cleanbook.com.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,19 +26,23 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.List;
+import java.util.Optional;
 
 import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
-@DataJpaTest
-@Import(QuerydslConfig.class)
-//@SpringBootTest
-//@Transactional
-//@Rollback(value = false)
+//@DataJpaTest
+//@Import(QuerydslConfig.class)
+@SpringBootTest
+@Transactional
 class MyTest {
 
     @Autowired
     private PageService pageService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -46,10 +51,10 @@ class MyTest {
     private CommentRepository commentRepository;
     @Autowired
     private PageImgUrlRepository pageImgUrlRepository;
-    @Autowired
-    private TestEntityManager em;
 //    @Autowired
-//    private EntityManager em;
+//    private TestEntityManager em;
+    @Autowired
+    private EntityManager em;
 
     @BeforeEach
     void init() {
@@ -71,22 +76,5 @@ class MyTest {
         }
     }
 
-    @Test
-    void aaa() {
 
-
-        //given
-        User user = userRepository.findById(1L).get();
-        System.out.println("size " + user.getPageList().size());
-
-        // when
-        System.out.println("user.getId() = " + user.getId());
-        pageService.createPage(user.getId(), new PageCreateDto("제목", "내용"));
-
-
-        // then
-        System.out.println("size " + user.getPageList().size());
-
-
-    }
 }
