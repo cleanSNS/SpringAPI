@@ -1,7 +1,5 @@
 package cleanbook.com.service;
 
-import cleanbook.com.configuration.QuerydslConfig;
-import cleanbook.com.domain.page.Comment;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.page.PageCreateDto;
 import cleanbook.com.domain.page.PageUpdateDto;
@@ -11,26 +9,17 @@ import cleanbook.com.domain.user.UserProfile;
 import cleanbook.com.exception.NoAuthroizationException;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
 
 
 import java.util.Optional;
 
-import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

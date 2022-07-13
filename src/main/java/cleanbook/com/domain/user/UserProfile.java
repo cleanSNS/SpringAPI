@@ -1,9 +1,6 @@
 package cleanbook.com.domain.user;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -14,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserProfile {
 
     @NotEmpty

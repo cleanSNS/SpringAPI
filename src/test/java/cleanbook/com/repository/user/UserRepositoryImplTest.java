@@ -1,6 +1,6 @@
 package cleanbook.com.repository.user;
 
-import cleanbook.com.configuration.QuerydslConfig;
+import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.domain.user.GenderType;
 import cleanbook.com.domain.user.User;
 import cleanbook.com.domain.user.UserProfile;
