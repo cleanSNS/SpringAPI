@@ -42,6 +42,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 회원탈퇴
     @PostMapping("/delete")
     public ResponseEntity<Void> delete(@Valid @RequestBody UserDeleteDto userDeleteDto, HttpServletResponse response) {
         userService.delete(userDeleteDto, response);

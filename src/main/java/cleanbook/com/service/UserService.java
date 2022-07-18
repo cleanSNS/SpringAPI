@@ -105,12 +105,12 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = tokenProvider.createToken(authentication);
-        response.setHeader("X-AUTH-TOKEN", token);
 
         Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        // https-only
+//        cookie.setSecure(true);
         response.addCookie(cookie);
 
         return new UserLoginDto(user);
