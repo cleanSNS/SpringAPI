@@ -1,5 +1,6 @@
 package cleanbook.com.service;
 
+import cleanbook.com.domain.RefreshToken;
 import cleanbook.com.domain.page.Comment;
 import cleanbook.com.domain.page.Page;
 import cleanbook.com.domain.user.*;
@@ -30,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +66,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
@@ -98,26 +101,62 @@ public class UserService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword());
+        String accessToken = tokenProvider.createAccessToken(user.getId());
+        String refreshToken = tokenProvider.createRefreshToken(user.getId());
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
-        String token = tokenProvider.createToken(authentication);
+        addCookie(response, "X-AUTH-TOKEN", accessToken);
+        addCookie(response, "REFRESH-TOKEN", refreshToken);
 
-        Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
+        return new UserLoginDto(user);
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value) {
+        Cookie cookie;
+        cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         // https-only
 //        cookie.setSecure(true);
         response.addCookie(cookie);
+    }
 
-        return new UserLoginDto(user);
+    // 만료된 access token refresh
+    public void refresh(String accessToken, String refreshToken, HttpServletResponse response) {
+
+        // accessToken이 만료되지 않았거나 토큰이 비어있을시
+        if (!StringUtils.hasText(accessToken) || !StringUtils.hasText(refreshToken) || tokenProvider.validateToken(accessToken)) {
+            throw new IllegalTokenException();
+        }
+        User user = userRepository.findById(tokenProvider.getUserId(refreshToken)).orElseThrow(UserNotFoundException::new);
+
+        // refreshToken이 만료되지 않음
+        if (tokenProvider.validateToken(refreshToken)) {
+            String token = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new).getToken();
+
+            // db에 저장된 refreshToken과 일치하지 않을시
+            if (!token.equals(refreshToken)) {
+                throw new IllegalTokenException();
+            }
+
+            // accessToken 재발급
+            String newAccessToken = tokenProvider.createAccessToken(user.getId());
+            addCookie(response, "X-AUTH-TOKEN", newAccessToken);
+            return;
+        }
+
+        // refreshToken이 만료됨
+        throw new TokenExpiredException();
     }
 
     // 로그아웃
     public void logout(HttpServletResponse response) {
+        deleteCookie("X-AUTH-TOKEN", response);
+        deleteCookie("REFRESH-TOKEN", response);
+    }
+
+    private void deleteCookie(String name, HttpServletResponse response) {
         Cookie cookie = new Cookie("X-AUTH-TOKEN", null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);

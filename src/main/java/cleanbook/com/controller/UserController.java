@@ -8,10 +8,7 @@ import cleanbook.com.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -36,7 +33,7 @@ public class UserController {
     }
 
     // 로그아웃
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response){
         userService.logout(response);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -46,6 +43,15 @@ public class UserController {
     @PostMapping("/delete")
     public ResponseEntity<Void> delete(@Valid @RequestBody UserDeleteDto userDeleteDto, HttpServletResponse response) {
         userService.delete(userDeleteDto, response);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // accessToken refresh
+    @GetMapping("/refresh")
+    public ResponseEntity<Void> refresh(@CookieValue(name = "X-AUTH-TOKEN") String accessToken,
+                                        @CookieValue(name = "REFRESH-TOKEN") String refreshToken,
+                                        HttpServletResponse response) {
+        userService.refresh(accessToken, refreshToken, response);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
