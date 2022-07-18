@@ -1,23 +1,23 @@
 package cleanbook.com.config;
 
-import cleanbook.com.jwt.JwtAccessDeniedHandler;
-import cleanbook.com.jwt.JwtAuthenticationEntryPoint;
-import cleanbook.com.jwt.JwtSecurityConfig;
-import cleanbook.com.jwt.TokenProvider;
+import cleanbook.com.jwt.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -40,19 +40,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring()
-                .antMatchers(
+    // WebSecurity Configure
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                        .antMatchers(
                         "/h2-console/**"
                         ,"/favicon.ico"
                         ,"/error"
                 );
     }
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
                 // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
                 .csrf().disable()
 
@@ -82,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

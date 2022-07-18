@@ -132,7 +132,7 @@ public class UserService {
         if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-
+        logout(response);
         userRepository.delete(user);
     }
 

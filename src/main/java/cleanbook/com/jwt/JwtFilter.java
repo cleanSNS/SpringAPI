@@ -21,9 +21,7 @@ import java.util.Arrays;
 @Slf4j
 public class JwtFilter extends GenericFilterBean {
 
-   public static final String AUTHORIZATION_HEADER = "Authorization";
-
-   private TokenProvider tokenProvider;
+   private final TokenProvider tokenProvider;
 
    public JwtFilter(TokenProvider tokenProvider) {
       this.tokenProvider = tokenProvider;
