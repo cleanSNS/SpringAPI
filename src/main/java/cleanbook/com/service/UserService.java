@@ -169,8 +169,6 @@ public class UserService {
     public void delete(UserDeleteDto userDeleteDto, HttpServletResponse response) {
         User user = userRepository.findById(userDeleteDto.getUserId()).orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
-            log.info("userPassword {}", user.getPassword());
-            log.info("userDtoPassword {}", passwordEncoder.encode(userDeleteDto.getPassword()));
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
         logout(response);

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KakaoProfile {
-    private Long id;
+    private String id;
     private KakaoAccount kakao_account;
 
     @Data

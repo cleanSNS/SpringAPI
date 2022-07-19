@@ -44,16 +44,30 @@ public class SocialController {
     }
 
     @GetMapping("/kakao")
-    public String socialSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
-        providerService.socialSignUpAndLogin(code, response);
+    public String kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
+        providerService.socialSignUpAndLogin(code, "kakao", response);
         return code;
     }
 
     // postman 테스트위해
     @GetMapping("/kakao/postman")
-    public String test(@RequestParam String token, HttpServletResponse response) {
-        providerService.socialSignUpAndLoginPostman(token, response);
+    public String kakaoSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
+        providerService.socialSignUpAndLoginPostman(token, "kakao", response);
         return token;
     }
 
+
+    //https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=_A0bRpk1yPqnrmV8eBx8&state=state&redirect_uri=http://localhost:8080/social/login/naver
+    @GetMapping("/naver")
+    public String naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
+        providerService.socialSignUpAndLogin(code, "naver", response);
+        return code;
+    }
+
+    // postman 테스트위해
+    @GetMapping("/naver/postman")
+    public String naverSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
+        providerService.socialSignUpAndLoginPostman(token, "naver", response);
+        return token;
+    }
 }
