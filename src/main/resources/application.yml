@@ -11,6 +11,9 @@ spring:
 #    password: 98limchaemin
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
+  config:
+    import: classpath:/auth.yml
+
   jpa:
     hibernate:
       ddl-auto: create

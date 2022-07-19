@@ -65,7 +65,6 @@ public class UserService {
     private final FilterRepository filterRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RefreshTokenRepository refreshTokenRepository;
 
     // 회원가입
@@ -97,6 +96,7 @@ public class UserService {
     public UserLoginDto login(UserLoginDto userLoginDto, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
@@ -112,7 +112,7 @@ public class UserService {
         return new UserLoginDto(user);
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value) {
+    public void addCookie(HttpServletResponse response, String name, String value) {
         Cookie cookie;
         cookie = new Cookie(name, value);
         cookie.setPath("/");
@@ -156,8 +156,8 @@ public class UserService {
         deleteCookie("REFRESH-TOKEN", response);
     }
 
-    private void deleteCookie(String name, HttpServletResponse response) {
-        Cookie cookie = new Cookie("X-AUTH-TOKEN", null);
+    public void deleteCookie(String name, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, null);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setMaxAge(0);
@@ -169,6 +169,8 @@ public class UserService {
     public void delete(UserDeleteDto userDeleteDto, HttpServletResponse response) {
         User user = userRepository.findById(userDeleteDto.getUserId()).orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
+            log.info("userPassword {}", user.getPassword());
+            log.info("userDtoPassword {}", passwordEncoder.encode(userDeleteDto.getPassword()));
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
         logout(response);

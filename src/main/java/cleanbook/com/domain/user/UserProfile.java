@@ -16,8 +16,7 @@ public class UserProfile {
 
     @NotEmpty
     private String nickname;
-    @NotEmpty
-    private int age;
+    private Integer age;
     @NotEmpty
     @Enumerated(EnumType.STRING)
     private GenderType gender;

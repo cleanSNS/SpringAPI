@@ -13,7 +13,7 @@ public class UserSignUpDto {
     private String email;
     private String password;
     private String nickname;
-    private int age;
+    private Integer age;
     private GenderType gender;
 
     public UserSignUpDto(User user) {
