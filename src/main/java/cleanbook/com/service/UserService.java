@@ -1,8 +1,6 @@
 package cleanbook.com.service;
 
-import cleanbook.com.dto.user.UserDeleteDto;
-import cleanbook.com.dto.user.UserLoginDto;
-import cleanbook.com.dto.user.UserSignUpDto;
+import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.enums.AccountState;
 import cleanbook.com.entity.user.RefreshToken;
 import cleanbook.com.entity.page.Comment;
@@ -10,9 +8,7 @@ import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.authority.Authority;
 import cleanbook.com.entity.user.block.Block;
-import cleanbook.com.dto.user.BlockedUserDto;
 import cleanbook.com.entity.user.filter.Filter;
-import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.entity.user.like.LikeComment;
 import cleanbook.com.entity.user.like.LikePage;
@@ -23,6 +19,8 @@ import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.*;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
+import cleanbook.com.repository.user.email.EmailAuthRepository;
+import cleanbook.com.repository.user.email.EmailAuthRepositoryCustom;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
 import cleanbook.com.repository.user.report.ReportCommentRepository;
@@ -37,7 +35,9 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.user.authority.UserAuthority.createUserAuthority;
@@ -68,13 +68,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
+    private final EmailAuthRepository emailAuthRepository;
 
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
+
+        // 유저 중복 검사
         if (userRepository.findUserByEmail(userSignupDto.getEmail()).isPresent()) {
             throw new DuplicateUserException();
         }
 
+        // 유저 생성
         Authority authority = Authority.builder()
                 .name("ROLE_USER")
                 .build();
@@ -82,7 +87,7 @@ public class UserService {
         User user = User.builder()
                 .email(userSignupDto.getEmail())
                 .password(passwordEncoder.encode(userSignupDto.getPassword()))
-                .accountState(AccountState.ACTIVE)
+                .accountState(AccountState.INACTIVE)
                 .userProfile(UserProfile.builder()
                         .nickname(userSignupDto.getNickname())
                         .age(userSignupDto.getAge())
@@ -91,7 +96,28 @@ public class UserService {
                 .build();
 
         createUserAuthority(user, authority);
+
+        // 이메일 인증 객체 생성
+        EmailAuth emailAuth = emailAuthRepository.save(
+                EmailAuth.builder()
+                        .email(userSignupDto.getEmail())
+                        .authToken(UUID.randomUUID().toString())
+                        .expired(false)
+                        .build());
+
+        emailService.send(userSignupDto.getEmail(), emailAuth.getAuthToken());
+
         return new UserSignUpDto(userRepository.save(user));
+    }
+
+    @Transactional
+    public void confirmEmail(EmailAuthDto requestDto) {
+        EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now())
+                .orElseThrow(EmailAuthTokenNotFoundException::new);
+        User user = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow(UserNotFoundException::new);
+
+        emailAuth.useToken();
+        user.activateAccount();
     }
 
     // 로그인
@@ -174,6 +200,8 @@ public class UserService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
         logout(response);
+        RefreshToken refreshToken = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new);
+        refreshTokenRepository.delete(refreshToken);
         userRepository.delete(user);
     }
 

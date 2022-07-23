@@ -117,4 +117,8 @@ public class User extends Timestamped {
     public void changeUserFilterSetting(UserFilterSetting userFilterSetting) {
         this.userSetting.changeUserFilterSetting(userFilterSetting);
     }
+
+    public void activateAccount() {
+        this.accountState = AccountState.ACTIVE;
+    }
 }
