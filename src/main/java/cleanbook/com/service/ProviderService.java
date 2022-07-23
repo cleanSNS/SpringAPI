@@ -1,8 +1,10 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.RefreshToken;
-import cleanbook.com.domain.social.*;
-import cleanbook.com.domain.user.*;
+import cleanbook.com.dto.user.UserSignUpDto;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.user.RefreshToken;
+import cleanbook.com.entity.social.*;
+import cleanbook.com.entity.user.*;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.RefreshTokenRepository;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +24,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Transactional
 public class ProviderService {
 
     private final OAuthRequestFactory oAuthRequestFactory;
@@ -31,6 +35,7 @@ public class ProviderService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // access 토큰 받아오기
     public SocialAccessToken getAccessToken(String code, String provider) {
 
         String uri = oAuthRequestFactory.getUri(code, provider);
@@ -56,6 +61,7 @@ public class ProviderService {
         throw new RuntimeException();
     }
 
+    // access 토큰 바탕으로 유저 프로필 받아오기
     public SocialProfile getProfile(String accessToken, String provider) {
 
         ResponseEntity<String> response = WebClient.create()
@@ -86,7 +92,6 @@ public class ProviderService {
                 KakaoProfile kakaoProfile = gson.fromJson(response, KakaoProfile.class);
                 gender = kakaoProfile.getKakao_account().getGender().equals("male") ? GenderType.MALE : GenderType.FEMALE;
                 return SocialProfile.builder()
-                        .id(kakaoProfile.getId())
                         .email(kakaoProfile.getKakao_account().getEmail())
                         .nickname(kakaoProfile.getKakao_account().getProfile().getNickname())
                         .gender(gender)
@@ -96,14 +101,11 @@ public class ProviderService {
                 NaverProfile naverProfile = gson.fromJson(response, NaverProfile.class);
                 gender = naverProfile.getResponse().getGender().equals("M") ? GenderType.MALE : GenderType.FEMALE;
                 return SocialProfile.builder()
-                        .id(naverProfile.getResponse().getId())
                         .email(naverProfile.getResponse().getEmail())
                         .nickname(naverProfile.getResponse().getNickname())
                         .gender(gender)
                         .build();
 
-            case "google":
-                return new SocialProfile();
         }
         throw new RuntimeException();
     }
@@ -150,7 +152,7 @@ public class ProviderService {
         if (findUser.isEmpty()) {
             UserSignUpDto signUpDto = UserSignUpDto.builder()
                     .email(socialProfile.getEmail())
-                    .password(passwordEncoder.encode(socialProfile.getId()))
+                    .password(passwordEncoder.encode(socialProfile.getEmail()))
                     .nickname(socialProfile.getNickname())
                     .age(null)
                     .gender(socialProfile.getGender())

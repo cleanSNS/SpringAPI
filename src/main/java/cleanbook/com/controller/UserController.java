@@ -1,9 +1,8 @@
 package cleanbook.com.controller;
 
-import cleanbook.com.domain.user.UserDeleteDto;
-import cleanbook.com.domain.user.UserDto;
-import cleanbook.com.domain.user.UserLoginDto;
-import cleanbook.com.domain.user.UserSignUpDto;
+import cleanbook.com.dto.user.UserDeleteDto;
+import cleanbook.com.dto.user.UserLoginDto;
+import cleanbook.com.dto.user.UserSignUpDto;
 import cleanbook.com.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

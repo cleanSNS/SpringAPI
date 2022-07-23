@@ -1,8 +1,9 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.ResultDto;
-import cleanbook.com.domain.page.*;
-import cleanbook.com.domain.user.User;
+import cleanbook.com.dto.ResultDto;
+import cleanbook.com.dto.page.*;
+import cleanbook.com.entity.page.*;
+import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.NoAuthroizationException;
 import cleanbook.com.exception.exceptions.PageNotFoundException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;

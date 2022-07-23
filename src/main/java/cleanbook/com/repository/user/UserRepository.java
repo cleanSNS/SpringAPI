@@ -1,11 +1,8 @@
 package cleanbook.com.repository.user;
 
-import cleanbook.com.domain.user.User;
+import cleanbook.com.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {

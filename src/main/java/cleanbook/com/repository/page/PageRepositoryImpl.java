@@ -1,8 +1,9 @@
 package cleanbook.com.repository.page;
 
-import cleanbook.com.domain.ResultDto;
-import cleanbook.com.domain.page.*;
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.dto.ResultDto;
+import cleanbook.com.dto.page.*;
+import cleanbook.com.entity.page.*;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.exception.exceptions.NoMorePageException;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -16,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static cleanbook.com.domain.page.QComment.comment;
-import static cleanbook.com.domain.page.QPage.page;
-import static cleanbook.com.domain.page.QPageImgUrl.pageImgUrl;
-import static cleanbook.com.domain.user.QFollow.follow;
-import static cleanbook.com.domain.user.QUser.user;
+import static cleanbook.com.entity.page.QComment.comment;
+import static cleanbook.com.entity.page.QPage.page;
+import static cleanbook.com.entity.page.QPageImgUrl.pageImgUrl;
+import static cleanbook.com.entity.user.follow.QFollow.follow;
+import static cleanbook.com.entity.user.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
@@ -40,7 +41,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, page.title, page.content, page.likeCount, page.createdDate))
+                            page.id, page.content, page.likeCount, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))
@@ -160,7 +161,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         if (pageList.isEmpty()) throw new NoMorePageException();
 
         List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getTitle(), p.getLikeCount(),
+                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(),
                                 p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
 

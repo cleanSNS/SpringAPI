@@ -1,12 +1,12 @@
 package cleanbook.com.controller;
 
-import cleanbook.com.domain.social.SocialAccessToken;
 import cleanbook.com.service.ProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,12 +25,6 @@ public class SocialController {
     @Value("${spring.social.kakao.redirect}")
     private String kakaoRedirect;
 
-    @Value("${spring.social.google.client_id}")
-    private String googleClientId;
-
-    @Value("${spring.social.google.redirect}")
-    private String googleRedirect;
-
     @Value("${spring.social.naver.client_id}")
     private String naverClientId;
 
@@ -44,30 +38,30 @@ public class SocialController {
     }
 
     @GetMapping("/kakao")
-    public String kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<Void> kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "kakao", response);
-        return code;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // postman 테스트위해
     @GetMapping("/kakao/postman")
-    public String kakaoSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
+    public ResponseEntity<Void> kakaoSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
         providerService.socialSignUpAndLoginPostman(token, "kakao", response);
-        return token;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     //https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=_A0bRpk1yPqnrmV8eBx8&state=state&redirect_uri=http://localhost:8080/social/login/naver
     @GetMapping("/naver")
-    public String naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<Void> naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "naver", response);
-        return code;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // postman 테스트위해
     @GetMapping("/naver/postman")
-    public String naverSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
+    public ResponseEntity<Void> naverSignUpAndLoginTest(@RequestParam String token, HttpServletResponse response) {
         providerService.socialSignUpAndLoginPostman(token, "naver", response);
-        return token;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

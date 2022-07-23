@@ -1,7 +1,7 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.user.AccountState;
-import cleanbook.com.domain.user.User;
+import cleanbook.com.entity.enums.AccountState;
+import cleanbook.com.entity.user.User;
 import cleanbook.com.repository.user.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

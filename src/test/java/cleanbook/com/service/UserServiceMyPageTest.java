@@ -1,11 +1,9 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.SettingType;
-import cleanbook.com.domain.page.Comment;
-import cleanbook.com.domain.page.Page;
-import cleanbook.com.domain.user.*;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.enums.SettingType;
+import cleanbook.com.entity.user.*;
 import cleanbook.com.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

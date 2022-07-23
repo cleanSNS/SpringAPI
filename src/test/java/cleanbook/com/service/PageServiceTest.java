@@ -1,11 +1,11 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.page.Page;
-import cleanbook.com.domain.page.PageCreateDto;
-import cleanbook.com.domain.page.PageUpdateDto;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
+import cleanbook.com.entity.page.Page;
+import cleanbook.com.dto.page.PageCreateDto;
+import cleanbook.com.dto.page.PageUpdateDto;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.exception.exceptions.NoAuthroizationException;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;

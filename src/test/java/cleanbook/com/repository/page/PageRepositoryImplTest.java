@@ -1,9 +1,13 @@
 package cleanbook.com.repository.page;
 
 import cleanbook.com.config.QuerydslConfig;
-import cleanbook.com.domain.ResultDto;
-import cleanbook.com.domain.page.*;
-import cleanbook.com.domain.user.*;
+import cleanbook.com.dto.page.*;
+import cleanbook.com.dto.user.UserDto;
+import cleanbook.com.dto.ResultDto;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.page.*;
+import cleanbook.com.entity.user.*;
+import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.exception.exceptions.NoMorePageException;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
@@ -19,7 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
+import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -1,7 +1,7 @@
 package cleanbook.com.repository.page;
 
-import cleanbook.com.domain.ResultDto;
-import cleanbook.com.domain.page.*;
+import cleanbook.com.dto.ResultDto;
+import cleanbook.com.dto.page.*;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

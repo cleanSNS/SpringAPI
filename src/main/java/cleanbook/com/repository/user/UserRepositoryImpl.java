@@ -1,6 +1,6 @@
 package cleanbook.com.repository.user;
 
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.dto.user.UserDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static cleanbook.com.domain.user.QUser.*;
+import static cleanbook.com.entity.user.QUser.*;
 
 @Repository
 @AllArgsConstructor

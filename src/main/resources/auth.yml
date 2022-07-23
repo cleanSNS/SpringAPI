@@ -17,12 +17,4 @@ spring:
         token: https://nid.naver.com/oauth2.0/token
         profile: https://openapi.naver.com/v1/nid/me
 
-    google:
-      client_id:
-      client_secret:
-      redirect: http://localhost:8080/social/login/google
-      url:
-        login: https://accounts.google.com/o/oauth2/v2/auth
-        token: https://oauth2.googleapis.com/token
-        profile: https://www.googleapis.com/oauth2/v3/userinfo
 

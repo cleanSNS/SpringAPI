@@ -1,6 +1,6 @@
 package cleanbook.com.repository;
 
-import cleanbook.com.domain.page.Comment;
+import cleanbook.com.entity.page.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {

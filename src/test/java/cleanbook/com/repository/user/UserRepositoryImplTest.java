@@ -1,10 +1,10 @@
 package cleanbook.com.repository.user;
 
 import cleanbook.com.config.QuerydslConfig;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.UserProfile;
+import cleanbook.com.dto.user.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

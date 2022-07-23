@@ -1,6 +1,6 @@
 package cleanbook.com.repository;
 
-import cleanbook.com.domain.RefreshToken;
+import cleanbook.com.entity.user.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

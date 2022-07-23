@@ -1,6 +1,6 @@
 package cleanbook.com.repository.user;
 
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.dto.user.UserDto;
 
 import java.util.List;
 

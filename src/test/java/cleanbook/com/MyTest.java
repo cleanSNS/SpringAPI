@@ -1,13 +1,10 @@
 package cleanbook.com;
 
-import cleanbook.com.config.QuerydslConfig;
-import cleanbook.com.domain.page.Comment;
-import cleanbook.com.domain.page.Page;
-import cleanbook.com.domain.page.PageCreateDto;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
-import cleanbook.com.domain.user.UserSignUpDto;
+import cleanbook.com.entity.page.Comment;
+import cleanbook.com.entity.page.Page;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.page.PageImgUrlRepository;
 import cleanbook.com.repository.page.PageRepository;
@@ -15,23 +12,15 @@ import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.service.PageService;
 import cleanbook.com.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.Optional;
 
-import static cleanbook.com.domain.page.PageImgUrl.createPageImgUrl;
+import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 //@DataJpaTest
 //@Import(QuerydslConfig.class)

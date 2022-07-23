@@ -1,12 +1,12 @@
 package cleanbook.com.service;
 
-import cleanbook.com.domain.page.Comment;
-import cleanbook.com.domain.page.Page;
-import cleanbook.com.domain.user.GenderType;
-import cleanbook.com.domain.user.User;
-import cleanbook.com.domain.user.UserProfile;
-import cleanbook.com.domain.user.filter.Filter;
-import cleanbook.com.domain.user.UserDto;
+import cleanbook.com.entity.page.Comment;
+import cleanbook.com.entity.page.Page;
+import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.UserProfile;
+import cleanbook.com.entity.user.filter.Filter;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.repository.user.FilterRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
