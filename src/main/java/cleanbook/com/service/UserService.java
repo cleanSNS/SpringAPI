@@ -20,7 +20,6 @@ import cleanbook.com.repository.*;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
-import cleanbook.com.repository.user.email.EmailAuthRepositoryCustom;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
 import cleanbook.com.repository.user.report.ReportCommentRepository;
@@ -76,7 +75,7 @@ public class UserService {
 
         // 유저 중복 검사
         if (userRepository.findUserByEmail(userSignupDto.getEmail()).isPresent()) {
-            throw new DuplicateUserException();
+            throw new UserDuplicateException();
         }
 
         // 유저 생성
@@ -110,10 +109,9 @@ public class UserService {
         return new UserSignUpDto(userRepository.save(user));
     }
 
-    @Transactional
+    // 이메일 인증
     public void confirmEmail(EmailAuthDto requestDto) {
-        EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now())
-                .orElseThrow(EmailAuthTokenNotFoundException::new);
+        EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now()).orElseThrow(EmailAuthTokenNotFoundException::new);
         User user = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow(UserNotFoundException::new);
 
         emailAuth.useToken();
@@ -123,10 +121,15 @@ public class UserService {
     // 로그인
     public UserLoginDto login(UserLoginDto userLoginDto, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
+                .orElseThrow(IllegalAccountException::new);
 
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new IllegalAccountException();
+        }
+
+        // 이메일 인증 검증
+        if (!user.getAccountState().equals(AccountState.ACTIVE)) {
+            throw new EmailAuthFailException();
         }
 
         String accessToken = tokenProvider.createAccessToken(user.getId());
@@ -197,7 +200,7 @@ public class UserService {
     public void delete(UserDeleteDto userDeleteDto, HttpServletResponse response) {
         User user = userRepository.findById(userDeleteDto.getUserId()).orElseThrow(UserNotFoundException::new);
         if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new IllegalAccountException();
         }
         logout(response);
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new);

@@ -15,7 +15,7 @@ import cleanbook.com.entity.user.report.ReportComment;
 import cleanbook.com.entity.user.report.ReportPage;
 import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.entity.user.report.ReportUser;
-import cleanbook.com.exception.exceptions.DuplicateUserException;
+import cleanbook.com.exception.exceptions.UserDuplicateException;
 import cleanbook.com.repository.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.page.PageRepository;
@@ -142,7 +142,7 @@ class UserServiceTest {
 
             // when
             // then
-            assertThrows(DuplicateUserException.class, () -> userService.signUp(userSignUpDto));
+            assertThrows(UserDuplicateException.class, () -> userService.signUp(userSignUpDto));
 
         }
         

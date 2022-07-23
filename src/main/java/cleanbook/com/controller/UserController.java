@@ -1,10 +1,13 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.user.EmailAuthDto;
 import cleanbook.com.dto.user.UserDeleteDto;
 import cleanbook.com.dto.user.UserLoginDto;
 import cleanbook.com.dto.user.UserSignUpDto;
+import cleanbook.com.service.EmailService;
 import cleanbook.com.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,17 +15,27 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<UserSignUpDto> signUp(@Valid @RequestBody UserSignUpDto userSignUpDto) {
         return ResponseEntity.ok(userService.signUp(userSignUpDto));
+    }
+
+    // 이메일 인증
+    @GetMapping("/signup/confirm")
+    public ResponseEntity<Void> authenticateEmail(@ModelAttribute EmailAuthDto emailAuthDto) {
+        log.info("이메일 인증시작");
+        userService.confirmEmail(emailAuthDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 로그인
@@ -45,7 +58,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // accessToken refresh
+    // refresh accessToken
     @GetMapping("/refresh")
     public ResponseEntity<Void> refresh(@CookieValue(name = "X-AUTH-TOKEN") String accessToken,
                                         @CookieValue(name = "REFRESH-TOKEN") String refreshToken,

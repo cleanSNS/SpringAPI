@@ -33,9 +33,9 @@ public class MyExceptionHandeler {
         return new ErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler(DuplicateUserException.class)
+    @ExceptionHandler(UserDuplicateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse reportError(DuplicateUserException exception) {
+    public ErrorResponse reportError(UserDuplicateException exception) {
         return new ErrorResponse(exception.getMessage());
     }
 
