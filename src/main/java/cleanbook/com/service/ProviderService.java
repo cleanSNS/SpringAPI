@@ -28,7 +28,7 @@ import java.util.Optional;
 public class ProviderService {
 
     private final OAuthRequestFactory oAuthRequestFactory;
-    private final UserService userService;
+    private final UserAuthService userAuthService;
     private final UserRepository userRepository;
     private final Gson gson;
     private final PasswordEncoder passwordEncoder;
@@ -127,7 +127,7 @@ public class ProviderService {
                     .gender(socialProfile.getGender())
                     .build();
 
-            userService.signUp(signUpDto);
+            userAuthService.signUp(signUpDto);
             user = userRepository.findUserByEmail(socialProfile.getEmail()).orElseThrow(UserNotFoundException::new);
         } else {
             user = findUser.get();
@@ -138,8 +138,8 @@ public class ProviderService {
 
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
-        userService.addCookie(response, "X-AUTH-TOKEN", accessToken);
-        userService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+        userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
+        userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
     }
 
     // postman 테스트위해
@@ -158,7 +158,7 @@ public class ProviderService {
                     .gender(socialProfile.getGender())
                     .build();
 
-            userService.signUp(signUpDto);
+            userAuthService.signUp(signUpDto);
             user = userRepository.findUserByEmail(socialProfile.getEmail()).orElseThrow(UserNotFoundException::new);
         } else {
             user = findUser.get();
@@ -169,7 +169,7 @@ public class ProviderService {
 
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
-        userService.addCookie(response, "X-AUTH-TOKEN", accessToken);
-        userService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+        userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
+        userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
     }
 }

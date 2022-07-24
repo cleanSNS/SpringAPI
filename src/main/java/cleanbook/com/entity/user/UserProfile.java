@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
@@ -15,11 +16,11 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 public class UserProfile {
 
-    @NotEmpty
+    @NotBlank
     private String nickname;
     private Integer age;
     private boolean ageVisible;
-    @NotEmpty
+    @NotBlank
     @Enumerated(EnumType.STRING)
     private GenderType gender;
     private boolean genderVisible;

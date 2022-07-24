@@ -92,61 +92,8 @@ class UserServiceTest {
         user = new User(1L,"user", "aaa", userProfile);
         targetUser = new User(2L,"targetUser", "aaa", userProfile2);
         user3 = new User(3L,"user3", "aaa", userProfile3);
-        page = new Page(1L, user, "제목", "내용");
+        page = new Page(1L, user, "내용");
         comment = new Comment(1L, user, page, "내용");
-    }
-
-    @Nested
-    @DisplayName("회원가입")
-    class signUpTest {
-
-        @Test
-        @DisplayName("중복X")
-        void noDuplicationTest() {
-
-            //given
-            given(userRepository.findUserByEmail(any(String.class))).willReturn(Optional.empty());
-            given(userRepository.save(any(User.class))).willReturn(new User("email", "password", new UserProfile("nickname",25,GenderType.FEMALE)));
-            UserSignUpDto userSignUpDto = UserSignUpDto.builder()
-                    .email("email")
-                    .password("password")
-                    .nickname("nickname")
-                    .age(25)
-                    .gender(GenderType.FEMALE)
-                    .build();
-
-            // when
-            UserSignUpDto signUpDto = userService.signUp(userSignUpDto);
-
-
-            // then
-            assertThat(signUpDto.getEmail()).isEqualTo(userSignUpDto.getEmail());
-            assertThat(signUpDto.getPassword()).isEqualTo(userSignUpDto.getPassword());
-            assertThat(signUpDto.getNickname()).isEqualTo(userSignUpDto.getNickname());
-        }
-    
-        @Test
-        @DisplayName("중복O")
-        void duplicationTest() {
-
-            //given
-            given(userRepository.findUserByEmail(any(String.class))).willReturn(Optional.of(user));
-            UserSignUpDto userSignUpDto = UserSignUpDto.builder()
-                    .email("user")
-                    .password("password")
-                    .nickname("nickname")
-                    .age(25)
-                    .gender(GenderType.FEMALE)
-                    .build();
-
-
-            // when
-            // then
-            assertThrows(UserDuplicateException.class, () -> userService.signUp(userSignUpDto));
-
-        }
-        
-        
     }
 
     @Test

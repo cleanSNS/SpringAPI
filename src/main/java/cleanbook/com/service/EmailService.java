@@ -21,7 +21,7 @@ public class EmailService {
         SimpleMailMessage smm = new SimpleMailMessage();
         smm.setTo(email);
         smm.setSubject("회원가입 이메일 인증");
-        smm.setText(LOCAL_HOST + "/user/signup/confirm?email="+email+"&authToken="+authToken);
+        smm.setText(LOCAL_HOST + "/user/auth/signup/confirm?email="+email+"&authToken="+authToken);
 
         javaMailSender.send(smm);
     }
