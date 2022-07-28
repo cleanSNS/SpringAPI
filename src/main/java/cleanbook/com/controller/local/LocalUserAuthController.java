@@ -1,4 +1,4 @@
-package cleanbook.com.controller;
+package cleanbook.com.controller.local;
 
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
@@ -16,9 +16,9 @@ import javax.validation.Valid;
 
 @Slf4j
 @RestController
-@RequestMapping("/user/auth")
+@RequestMapping("/local/user/auth")
 @AllArgsConstructor
-public class UserAuthController {
+public class LocalUserAuthController {
 
     private final UserAuthService userAuthService;
     private final EmailService emailService;
@@ -39,7 +39,7 @@ public class UserAuthController {
     // 이메일 인증 코드요청
     @GetMapping("/signup/request")
     public ResponseEntity<Response> requestEmailLink(@RequestBody EmailDto emailDto) throws MessagingException {
-        userAuthService.requestEmailServer(emailDto.getEmail());
+        userAuthService.requestEmailLocal(emailDto.getEmail());
         return ResponseEntity.ok(new Response("success"));
     }
 

@@ -1,38 +1,39 @@
-package cleanbook.com.controller;
+package cleanbook.com.controller.local;
 
 import cleanbook.com.exception.Response;
 import cleanbook.com.service.ProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/social/login")
-public class SocialController {
+@RequestMapping("/local/social/login")
+public class LocalSocialController {
 
     private final Environment env;
     private final ProviderService providerService;
 
-    @Value("${spring.social.kakao.client_id}")
+    @Value("${spring.local.social.kakao.client_id}")
     private String kakaoClientId;
 
-    @Value("${spring.social.kakao.redirect}")
+    @Value("${spring.local.social.kakao.redirect}")
     private String kakaoRedirect;
 
-    @Value("${spring.social.naver.client_id}")
+    @Value("${spring.local.social.naver.client_id}")
     private String naverClientId;
 
-    @Value("${spring.social.naver.redirect}")
+    @Value("${spring.local.social.naver.redirect}")
     private String naverRedirect;
 
-    // 13.209.50.133:8080/social/login/kakao/code
     //https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=75670ae520e9b0c56500f349b16c3c68&redirect_uri=http://localhost:8080/social/login/kakao
     @GetMapping("/kakao/code")
     public void kakaoCode(HttpServletResponse response) throws IOException {

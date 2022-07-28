@@ -58,6 +58,18 @@ public class MyExceptionHandeler {
         return new Response(exception.getMessage());
     }
 
+    @ExceptionHandler(IllegalTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Response reportError(IllegalTokenException exception) {
+        return new Response(exception.getMessage());
+    }
+
+    @ExceptionHandler(IllegalAccountException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Response reportError(IllegalAccountException exception) {
+        return new Response(exception.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportError() {

@@ -16,10 +16,13 @@ import cleanbook.com.repository.RefreshTokenRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,7 +31,9 @@ import java.util.UUID;
 
 import static cleanbook.com.entity.user.authority.UserAuthority.createUserAuthority;
 
+@Slf4j
 @Service
+@Transactional
 @AllArgsConstructor
 public class UserAuthService {
 
@@ -65,17 +70,33 @@ public class UserAuthService {
 
         createUserAuthority(user, authority);
 
+        return new UserSignUpDto(userRepository.save(user));
+    }
+
+    // 이메일 인증 요청 보내기
+    public void requestEmailServer(String email) throws MessagingException {
         // 이메일 인증 객체 생성
         EmailAuth emailAuth = emailAuthRepository.save(
                 EmailAuth.builder()
-                        .email(userSignupDto.getEmail())
+                        .email(email)
                         .authToken(UUID.randomUUID().toString())
                         .expired(false)
                         .build());
 
-        emailService.send(userSignupDto.getEmail(), emailAuth.getAuthToken());
+        emailService.sendServer(email, emailAuth.getAuthToken());
+    }
 
-        return new UserSignUpDto(userRepository.save(user));
+    public void requestEmailLocal(String email) throws MessagingException {
+        // 이메일 인증 객체 생성
+        EmailAuth emailAuth = emailAuthRepository.save(
+                EmailAuth.builder()
+                        .email(email)
+                        .authToken(UUID.randomUUID().toString())
+                        .expired(false)
+                        .build());
+
+        log.info("authToken {}", emailAuth.getAuthToken());
+        emailService.sendLocal(email, emailAuth.getAuthToken());
     }
 
     // 이메일 인증
