@@ -12,14 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageUpdateDto {
-    private String title;
     private String content;
     private PageSetting pageSetting;
     private List<String> imgUrlList = new ArrayList<>();
     private List<String> pageHashtagList = new ArrayList<>();
 
-    public PageUpdateDto(String title, String content) {
-        this.title = title;
+    public PageUpdateDto(String content) {
         this.content = content;
     }
 }

@@ -2,6 +2,7 @@ package cleanbook.com.config;
 
 import cleanbook.com.jwt.*;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -74,11 +75,21 @@ public class SecurityConfig {
                 .antMatchers("/user/auth/login").permitAll()
                 .antMatchers("/user/auth/refresh").permitAll()
                 .antMatchers("/social/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/page/{^[^0]\\d*}/comment").permitAll()
+                .antMatchers("/page/{^[^0]\\d*}/nested").permitAll()
+                .antMatchers("/page/{^[^0]\\d*}/detail").permitAll()
+                .antMatchers("/page/user/{^[^0]\\d*}").permitAll()
+                .antMatchers("/page/main").permitAll()
 
                 .antMatchers("/local/user/auth/signup/**").permitAll()
                 .antMatchers("/local/user/auth/login").permitAll()
                 .antMatchers("/local/user/auth/refresh").permitAll()
                 .antMatchers("/local/social/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/local/page/{^[^0]\\d*}/comment").permitAll()
+                .antMatchers("/local/page/{^[^0]\\d*}/nested").permitAll()
+                .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll()
+                .antMatchers("/local/page/user/{^[^0]\\d*}").permitAll()
+                .antMatchers("/local/page/main").permitAll()
 
                 .anyRequest().authenticated()
 

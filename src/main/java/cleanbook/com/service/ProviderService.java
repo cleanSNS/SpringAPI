@@ -140,6 +140,8 @@ public class ProviderService {
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
         userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+
+        user.activateAccount();
     }
 
     // postman 테스트위해
@@ -171,5 +173,7 @@ public class ProviderService {
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
         userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+
+        user.activateAccount();
     }
 }

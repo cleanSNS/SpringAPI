@@ -37,7 +37,7 @@ public class UserAuthController {
     }
 
     // 이메일 인증 코드요청
-    @GetMapping("/signup/request")
+    @PostMapping("/signup/request")
     public ResponseEntity<Response> requestEmailLink(@RequestBody EmailDto emailDto) throws MessagingException {
         userAuthService.requestEmailServer(emailDto.getEmail());
         return ResponseEntity.ok(new Response("success"));

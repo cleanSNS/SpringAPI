@@ -45,16 +45,15 @@ class PageServiceTest {
         User user = new User(1L,"user", "aaa", userProfile);
 
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
-        given(pageRepository.save(any(Page.class))).willReturn(new Page("bb", "bb"));
+        given(pageRepository.save(any(Page.class))).willReturn(new Page("bb"));
 
         User findUser = userRepository.findById(1L).get();
 
         // when
-        Page findPage = pageService.createPage(findUser.getId(), new PageCreateDto("bb", "bb"));
+        Page findPage = pageService.createPage(findUser.getId(), new PageCreateDto("bb"));
         findUser = userRepository.findById(1L).get();
 
         // then
-        assertThat(findPage.getTitle()).isEqualTo("bb");
         assertThat(findUser.getPageList().size()).isEqualTo(1);
     }
 
@@ -68,18 +67,17 @@ class PageServiceTest {
         
             //given
             User user = new User(1L, "email", "password", null);
-            Page oldPage = new Page(1L, user, "old", "old");
+            Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
             given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(oldPage));
 
             // when
-            Page newPage = pageService.updatePage(user.getId(), oldPage.getId(), new PageUpdateDto("new", "new"));
+            pageService.updatePage(user.getId(), oldPage.getId(), new PageUpdateDto("new"));
 
 
             // then
-            assertThat(newPage.getTitle()).isEqualTo("new");
-            
+
         }
 
         @Test
@@ -88,7 +86,7 @@ class PageServiceTest {
 
             //given
             User user = new User(1L, "email", "password", null);
-            Page oldPage = new Page(1L, user, "old", "old");
+            Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
             given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(oldPage));
@@ -96,7 +94,7 @@ class PageServiceTest {
             // when
             // then
             assertThrows(NoAuthroizationException.class, () -> {
-                pageService.updatePage(2L, oldPage.getId(), new PageUpdateDto("new", "new"));
+                pageService.updatePage(2L, oldPage.getId(), new PageUpdateDto("new"));
             });
         }
     }
@@ -111,14 +109,14 @@ class PageServiceTest {
 
             //given
             User user = new User(1L, "email", "password", null);
-            Page oldPage = new Page(1L, user, "old", "old");
+            Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
             given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(oldPage));
             given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
 
             // when
-            Long pageId = pageService.deletePage(user.getId(), oldPage.getId());
+            pageService.deletePage(user.getId(), oldPage.getId());
 
 
             // then
@@ -131,7 +129,7 @@ class PageServiceTest {
 
             //given
             User user = new User(1L, "email", "password", null);
-            Page oldPage = new Page(1L, user, "old", "old");
+            Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
             given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(oldPage));

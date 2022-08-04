@@ -1,7 +1,6 @@
 package cleanbook.com.service;
 
 import cleanbook.com.config.QuerydslConfig;
-import cleanbook.com.dto.user.UserSignUpDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
@@ -15,8 +14,7 @@ import cleanbook.com.entity.user.report.ReportComment;
 import cleanbook.com.entity.user.report.ReportPage;
 import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.entity.user.report.ReportUser;
-import cleanbook.com.exception.exceptions.UserDuplicateException;
-import cleanbook.com.repository.CommentRepository;
+import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.BlockRepository;
@@ -29,7 +27,6 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

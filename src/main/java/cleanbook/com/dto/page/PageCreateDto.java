@@ -12,14 +12,23 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageCreateDto {
-    private String title;
     private String content;
     private PageSetting pageSetting;
     private List<String> imgUrlList = new ArrayList<>();
     private List<String> pageHashtagList = new ArrayList<>();
 
-    public PageCreateDto(String title, String content) {
-        this.title = title;
+    public PageCreateDto(String content) {
         this.content = content;
+    }
+
+    public PageCreateDto(String content, List<String> imgUrlList) {
+        this.content = content;
+        this.imgUrlList = imgUrlList;
+    }
+
+    public PageCreateDto(String content, List<String> imgUrlList, List<String> pageHashtagList) {
+        this.content = content;
+        this.imgUrlList = imgUrlList;
+        this.pageHashtagList = pageHashtagList;
     }
 }

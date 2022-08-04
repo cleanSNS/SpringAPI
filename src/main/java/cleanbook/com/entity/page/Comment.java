@@ -2,15 +2,15 @@ package cleanbook.com.entity.page;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends Timestamped {
 
@@ -29,20 +29,42 @@ public class Comment extends Timestamped {
     @NotEmpty
     private String content;
 
-    @Column(name = "orders", columnDefinition = "bigint default 0")
-    private int order;
+    @Builder.Default
+    private boolean nested = false;
+
+    @Builder.Default
+    @Column(name = "orders")
+    private int order = 0;
 
     @Column(name = "comment_group")
     private int group;
 
-    @Column(columnDefinition = "boolean default true")
-    private boolean visible;
+    @Builder.Default
+    private boolean visible = true;
 
-    @Column(columnDefinition = "bigint default 0")
-    private int warningCount;
+    @Builder.Default
+    private int warningCount = 0;
 
-    @Column(columnDefinition = "bigint default 0")
-    private int likeCount;
+    @Builder.Default
+    private int likeCount = 0;
+
+    public static Comment createComment(User user, Page page, String content, int group, boolean nested, boolean visible) {
+        Comment comment = Comment.builder()
+                .user(user)
+                .page(page)
+                .content(content)
+                .group(group)
+                .nested(nested)
+                .visible(visible)
+                .build();
+        page.getCommentList().add(comment);
+
+        return comment;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
     public Comment(User user, Page page, String content) {
         this.user = user;
@@ -56,15 +78,6 @@ public class Comment extends Timestamped {
         this.user = user;
         this.page = page;
         this.content = content;
-    }
-
-    void setUser(User user) {
-        this.user = user;
-    }
-
-    void setPage(Page page) {
-        this.page = page;
-        page.getCommentList().add(this);
     }
 
     void setCommentContents(String content, int order, int group, boolean visible) {

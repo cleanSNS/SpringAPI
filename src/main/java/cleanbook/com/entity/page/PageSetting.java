@@ -23,13 +23,13 @@ public class PageSetting {
     private SettingType readAuth;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean CommentReadAuth;
+    private boolean commentReadAuth;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean CommentWriteAuth;
+    private boolean commentWriteAuth;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean LikeReadAuth;
+    private boolean likeReadAuth;
 
 
 }

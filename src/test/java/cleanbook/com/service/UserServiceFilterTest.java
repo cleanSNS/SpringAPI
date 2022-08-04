@@ -47,7 +47,7 @@ class UserServiceFilterTest {
         user = new User(1L,"user", "aaa", userProfile);
         targetUser = new User(2L,"targetUser", "aaa", userProfile2);
         user3 = new User(3L,"user3", "aaa", userProfile3);
-        page = new Page(1L, user, "제목", "내용");
+        page = new Page(1L, user, "내용");
         comment = new Comment(1L, user, page, "내용");
     }
 

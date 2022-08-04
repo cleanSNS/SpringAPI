@@ -32,14 +32,14 @@ public class SocialController {
     @Value("${spring.social.naver.redirect}")
     private String naverRedirect;
 
-    // 13.209.50.133:8080/social/login/kakao/code
+    // 52.78.49.137:8080/social/login/kakao/code
     //https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=75670ae520e9b0c56500f349b16c3c68&redirect_uri=http://localhost:8080/social/login/kakao
     @GetMapping("/kakao/code")
     public void kakaoCode(HttpServletResponse response) throws IOException {
         response.sendRedirect("https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+kakaoClientId+"&redirect_uri="+kakaoRedirect);
     }
 
-    @GetMapping("/kakao")
+    @PostMapping("/kakao")
     public ResponseEntity<Response> kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "kakao", response);
         return ResponseEntity.ok(new Response("success"));
@@ -58,7 +58,7 @@ public class SocialController {
         response.sendRedirect("https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id="+naverClientId+"&state=state&redirect_uri="+naverRedirect);
     }
 
-    @GetMapping("/naver")
+    @PostMapping("/naver")
     public ResponseEntity<Response> naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "naver", response);
         return ResponseEntity.ok(new Response("success"));

@@ -70,6 +70,18 @@ public class MyExceptionHandeler {
         return new Response(exception.getMessage());
     }
 
+    @ExceptionHandler(NoMorePageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportError(NoMorePageException exception) {
+        return new Response(exception.getMessage());
+    }
+
+    @ExceptionHandler(NoMoreCommentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportError(NoMoreCommentException exception) {
+        return new Response(exception.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportError() {

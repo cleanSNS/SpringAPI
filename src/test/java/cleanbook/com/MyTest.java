@@ -5,7 +5,7 @@ import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.entity.user.UserProfile;
-import cleanbook.com.repository.CommentRepository;
+import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.page.PageImgUrlRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
@@ -54,7 +54,7 @@ class MyTest {
             userRepository.save(user);
 
             for (int k = 0; k < 2; k++) {
-                Page page = new Page(user, Integer.toString(k), Integer.toString(k));
+                Page page = new Page(user, Integer.toString(k));
                 createPageImgUrl(page, Integer.toString(k) + "a");
                 createPageImgUrl(page, Integer.toString(k) + "b");
                 for (int j = 0; j < 10; j++) {

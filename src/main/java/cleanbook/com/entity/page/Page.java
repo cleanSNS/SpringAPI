@@ -85,9 +85,11 @@ public class Page extends Timestamped {
         page.pageSetting = pageCreateDto.getPageSetting();
         page.imgUrlList.clear();
         page.pageHashtagList.clear();
+
         for (String imgUrl : pageCreateDto.getImgUrlList()) {
             createPageImgUrl(page,imgUrl);
         }
+
         for (String name : pageCreateDto.getPageHashtagList()) {
             Hashtag hashtag = new Hashtag(name);
             createPageHashtag(page, hashtag);

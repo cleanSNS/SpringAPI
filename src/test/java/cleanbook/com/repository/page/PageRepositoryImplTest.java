@@ -9,7 +9,7 @@ import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.exception.exceptions.NoMorePageException;
-import cleanbook.com.repository.CommentRepository;
+import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +59,7 @@ class PageRepositoryImplTest {
             userRepository.save(user);
 
             for (int k = 0; k < 2; k++) {
-                Page page = new Page(user, Integer.toString(k), Integer.toString(k));
+                Page page = new Page(user, Integer.toString(k));
                 createPageImgUrl(page, Integer.toString(k)+"a");
                 createPageImgUrl(page, Integer.toString(k)+"b");
                 for (int j = 0; j < 10; j++) {
@@ -84,7 +84,6 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(pageDto.getUserDto().getNickname()).isEqualTo(myPage.getUser().getUserProfile().getNickname());
-        assertThat(pageDto.getTitle()).isEqualTo(myPage.getTitle());
     }
 
     @Test
@@ -109,7 +108,7 @@ class PageRepositoryImplTest {
         // given
         User user = new User("a", "a", new UserProfile());
         userRepository.save(user);
-        Long pageId = pageRepository.save(new Page(user, "제목", "내용")).getId();
+        Long pageId = pageRepository.save(new Page(user,  "내용")).getId();
 
 
         // when
@@ -174,7 +173,7 @@ class PageRepositoryImplTest {
         // when
         ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
         List<MainPageDto> mainPageDtoList = result.getData();
-        Long startPageId = result.getStartPageId();
+        Long startPageId = result.getStartId();
         System.out.println("startPageId = " + startPageId);
 
         // then
@@ -208,7 +207,7 @@ class PageRepositoryImplTest {
         User user = new User("aa", "aa", userProfile);
         userRepository.save(user);
         for (int k = 0; k < 10; k++) {
-            Page page = new Page(user, Integer.toString(k), Integer.toString(k));
+            Page page = new Page(user, Integer.toString(k));
             for (int i = 0; i < k; i++) {
                 createPageImgUrl(page, k +"a");
             }
@@ -219,7 +218,7 @@ class PageRepositoryImplTest {
         // when
         ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user.getId(), null, 2);
         List<UserPageDto> userPageDtoList = result.getData();
-        Long pageStartIdx = result.getStartPageId();
+        Long pageStartIdx = result.getStartId();
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(2);
@@ -228,7 +227,7 @@ class PageRepositoryImplTest {
         // when
         result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 3);
         userPageDtoList = result.getData();
-        pageStartIdx = result.getStartPageId();
+        pageStartIdx = result.getStartId();
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(3);
@@ -237,7 +236,7 @@ class PageRepositoryImplTest {
         // when
         result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 6);
         userPageDtoList = result.getData();
-        pageStartIdx = result.getStartPageId();
+        pageStartIdx = result.getStartId();
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(5);

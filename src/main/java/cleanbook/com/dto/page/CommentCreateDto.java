@@ -2,21 +2,21 @@ package cleanbook.com.dto.page;
 
 import cleanbook.com.dto.user.UserDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class PageDto {
-
-    private UserDto userDto;
+@Builder
+public class CommentCreateDto {
     private Long pageId;
+    private Long userId;
     private String content;
-    private int likeCount;
-    private LocalDateTime createdDate;
+    private int group;
+    private boolean nested;
+    private boolean visible;
 }

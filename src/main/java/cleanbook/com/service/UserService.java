@@ -1,12 +1,9 @@
 package cleanbook.com.service;
 
 import cleanbook.com.dto.user.*;
-import cleanbook.com.entity.enums.AccountState;
-import cleanbook.com.entity.user.RefreshToken;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.*;
-import cleanbook.com.entity.user.authority.Authority;
 import cleanbook.com.entity.user.block.Block;
 import cleanbook.com.entity.user.filter.Filter;
 import cleanbook.com.entity.user.follow.Follow;
@@ -17,6 +14,7 @@ import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.*;
+import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
@@ -30,16 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static cleanbook.com.entity.user.authority.UserAuthority.createUserAuthority;
 import static cleanbook.com.entity.user.filter.Filter.createFilter;
 import static cleanbook.com.entity.user.block.Block.createBlock;
 import static cleanbook.com.entity.user.report.ReportComment.createReportComment;
