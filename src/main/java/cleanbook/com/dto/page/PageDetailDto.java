@@ -1,5 +1,6 @@
 package cleanbook.com.dto.page;
 
+import cleanbook.com.dto.ResultDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,6 @@ public class PageDetailDto {
 
     private PageDto pageDto;
     private List<String> imgUrlList;
-    private List<CommentDto> commentDtoList;
+    private List<String> hashtagList;
+    private ResultDto<List<CommentDto>> commentDtoList;
 }

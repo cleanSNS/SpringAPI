@@ -22,7 +22,7 @@ public class Follow extends Timestamped {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taget_user_id")
+    @JoinColumn(name = "target_user_id")
     private User targetUser;
 
     public Follow(User user, User targetUser) {

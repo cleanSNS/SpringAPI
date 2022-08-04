@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class MyExceptionHandeler {
 
@@ -84,7 +86,13 @@ public class MyExceptionHandeler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Response reportError() {
+    public Response reportRegexError() {
+        return new Response("잘못된 양식입니다.");
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportEmptyError() {
         return new Response("잘못된 양식입니다.");
     }
 }

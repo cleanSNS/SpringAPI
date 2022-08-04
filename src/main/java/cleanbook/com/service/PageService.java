@@ -39,13 +39,13 @@ public class PageService {
     }
 
    // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)
-    public ResultDto<List<MainPageDto>> readPageList(Long userId, Long startPageId) {
-        return pageRepository.readFolloweePageList(userId, startPageId, 10);
+    public ResultDto<List<MainPageDto>> readPageList(Long userId, Long startId) {
+        return pageRepository.readFolloweePageList(userId, startId, 10);
     }
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
-    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startPageId) {
-        return pageRepository.readUserPageList(userId, startPageId, 10);
+    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId) {
+        return pageRepository.readUserPageList(userId, startId, 10);
     }
 
     // 게시글 수정

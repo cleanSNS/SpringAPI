@@ -79,7 +79,6 @@ public class SecurityConfig {
                 .antMatchers("/page/{^[^0]\\d*}/nested").permitAll()
                 .antMatchers("/page/{^[^0]\\d*}/detail").permitAll()
                 .antMatchers("/page/user/{^[^0]\\d*}").permitAll()
-                .antMatchers("/page/main").permitAll()
 
                 .antMatchers("/local/user/auth/signup/**").permitAll()
                 .antMatchers("/local/user/auth/login").permitAll()
@@ -89,7 +88,6 @@ public class SecurityConfig {
                 .antMatchers("/local/page/{^[^0]\\d*}/nested").permitAll()
                 .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll()
                 .antMatchers("/local/page/user/{^[^0]\\d*}").permitAll()
-                .antMatchers("/local/page/main").permitAll()
 
                 .anyRequest().authenticated()
 

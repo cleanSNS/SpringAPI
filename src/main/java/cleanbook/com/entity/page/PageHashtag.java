@@ -16,7 +16,7 @@ public class PageHashtag {
     @JoinColumn(name = "page_id")
     private Page page;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "hashtag_id")
     private Hashtag hashtag;
 

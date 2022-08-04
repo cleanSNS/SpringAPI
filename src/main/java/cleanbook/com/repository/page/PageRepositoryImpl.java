@@ -5,6 +5,7 @@ import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.exception.exceptions.NoMorePageException;
+import cleanbook.com.repository.comment.CommentRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.page.QComment.comment;
 import static cleanbook.com.entity.page.QPage.page;
+import static cleanbook.com.entity.page.QPageHashtag.pageHashtag;
 import static cleanbook.com.entity.page.QPageImgUrl.pageImgUrl;
 import static cleanbook.com.entity.user.follow.QFollow.follow;
 import static cleanbook.com.entity.user.QUser.user;
@@ -30,10 +32,11 @@ import static com.querydsl.core.group.GroupBy.list;
 public class PageRepositoryImpl implements PageRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
+    private final CommentRepository commentRepository;
 
     // 게시글 상세보기
     public PageDetailDto readPageDetail(Long pageId) {
-        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageCommentList(pageId, PageRequest.of(0,10)).getData());
+        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(pageId));
     }
 
     public PageDto readPageDto(Long pageId) {
@@ -57,24 +60,21 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .fetch();
     }
 
-    public ResultDto<List<CommentDto>> readPageCommentList(Long pageId, Pageable pageable) {
-        List<CommentDto> commentDtoList = queryFactory.query()
-                .select(Projections.constructor(CommentDto.class,
-                        Projections.constructor(UserDto.class,
-                                user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                        comment.id, comment.content, comment.likeCount, comment.createdDate))
-                .from(comment)
-                .join(comment.user, user)
-                .where(comment.page.id.eq(pageId))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+    public List<String> readPageHashtagList(Long pageId) {
+        return queryFactory.query()
+                .select(pageHashtag.hashtag.name)
+                .from(page)
+                .join(page.pageHashtagList, pageHashtag)
+                .where(page.id.eq(pageId))
                 .fetch();
+    }
 
-        return new ResultDto<>(commentDtoList, pageable.getPageNumber());
+    public ResultDto<List<CommentDto>> readPageCommentList(Long pageId) {
+        return commentRepository.readCommentList(pageId, 1L, 10);
     }
 
     // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)
-    public ResultDto<List<MainPageDto>> readFolloweePageList(Long userId, Long startPageId, int pageSize) {
+    public ResultDto<List<MainPageDto>> readFolloweePageList(Long userId, Long startId, int pageSize) {
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
@@ -83,7 +83,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .from(follow)
                 .join(follow.targetUser, user)
                 .join(user.pageList, page)
-                .where(follow.user.id.eq(userId), loePageId(startPageId))
+                .where(follow.user.id.eq(userId), loePageId(startId))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
@@ -95,21 +95,21 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         for (Long pageId : pageIdList) {
             pageAndImgDtoList.add(new MainPageDto(readPageDto(pageId), readPageImgUrlList(pageId)));
         }
-        Long nextStartPageId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
+        Long nextStartId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 
-        return new ResultDto<>(pageAndImgDtoList, nextStartPageId);
+        return new ResultDto<>(pageAndImgDtoList, nextStartId);
     }
 
     // 특정 유저 게시글 전체조회(유저페이지)
     // dto로 바로 조회
-//    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startPageId, int pageSize) {
+//    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId, int pageSize) {
 //
 //        // no offset방식
 //        // 페이지 pk 조회 및 페이징
 //        List<Long> pageIdList = queryFactory.query()
 //                .select(page.id)
 //                .from(page)
-//                .where(page.user.id.eq(userId), loePageId(startPageId))
+//                .where(page.user.id.eq(userId), loePageId(startId))
 //                .orderBy(page.id.desc())
 //                .limit(pageSize)
 //                .fetch();
@@ -140,19 +140,19 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 //        }
 //
 //
-//        return new ResultDto<>(userPageDtoList, getNextPageId(userId, startPageId, pageSize));
+//        return new ResultDto<>(userPageDtoList, getNextPageId(userId, startId, pageSize));
 //    }
 
     // 특정 유저 게시글 전체조회(유저페이지)
     // 엔티티로 조회 후 dto로 변환
-    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startPageId, int pageSize) {
+    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId, int pageSize) {
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
         List<Page> pageList = queryFactory.query()
                 .select(page)
                 .from(page)
-                .where(page.user.id.eq(userId), loePageId(startPageId))
+                .where(page.user.id.eq(userId), loePageId(startId))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
@@ -165,28 +165,11 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                                 p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
-        return new ResultDto<>(userPageDtoList, getNextPageId(userId, startPageId, pageSize));
-    }
+        Long nextStartId = pageList.stream()
+                .map(p -> p.getId())
+                .mapToLong(x -> x).min().getAsLong() - 1;
 
-    private Long getNextPageId(Long userId, Long pageId, int pageSize) {
-        Long nextPageId = pageId;
-        if (pageId == null) {
-            nextPageId = getMaxPageId(userId);
-        }
-        nextPageId -= pageSize;
-        System.out.println("nextPageId = " + nextPageId);
-
-        return nextPageId;
-    }
-
-    private Long getMaxPageId(Long userId) {
-        Long count = queryFactory.query()
-                .select(page.id.max())
-                .from(page)
-                .where(page.user.id.eq(userId))
-                .fetchOne();
-        System.out.println("pageCount = " + count);
-        return count;
+        return new ResultDto<>(userPageDtoList, nextStartId);
     }
 
     private BooleanExpression loePageId(Long pageId) {
