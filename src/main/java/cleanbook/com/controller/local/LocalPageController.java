@@ -7,6 +7,7 @@ import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.PageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class LocalPageController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<Response> createPage(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody PageCreateDto pageCreateDto) {
+    public ResponseEntity<Response> createPage(@CookieValue("X-AUTH-TOKEN") String token, @Validated @RequestBody PageCreateDto pageCreateDto) {
         Long userId = tokenProvider.getUserId(token);
         pageService.createPage(userId, pageCreateDto);
         return ResponseEntity.ok(new Response("success"));
@@ -36,15 +37,15 @@ public class LocalPageController {
     // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)
     @GetMapping("/main")
     public ResponseEntity<ResultDto<List<MainPageDto>>> readPageList(@CookieValue("X-AUTH-TOKEN") String token,
-                                                                     @RequestParam Long startPageId) {
+                                                                     @RequestParam Long startId) {
         Long userId = tokenProvider.getUserId(token);
-        return ResponseEntity.ok(pageService.readPageList(userId, startPageId));
+        return ResponseEntity.ok(pageService.readPageList(userId, startId));
     }
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@PathVariable Long userId, @RequestParam Long startPageId) {
-        return ResponseEntity.ok(pageService.readUserPageList(userId, startPageId));
+    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@PathVariable Long userId, @RequestParam Long startId) {
+        return ResponseEntity.ok(pageService.readUserPageList(userId, startId));
     }
 
     // 게시글 수정
