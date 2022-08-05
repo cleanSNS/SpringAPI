@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,10 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class CommentCreateDto {
+    @NotNull
     private Long pageId;
-    private Long userId;
+    @NotBlank
     private String content;
+    @NotNull
     private int group;
+    @NotNull
     private boolean nested;
+    @NotNull
     private boolean visible;
 }

@@ -50,25 +50,23 @@ class CommentServiceTest {
                 Page page = new Page(user, Integer.toString(j));
                 pageRepository.save(page);
                 CommentCreateDto comment = CommentCreateDto.builder()
-                        .userId(user.getId())
                         .pageId(page.getId())
                         .visible(true)
                         .content("내용")
                         .nested(false)
                         .group(++group)
                         .build();
-                commentService.createComment(comment);
+                commentService.createComment(user.getId(), comment);
 
                 for (int k = 0; k < 5; k++) {
                     CommentCreateDto reply = CommentCreateDto.builder()
-                            .userId(user.getId())
                             .pageId(page.getId())
                             .visible(true)
                             .content("내용")
                             .nested(true)
                             .group(group)
                             .build();
-                    commentService.createComment(reply);
+                    commentService.createComment(user.getId(), reply);
                 }
             }
         }
