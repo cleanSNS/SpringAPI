@@ -89,6 +89,9 @@ public class SecurityConfig {
                 .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll()
                 .antMatchers("/local/page/user/{^[^0]\\d*}").permitAll()
 
+                .antMatchers("/local/test/**").permitAll()
+                .antMatchers("/").permitAll()
+
                 .anyRequest().authenticated()
 
                 .and()

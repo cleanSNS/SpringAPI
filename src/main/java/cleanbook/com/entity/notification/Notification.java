@@ -2,14 +2,20 @@ package cleanbook.com.entity.notification;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
-import lombok.Getter;
+import cleanbook.com.validation.ValidEnum;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Notification extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,28 +30,22 @@ public class Notification extends Timestamped {
     @JoinColumn(name = "target_user_id")
     private User targetUser;
 
-    @NotEmpty
+    @ValidEnum(enumClass = NotificationType.class)
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    @NotEmpty
+    @NotBlank
     private String url;
 
     @Column(columnDefinition = "timestamp default null")
     private LocalDateTime readDate;
 
-    void setUser(User user) {
-        this.user = user;
-        targetUser.getNotificationList().add(this);
-    }
-
-    void setTargetUser(User user) {
-        this.targetUser = user;
-    }
-
-    void setContents(NotificationType type, String url, LocalDateTime readDate) {
-        this.type = type;
-        this.url = url;
-        this.readDate = readDate;
+    public static Notification createNotification(User sender, User receiver, NotificationType type) {
+        Notification notification = new Notification();
+        notification.user = sender;
+        notification.targetUser = receiver;
+        notification.type = type;
+        notification.url = "url";
+        return notification;
     }
 }

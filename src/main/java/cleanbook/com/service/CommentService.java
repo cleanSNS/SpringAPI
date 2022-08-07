@@ -3,6 +3,7 @@ package cleanbook.com.service;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
+import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
@@ -28,11 +29,13 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PageRepository pageRepository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
 
     // 댓글 생성
     public void createComment(Long userId, CommentCreateDto dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Page page = pageRepository.findById(dto.getPageId()).orElseThrow(PageNotFoundException::new);
+        User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
         if (comment.isNested()) {
@@ -41,6 +44,7 @@ public class CommentService {
         }
 
         commentRepository.save(comment);
+        notificationService.send(user, targetUser, dto.isNested() ? NotificationType.NESTED : NotificationType.COMMENT);
     }
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
