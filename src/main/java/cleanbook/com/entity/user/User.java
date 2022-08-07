@@ -1,7 +1,7 @@
 package cleanbook.com.entity.user;
 
 import cleanbook.com.entity.enums.AccountState;
-import cleanbook.com.entity.notice.Notice;
+import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.chat.UserChatRoom;
 import cleanbook.com.entity.page.Page;
@@ -67,7 +67,7 @@ public class User extends Timestamped {
     private List<UserChatRoom> userChatRoomList = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetUser")
-    private List<Notice> noticeList = new ArrayList<>();
+    private List<Notification> notificationList = new ArrayList<>();
 
     public User(String email, String password, UserProfile userProfile) {
         this.email = email;
@@ -110,8 +110,8 @@ public class User extends Timestamped {
         this.userProfile = userProfile;
     }
 
-    public void changeUserNoticeSetting(UserNoticeSetting userNoticeSetting) {
-        this.userSetting.changeUserNoticeSetting(userNoticeSetting);
+    public void changeUserNotificationSetting(UserNotificationSetting userNotificationSetting) {
+        this.userSetting.changeUserNotificationSetting(userNotificationSetting);
     }
 
     public void changeUserFilterSetting(UserFilterSetting userFilterSetting) {

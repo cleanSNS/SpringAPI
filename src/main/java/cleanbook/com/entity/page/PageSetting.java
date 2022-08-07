@@ -13,10 +13,10 @@ import javax.persistence.Enumerated;
 public class PageSetting {
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeLike;
+    private boolean notificationLike;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeComment;
+    private boolean notificationComment;
 
     @Column(columnDefinition = "varchar(20) default 'ALL'")
     @Enumerated(EnumType.STRING)

@@ -186,9 +186,9 @@ public class UserService {
     }
 
     // 푸쉬알림 설정
-    public void changeUserNoticeSetting(Long userId, UserNoticeSetting userNoticeSetting) {
+    public void changeUserNotificationSetting(Long userId, UserNotificationSetting userNotificationSetting) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.changeUserNoticeSetting(userNoticeSetting);
+        user.changeUserNotificationSetting(userNotificationSetting);
     }
 
     // 비밀번호 변경

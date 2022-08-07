@@ -16,25 +16,25 @@ import javax.persistence.Enumerated;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserNoticeSetting {
+public class UserNotificationSetting {
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeFollow;
+    private boolean notificationFollow;
 
     @Column(columnDefinition = "varchar(15) default 'ALL'")
     @Enumerated(EnumType.STRING)
-    private SettingType noticeComment;
+    private SettingType notificationComment;
 
     @Column(columnDefinition = "varchar(15) default 'ALL'")
     @Enumerated(EnumType.STRING)
-    private SettingType noticeLike;
+    private SettingType notificationLike;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeFollowAccept;
+    private boolean notificationFollowAccept;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeSingleChat;
+    private boolean notificationSingleChat;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean noticeGroupChat;
+    private boolean notificationGroupChat;
 }

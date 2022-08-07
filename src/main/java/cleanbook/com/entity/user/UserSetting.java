@@ -13,13 +13,13 @@ import javax.persistence.*;
 public class UserSetting {
 
     @Embedded
-    private UserNoticeSetting userNoticeSetting;
+    private UserNotificationSetting userNotificationSetting;
 
     @Embedded
     private UserFilterSetting userFilterSetting;
 
-    public void changeUserNoticeSetting(UserNoticeSetting userNoticeSetting) {
-        this.userNoticeSetting = userNoticeSetting;
+    public void changeUserNotificationSetting(UserNotificationSetting userNotificationSetting) {
+        this.userNotificationSetting = userNotificationSetting;
     }
 
     public void changeUserFilterSetting(UserFilterSetting userFilterSetting) {
