@@ -5,14 +5,12 @@ import cleanbook.com.dto.user.UserDeleteDto;
 import cleanbook.com.dto.user.UserLoginDto;
 import cleanbook.com.dto.user.UserSignUpDto;
 import cleanbook.com.entity.enums.AccountState;
-import cleanbook.com.entity.user.EmailAuth;
-import cleanbook.com.entity.user.RefreshToken;
-import cleanbook.com.entity.user.User;
-import cleanbook.com.entity.user.UserProfile;
+import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.authority.Authority;
 import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.RefreshTokenRepository;
+import cleanbook.com.repository.UserActiveRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
 import lombok.AllArgsConstructor;
@@ -43,6 +41,7 @@ public class UserAuthService {
     private final EmailService emailService;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserActiveRepository userActiveRepository;
 
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
@@ -69,6 +68,10 @@ public class UserAuthService {
                 .build();
 
         createUserAuthority(user, authority);
+
+        if (userActiveRepository.findByEmail(userSignupDto.getEmail()).orElseThrow(EmailAuthFailException::new).isActive()) {
+            user.activateAccount();
+        }
 
         return new UserSignUpDto(userRepository.save(user));
     }
@@ -102,10 +105,9 @@ public class UserAuthService {
     // 이메일 인증
     public void confirmEmail(EmailAuthDto requestDto) {
         EmailAuth emailAuth = emailAuthRepository.findValidAuthByEmail(requestDto.getEmail(), requestDto.getAuthToken(), LocalDateTime.now()).orElseThrow(EmailAuthTokenNotFoundException::new);
-        User user = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow(UserNotFoundException::new);
+        userActiveRepository.save(new UserActive(requestDto.getEmail(), true));
 
         emailAuth.useToken();
-        user.activateAccount();
     }
 
     // 로그인
