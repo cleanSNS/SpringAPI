@@ -24,7 +24,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         Message message = Message.builder()
                 .sender(sessionId)
-                .receiver("all")
+                .channelId("all")
                 .build();
         message.newConnect();
 
@@ -46,7 +46,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         Message myMessage = new Gson().fromJson(message.getPayload().toString(), Message.class);
         myMessage.setSender(session.getId());
 
-        WebSocketSession receiver = sessions.get(myMessage.getReceiver());
+        WebSocketSession receiver = sessions.get(myMessage.getChannelId());
 
         if (receiver != null && receiver.isOpen()) {
             receiver.sendMessage(new TextMessage(myMessage.toString()));

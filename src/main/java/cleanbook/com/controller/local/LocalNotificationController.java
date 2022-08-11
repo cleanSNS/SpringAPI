@@ -9,7 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/local")
-public class NotificationController {
+public class LocalNotificationController {
 
     private final NotificationService notificationService;
     private final TokenProvider tokenProvider;

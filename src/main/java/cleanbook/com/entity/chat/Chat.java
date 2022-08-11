@@ -2,14 +2,22 @@ package cleanbook.com.entity.chat;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Chat extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,21 +33,19 @@ public class Chat extends Timestamped {
     private User user;
 
     @NotEmpty
-    private String content;
+    private String message;
 
     @OneToMany(mappedBy = "chat")
-    private List<ChatImgUrl> chatImgUrlList;
+    private List<ChatImgUrl> chatImgUrlList = new ArrayList<>();
 
-    void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-        chatRoom.getChatList().add(this);
-    }
+    public static Chat createChat(ChatRoom chatRoom, User user, String message) {
+        Chat chat = new Chat();
+        chat.chatRoom = chatRoom;
+        chat.user = user;
+        chat.message = message;
 
-    void setUser(User user) {
-        this.user = user;
-    }
+        chatRoom.getChatList().add(chat);
 
-    void setContent(String content) {
-        this.content = content;
+        return chat;
     }
 }

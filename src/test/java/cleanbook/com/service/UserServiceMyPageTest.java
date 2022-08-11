@@ -33,7 +33,7 @@ class UserServiceMyPageTest {
     void init() {
         UserProfile userProfile = new UserProfile("a",1, GenderType.FEMALE);
         newUserProfile = new UserProfile("lacram",25, GenderType.MALE);
-        UserSetting userSetting = new UserSetting(new UserNoticeSetting(), new UserFilterSetting());
+        UserSetting userSetting = new UserSetting(new UserNotificationSetting(), new UserFilterSetting());
         user = new User(1L,"user", "aaa", userProfile, userSetting);
     }
 
@@ -57,20 +57,20 @@ class UserServiceMyPageTest {
 
     @Test
     @DisplayName("푸쉬알림_설정")
-    void changeNoticeSettingTest() {
+    void changeNotificationSettingTest() {
 
         //given
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        UserNoticeSetting newSetting = new UserNoticeSetting(true, SettingType.FOLLOW_ONLY, SettingType.NONE, true, true, true);
+        UserNotificationSetting newSetting = new UserNotificationSetting(true, SettingType.FOLLOW_ONLY, SettingType.NONE, true, true, true);
 
 
         // when
-        userService.changeUserNoticeSetting(user.getId(), newSetting);
+        userService.changeUserNotificationSetting(user.getId(), newSetting);
 
 
         // then
-        assertThat(user.getUserSetting().getUserNoticeSetting().isNoticeFollow()).isEqualTo(true);
-        assertThat(user.getUserSetting().getUserNoticeSetting().getNoticeLike()).isEqualTo(SettingType.NONE);
+        assertThat(user.getUserSetting().getUserNotificationSetting().isNotificationFollow()).isEqualTo(true);
+        assertThat(user.getUserSetting().getUserNotificationSetting().getNotificationLike()).isEqualTo(SettingType.NONE);
 
     }
 
