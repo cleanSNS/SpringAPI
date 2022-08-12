@@ -130,7 +130,7 @@ public class UserAuthService {
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
         addCookie(response, "X-AUTH-TOKEN", accessToken);
-        addCookie(response, "REFRESH-TOKEN", refreshToken);
+        response.setHeader("Authorization", "Bearer " + refreshToken);
 
         return new UserLoginDto(user);
     }
@@ -148,9 +148,13 @@ public class UserAuthService {
     // refresh access token
     public void refreshToken(String accessToken, String refreshToken, HttpServletResponse response) {
 
-        // accessToken이 만료되지 않았거나 토큰이 비어있을시
-        if (!StringUtils.hasText(accessToken) || !StringUtils.hasText(refreshToken) || tokenProvider.validateToken(accessToken)) {
+        if (!StringUtils.hasText(accessToken) || !StringUtils.hasText(refreshToken)) {
             throw new IllegalTokenException();
+        }
+
+        // accessToken이 만료되지 않았거나 토큰이 비어있을시
+        if (tokenProvider.validateToken(accessToken)) {
+            throw new NotExpiredTokenException();
         }
         User user = userRepository.findById(tokenProvider.getUserId(refreshToken)).orElseThrow(UserNotFoundException::new);
 
@@ -176,7 +180,6 @@ public class UserAuthService {
     // 로그아웃
     public void logout(HttpServletResponse response) {
         deleteCookie("X-AUTH-TOKEN", response);
-        deleteCookie("REFRESH-TOKEN", response);
     }
 
     public void deleteCookie(String name, HttpServletResponse response) {

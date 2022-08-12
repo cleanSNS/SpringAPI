@@ -61,7 +61,7 @@ public class MyExceptionHandeler {
     }
 
     @ExceptionHandler(IllegalTokenException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportError(IllegalTokenException exception) {
         return new Response(exception.getMessage());
     }
@@ -81,6 +81,12 @@ public class MyExceptionHandeler {
     @ExceptionHandler(NoMoreCommentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportError(NoMoreCommentException exception) {
+        return new Response(exception.getMessage());
+    }
+
+    @ExceptionHandler(NotExpiredTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportError(NotExpiredTokenException exception) {
         return new Response(exception.getMessage());
     }
 

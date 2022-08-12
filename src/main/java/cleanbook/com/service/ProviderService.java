@@ -139,7 +139,7 @@ public class ProviderService {
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
-        userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+        response.setHeader("Authorization", "Bearer " + refreshToken);
 
         user.activateAccount();
     }
@@ -172,7 +172,7 @@ public class ProviderService {
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
-        userAuthService.addCookie(response, "REFRESH-TOKEN", refreshToken);
+        response.setHeader("Authorization", "Bearer " + refreshToken);
 
         user.activateAccount();
     }

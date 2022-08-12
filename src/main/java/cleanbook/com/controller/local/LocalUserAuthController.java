@@ -66,7 +66,7 @@ public class LocalUserAuthController {
     // refresh accessToken
     @GetMapping("/refresh")
     public ResponseEntity<Response> refresh(@CookieValue(name = "X-AUTH-TOKEN") String accessToken,
-                                        @CookieValue(name = "REFRESH-TOKEN") String refreshToken,
+                                            @RequestHeader("Authorization") String refreshToken,
                                         HttpServletResponse response) {
 
         userAuthService.refreshToken(accessToken, refreshToken, response);

@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,13 +31,13 @@ public class LocalSocialController {
     @Value("${spring.local.social.naver.redirect}")
     private String naverRedirect;
 
-    //https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=75670ae520e9b0c56500f349b16c3c68&redirect_uri=http://localhost:8080/social/login/kakao
+    //https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=75670ae520e9b0c56500f349b16c3c68&redirect_uri=http://localhost:8080/local/social/login/kakao
     @GetMapping("/kakao/code")
     public void kakaoCode(HttpServletResponse response) throws IOException {
         response.sendRedirect("https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+kakaoClientId+"&redirect_uri="+kakaoRedirect);
     }
 
-    @GetMapping("/kakao")
+    @PostMapping("/kakao")
     public ResponseEntity<Response> kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "kakao", response);
         return ResponseEntity.ok(new Response("success"));
@@ -59,7 +56,7 @@ public class LocalSocialController {
         response.sendRedirect("https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id="+naverClientId+"&state=state&redirect_uri="+naverRedirect);
     }
 
-    @GetMapping("/naver")
+    @PostMapping("/naver")
     public ResponseEntity<Response> naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "naver", response);
         return ResponseEntity.ok(new Response("success"));
