@@ -33,7 +33,6 @@ public class ChatService {
     }
 
     // 채팅방 채팅내용 불러오기, 100개씩 최근순으로
-    // todo
     public ResultDto<List<ChatDto>> readChatList(Long ChatRoomId, Long startId) {
         return chatRepository.readChatList(ChatRoomId, startId, 100);
     }
