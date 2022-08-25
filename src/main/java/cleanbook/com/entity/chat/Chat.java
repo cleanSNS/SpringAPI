@@ -43,8 +43,8 @@ public class Chat extends Timestamped {
         chat.chatRoom = chatRoom;
         chat.user = user;
         chat.message = message;
-
         chatRoom.getChatList().add(chat);
+        chatRoom.modify(LocalDateTime.now());
 
         return chat;
     }

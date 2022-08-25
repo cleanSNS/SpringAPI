@@ -8,6 +8,7 @@ import cleanbook.com.entity.user.*;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.RefreshTokenRepository;
+import cleanbook.com.repository.UserActiveRepository;
 import cleanbook.com.repository.user.UserRepository;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class ProviderService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserActiveRepository userActiveRepository;
 
     // access 토큰 받아오기
     public SocialAccessToken getAccessToken(String code, String provider) {
@@ -127,6 +129,8 @@ public class ProviderService {
                     .gender(socialProfile.getGender())
                     .build();
 
+            // 소셜 회원가입은 이메일 인증이 필요없음
+            userActiveRepository.save(new UserActive(socialProfile.getEmail(), true));
             userAuthService.signUp(signUpDto);
             user = userRepository.findUserByEmail(socialProfile.getEmail()).orElseThrow(UserNotFoundException::new);
         } else {
@@ -140,6 +144,7 @@ public class ProviderService {
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
         response.setHeader("Authorization", "Bearer " + refreshToken);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
         user.activateAccount();
     }
@@ -173,6 +178,7 @@ public class ProviderService {
 
         userAuthService.addCookie(response, "X-AUTH-TOKEN", accessToken);
         response.setHeader("Authorization", "Bearer " + refreshToken);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
         user.activateAccount();
     }

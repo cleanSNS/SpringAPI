@@ -15,6 +15,7 @@ import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,19 +131,20 @@ public class UserAuthService {
         refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
 
         addCookie(response, "X-AUTH-TOKEN", accessToken);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader("Authorization", "Bearer " + refreshToken);
 
         return new UserLoginDto(user);
     }
 
     public void addCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie;
-        cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        // https-only
-//        cookie.setSecure(true);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .sameSite("None")
+                .path("/")
+                .httpOnly(true)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     // refresh access token

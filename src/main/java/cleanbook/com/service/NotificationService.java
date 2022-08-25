@@ -64,7 +64,6 @@ public class NotificationService {
 
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
-            System.out.println("data " + data);
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")

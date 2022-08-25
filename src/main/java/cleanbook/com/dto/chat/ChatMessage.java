@@ -1,4 +1,4 @@
-package cleanbook.com.dto;
+package cleanbook.com.dto.chat;
 
 import cleanbook.com.entity.chat.Chat;
 import lombok.AllArgsConstructor;

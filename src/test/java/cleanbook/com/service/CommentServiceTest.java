@@ -22,7 +22,6 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
-@Rollback(value = false)
 @SpringBootTest
 @Transactional
 class CommentServiceTest {
@@ -72,9 +71,4 @@ class CommentServiceTest {
         }
     }
 
-    @Test
-    public void test() {
-        List<Comment> commentList = commentRepository.findCommentsByGroup(1).orElseThrow(CommentNotFoundException::new);
-        Assertions.assertThat(commentList).extracting("order").containsExactly(0,1,2,3,4,5);
-    }
 }

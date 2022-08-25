@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/local")
 public class LocalHomeController {
@@ -18,6 +18,7 @@ public class LocalHomeController {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
 
+    @ResponseBody
     @GetMapping("/check_auth")
     public String hello() {
         return "hello";
@@ -26,7 +27,7 @@ public class LocalHomeController {
     // SSE 연결
     @GetMapping(value = "/test")
     public String home() {
-        return "test";
+        return "notification/notification";
     }
 
     // SSE 연결
@@ -38,6 +39,7 @@ public class LocalHomeController {
     }
 
     // SSE 연결
+    @ResponseBody
     @GetMapping(value = "/test/send", produces="application/json;charset=UTF-8")
     public String send() {
         User user = userRepository.findById(1L).orElseThrow(UserNotFoundException::new);

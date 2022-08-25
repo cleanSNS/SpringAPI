@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Import(QuerydslConfig.class)
 //@SpringBootTest
 //@Transactional
-//@Rollback(value = false)
 class PageRepositoryImplTest {
 
     @Autowired
@@ -53,10 +52,8 @@ class PageRepositoryImplTest {
     @BeforeEach
     void init() {
 
-        for (int i = 0; i < 10; i++) {
-            UserProfile userProfile = new UserProfile(Integer.toString(i), i, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            userRepository.save(user);
+        for (int i = 0; i < 4; i++) {
+            User user = userRepository.findById((long) (i + 1)).get();
 
             for (int k = 0; k < 2; k++) {
                 Page page = new Page(user, Integer.toString(k));
@@ -148,7 +145,7 @@ class PageRepositoryImplTest {
         List<CommentDto> commentDtoList = result.getData();
 
         // then
-        assertThat(userDto.getNickname()).isEqualTo("0");
+        assertThat(userDto.getNickname()).isEqualTo("홍길동");
         assertThat(commentDtoList.size()).isEqualTo(10);
 
 
@@ -221,7 +218,7 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(2);
-        assertThat(userPageDtoList).extracting("title").containsExactly("9","8");
+        assertThat(userPageDtoList).extracting("content").containsExactly("9","8");
 
         // when
         result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 3);
@@ -230,7 +227,7 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(3);
-        assertThat(userPageDtoList).extracting("title").containsExactly("7","6","5");
+        assertThat(userPageDtoList).extracting("content").containsExactly("7","6","5");
 
         // when
         result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 6);
@@ -239,7 +236,7 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(userPageDtoList.size()).isEqualTo(5);
-        assertThat(userPageDtoList).extracting("title").containsExactly("4","3","2","1","0");
+        assertThat(userPageDtoList).extracting("content").containsExactly("4","3","2","1","0");
 
         // 조회 완료시
         // when

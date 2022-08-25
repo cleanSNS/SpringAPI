@@ -1,5 +1,6 @@
 package cleanbook.com.entity.chat;
 
+import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
 import lombok.Getter;
 
@@ -21,13 +22,11 @@ public class UserChatRoom {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    void setUser(User user) {
-        this.user = user;
-        user.getUserChatRoomList().add(this);
-    }
-
-    void setChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-        chatRoom.getUserChatRoomList().add(this);
+    public static UserChatRoom createUserChatRoom(User user, ChatRoom chatRoom) {
+        UserChatRoom userChatRoom = new UserChatRoom();
+        userChatRoom.user = user;
+        userChatRoom.chatRoom = chatRoom;
+        user.getUserChatRoomList().add(userChatRoom);
+        return userChatRoom;
     }
 }

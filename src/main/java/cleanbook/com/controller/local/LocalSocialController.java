@@ -37,7 +37,7 @@ public class LocalSocialController {
         response.sendRedirect("https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+kakaoClientId+"&redirect_uri="+kakaoRedirect);
     }
 
-    @PostMapping("/kakao")
+    @GetMapping("/kakao")
     public ResponseEntity<Response> kakaoSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "kakao", response);
         return ResponseEntity.ok(new Response("success"));
@@ -56,7 +56,7 @@ public class LocalSocialController {
         response.sendRedirect("https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id="+naverClientId+"&state=state&redirect_uri="+naverRedirect);
     }
 
-    @PostMapping("/naver")
+    @GetMapping("/naver")
     public ResponseEntity<Response> naverSignUpAndLogin(@RequestParam String code, HttpServletResponse response) {
         providerService.socialSignUpAndLogin(code, "naver", response);
         return ResponseEntity.ok(new Response("success"));

@@ -6,8 +6,10 @@ import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.UserActive;
 import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.exception.exceptions.UserDuplicateException;
+import cleanbook.com.repository.UserActiveRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -32,6 +35,10 @@ class UserAuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserActiveRepository userActiveRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserAuthService userAuthService;
@@ -66,6 +73,7 @@ class UserAuthServiceTest {
             //given
             given(userRepository.findUserByEmail(any(String.class))).willReturn(Optional.empty());
             given(userRepository.save(any(User.class))).willReturn(new User("email", "password", new UserProfile("nickname",25,GenderType.FEMALE)));
+            given(userActiveRepository.findByEmail(any(String.class))).willReturn(Optional.of(new UserActive("email", true)));
             UserSignUpDto userSignUpDto = UserSignUpDto.builder()
                     .email("email")
                     .password("password")
@@ -73,6 +81,7 @@ class UserAuthServiceTest {
                     .age(25)
                     .gender(GenderType.FEMALE)
                     .build();
+            userActiveRepository.save(new UserActive(userSignUpDto.getEmail(), true));
 
             // when
             UserSignUpDto signUpDto = userAuthService.signUp(userSignUpDto);
