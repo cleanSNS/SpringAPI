@@ -54,6 +54,13 @@ public class MyExceptionHandeler {
         return new Response(exception.getMessage());
     }
 
+    @ExceptionHandler(MyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportError(MyException exception) {
+        return new Response(exception.getMessage());
+    }
+
+
     @ExceptionHandler(EmailAuthFailException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Response reportError(EmailAuthFailException exception) {

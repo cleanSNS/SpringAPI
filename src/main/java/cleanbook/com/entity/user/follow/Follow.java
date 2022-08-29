@@ -3,6 +3,7 @@ package cleanbook.com.entity.user.follow;
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,8 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Follow extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +29,16 @@ public class Follow extends Timestamped {
 
     public Follow(User user, User targetUser) {
         this.user = user;
-        user.getFolloweeList().add(this);
         this.targetUser = targetUser;
-        targetUser.getFollowerList().add(this);
     }
 
-//    void setUser(User user) {
-//        this.user = user;
-//        user.getFolloweeList().add(this);
-//    }
-//
-//    void setTargetUser(User user) {
-//        this.targetUser = user;
-//        user.getFolloweeList().add(this);
-//    }
+    public static Follow createFollow(User user, User targetUser) {
+        Follow follow = new Follow();
+        follow.user = user;
+        user.getFolloweeList().add(follow);
+        follow.targetUser = targetUser;
+        targetUser.getFollowerList().add(follow);
+        return follow;
+    }
+
 }

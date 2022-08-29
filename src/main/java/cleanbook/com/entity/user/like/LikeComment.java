@@ -2,6 +2,7 @@ package cleanbook.com.entity.user.like;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.page.Comment;
+import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,14 @@ public class LikeComment extends Timestamped {
     public LikeComment(User user, Comment comment) {
         this.user = user;
         this.comment = comment;
+    }
+
+    public static LikeComment createLikeComment(User user, Comment comment) {
+        LikeComment likeComment = new LikeComment();
+        likeComment.user = user;
+        likeComment.comment = comment;
+        comment.likeComment();
+        return likeComment;
     }
 
 }

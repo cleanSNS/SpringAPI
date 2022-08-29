@@ -32,4 +32,12 @@ public class LikePage extends Timestamped {
         this.user = user;
         this.page = page;
     }
+
+    public static LikePage createLikePage(User user, Page page) {
+        LikePage likePage = new LikePage();
+        likePage.user = user;
+        likePage.page = page;
+        page.likePage();
+        return likePage;
+    }
 }

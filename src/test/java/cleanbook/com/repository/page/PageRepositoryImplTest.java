@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
+import static cleanbook.com.entity.user.follow.Follow.createFollow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -161,9 +162,9 @@ class PageRepositoryImplTest {
         User user2 = userList.get(1);
         User user3 = userList.get(2);
         User user4 = userList.get(3);
-        em.persist(new Follow(user,user2));
-        em.persist(new Follow(user,user3));
-        em.persist(new Follow(user,user4));
+        em.persist(createFollow(user,user2));
+        em.persist(createFollow(user,user3));
+        em.persist(createFollow(user,user4));
 
 
         // when

@@ -77,6 +77,10 @@ public class Page extends Timestamped {
         this.warningCount++;
     }
 
+    public void likePage() {this.likeCount++;}
+
+    public void unlikePage() {this.likeCount--;}
+
     public static Page createPage(User user, PageCreateDto pageCreateDto) {
         Page page = new Page();
         page.user = user;

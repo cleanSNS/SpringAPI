@@ -1,12 +1,14 @@
 package cleanbook.com.service;
 
 import cleanbook.com.config.QuerydslConfig;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.block.Block;
 import cleanbook.com.dto.user.BlockedUserDto;
+import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.entity.user.like.LikeComment;
 import cleanbook.com.entity.user.like.LikePage;
 import cleanbook.com.entity.user.like.LikeType;
@@ -14,6 +16,7 @@ import cleanbook.com.entity.user.report.ReportComment;
 import cleanbook.com.entity.user.report.ReportPage;
 import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.entity.user.report.ReportUser;
+import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.page.PageRepository;
@@ -27,6 +30,7 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -38,6 +42,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
+import static cleanbook.com.entity.user.like.LikePage.createLikePage;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,62 +98,219 @@ class UserServiceTest {
         comment = new Comment(1L, user, page, "내용");
     }
 
-    @Test
+    @Nested
     @DisplayName("팔로우")
-    void followUserTest() {
-        //given
+    class follow{
 
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+        @Test
+        @DisplayName("팔로우")
+        void followUserTest() {
+            //given
 
-        // when
-        userRepository.save(user);
-        userRepository.save(targetUser);
-        userService.followUser(user.getId(), targetUser.getId());
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
 
-        // then
-        assertThat(user.getFolloweeList().size()).isEqualTo(1);
-        assertThat(user.getFolloweeList().get(0).getUser()).isEqualTo(user);
-        assertThat(targetUser.getFollowerList().get(0).getTargetUser()).isEqualTo(targetUser);
+            // when
+            userRepository.save(user);
+            userRepository.save(targetUser);
+            userService.followUser(user.getId(), targetUser.getId());
+
+            // then
+            assertThat(user.getFolloweeList().size()).isEqualTo(1);
+            assertThat(user.getFolloweeList().get(0).getUser()).isEqualTo(user);
+            assertThat(targetUser.getFollowerList().get(0).getTargetUser()).isEqualTo(targetUser);
+        }
+
+        @Test
+        @DisplayName("언팔로우")
+        void unfollowUserTest() {
+            //given
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+            userRepository.save(user);
+            userRepository.save(targetUser);
+            Follow follow = userService.followUser(user.getId(), targetUser.getId());
+            given(followRepository.findByUser_IdAndTargetUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(follow));
+
+
+            // when
+            userService.unfollowUser(user.getId(), targetUser.getId());
+
+
+            // then
+            assertThat(user.getFolloweeList().size()).isEqualTo(0);
+        }
+    }
+
+
+    @Nested
+    @DisplayName("좋아요")
+    class like{
+
+        @Nested
+        @DisplayName("페이지 좋아요")
+        class likePage{
+
+            @Test
+            @DisplayName("좋아요")
+            void likePageTest() {
+
+                //given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+                given(likePageRepository.findByPage_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
+
+
+                // when
+                userService.like(user3.getId(), page.getId(), LikeType.PAGE);
+
+
+                // then
+                assertThat(page.getLikeCount()).isEqualTo(1);
+            }
+
+            @Test
+            @DisplayName("좋아요 취소")
+            void unlikePageTest() {
+
+                //given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+                LikePage likePage = new LikePage(user3, page);
+
+
+                // when
+                given(likePageRepository.findByPage_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
+                userService.like(user3.getId(), page.getId(), LikeType.PAGE);
+                given(likePageRepository.findByPage_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(likePage));
+                userService.unlike(user3.getId(), page.getId(), LikeType.PAGE);
+
+
+                // then
+                assertThat(page.getLikeCount()).isEqualTo(0);
+            }
+
+            @Test
+            @DisplayName("잘못된 페이지 좋아요 취소")
+            void unlikePageErrorTest() {
+
+                // given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+
+
+                // when
+                // then
+                MyException exception = assertThrows(MyException.class, () -> {
+                    userService.unlike(user3.getId(), page.getId(), LikeType.PAGE);
+                });
+
+                assertThat(exception.getMessage()).isEqualTo("이미 좋아요 취소가 된 게시글입니다.");
+            }
+
+            @Test
+            @DisplayName("자신의 페이지 좋아요 하기")
+            void likeMyPageTest() {
+
+                //given
+                given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+
+
+                // when
+                // then
+                MyException exception = assertThrows(MyException.class, () -> {
+                    userService.like(user.getId(), page.getId(), LikeType.PAGE);
+                });
+
+                assertThat(exception.getMessage()).isEqualTo("자신의 게시글에는 좋아요 할 수 없습니다.");
+            }
+        }
+
+        @Nested
+        @DisplayName("댓글 좋아요")
+        class likeComment{
+
+            @Test
+            @DisplayName("좋아요")
+            void likeCommentTest() {
+
+                //given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
+                given(likeCommentRepository.findByComment_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
+
+
+                // when
+                userService.like(user3.getId(), comment.getId(), LikeType.COMMENT);
+
+
+                // then
+                assertThat(comment.getLikeCount()).isEqualTo(1);
+            }
+
+            @Test
+            @DisplayName("좋아요 취소")
+            void unlikeCommentTest() {
+
+                //given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
+                LikeComment likeComment = new LikeComment(user3, comment);
+
+
+                // when
+                given(likeCommentRepository.findByComment_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
+                userService.like(user3.getId(), comment.getId(), LikeType.COMMENT);
+                given(likeCommentRepository.findByComment_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(likeComment));
+                userService.unlike(user3.getId(), comment.getId(), LikeType.COMMENT);
+
+
+                // then
+                assertThat(comment.getLikeCount()).isEqualTo(0);
+            }
+
+            @Test
+            @DisplayName("잘못된 댓글 좋아요 취소")
+            void unlikeCommentErrorTest() {
+
+                // given
+                given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
+
+
+                // when
+                // then
+                MyException exception = assertThrows(MyException.class, () -> {
+                    userService.unlike(user3.getId(), comment.getId(), LikeType.COMMENT);
+                });
+
+                assertThat(exception.getMessage()).isEqualTo("이미 좋아요 취소가 된 댓글입니다.");
+            }
+
+            @Test
+            @DisplayName("자신의 댓글 좋아요 하기")
+            void likeMyCommentTest() {
+
+                //given
+                given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+                given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
+
+
+                // when
+                // then
+                MyException exception = assertThrows(MyException.class, () -> {
+                    userService.like(user.getId(), comment.getId(), LikeType.COMMENT);
+                });
+
+                assertThat(exception.getMessage()).isEqualTo("자신의 댓글에는 좋아요 할 수 없습니다.");
+            }
+        }
     }
     
-    @Test
-    @DisplayName("페이지좋아요")
-    void likePageTest() {
-    
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
-        given(likePageRepository.save(any(LikePage.class))).willReturn(new LikePage(1L, user, page));
 
-        // when
-        Long likeId = userService.like(user.getId(), page.getId(), LikeType.PAGE);
-        given(likePageRepository.findById(likeId)).willReturn(Optional.of(new LikePage(1L, user, page)));
 
-        // then
-        assertThat(likePageRepository.findById(likeId).get().getUser()).isEqualTo(user);
-        assertThat(likePageRepository.findById(likeId).get().getPage()).isEqualTo(page);
 
-    }
-
-    @Test
-    @DisplayName("댓글좋아요")
-    void likeCommentTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
-        given(likeCommentRepository.save(any(LikeComment.class))).willReturn(new LikeComment(1L, user, comment));
-
-        // when
-        Long likeId = userService.like(user.getId(), comment.getId(), LikeType.COMMENT);
-        given(likeCommentRepository.findById(likeId)).willReturn(Optional.of(new LikeComment(1L, user, comment)));
-
-        // then
-        assertThat(likeCommentRepository.findById(likeId).get().getUser()).isEqualTo(user);
-        assertThat(likeCommentRepository.findById(likeId).get().getComment()).isEqualTo(comment);
-
-    }
 
     @Test
     @DisplayName("유저신고")
@@ -283,6 +445,56 @@ class UserServiceTest {
         assertThat(blockedUserDtoList.size()).isEqualTo(1);
         assertThat(blockedUserDtoList.get(0).getUserId()).isEqualTo(3L);
         assertThat(blockedUserDtoList.get(0).getNickname()).isEqualTo("c");
+
+    }
+
+    @Test
+    @DisplayName("내가 팔로우한 유저 전체 조회")
+    void readFolloweeListTest() {
+
+        //given
+        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+        userRepository.save(user);
+        userRepository.save(targetUser);
+        userRepository.save(user3);
+        userService.followUser(user.getId(), targetUser.getId());
+        userService.followUser(user.getId(), user3.getId());
+
+
+        // when
+        List<UserDto> userDtoList = userService.readFolloweeList(user.getId());
+
+
+        // then
+        assertThat(userDtoList.size()).isEqualTo(2);
+        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
+
+    }
+
+    @Test
+    @DisplayName("나를 팔로우한 유저 전체 조회")
+    void readFollowerListTest() {
+
+        //given
+        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+        userRepository.save(user);
+        userRepository.save(targetUser);
+        userRepository.save(user3);
+        userService.followUser(targetUser.getId(), user.getId());
+        userService.followUser(user3.getId(), user.getId());
+
+
+        // when
+        List<UserDto> userDtoList = userService.readFollowerList(user.getId());
+
+
+        // then
+        assertThat(userDtoList.size()).isEqualTo(2);
+        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
 
     }
 }

@@ -90,4 +90,9 @@ public class Comment extends Timestamped {
     public void reported() {
         this.warningCount++;
     }
+
+    public void likeComment() {this.likeCount++;}
+
+    public void unlikeComment() {this.likeCount--;}
+
 }

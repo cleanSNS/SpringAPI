@@ -1,4 +1,4 @@
-package cleanbook.com.controller.local;
+package cleanbook.com.controller;
 
 import cleanbook.com.dto.chat.ChatRoomDto;
 import cleanbook.com.dto.chat.ChatRoomForm;
@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/local")
 @RequiredArgsConstructor
-public class LocalChatRoomController {
+public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final TokenProvider tokenProvider;

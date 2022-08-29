@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.user.filter.Filter.createFilter;
 import static cleanbook.com.entity.user.block.Block.createBlock;
+import static cleanbook.com.entity.user.follow.Follow.createFollow;
+import static cleanbook.com.entity.user.like.LikeComment.createLikeComment;
+import static cleanbook.com.entity.user.like.LikePage.createLikePage;
 import static cleanbook.com.entity.user.report.ReportComment.createReportComment;
 import static cleanbook.com.entity.user.report.ReportPage.createReportPage;
 import static cleanbook.com.entity.user.report.ReportUser.createReportUser;
@@ -56,36 +59,102 @@ public class UserService {
     private final ReportCommentRepository reportCommentRepository;
     private final BlockRepository blockRepository;
     private final FilterRepository filterRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final EmailService emailService;
-    private final EmailAuthRepository emailAuthRepository;
-
 
 
     // 팔로우하기
-    public Long followUser(Long userId, Long targetUserId) {
+    public Follow followUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
 
-        Follow follow = new Follow(user, targetUser);
+        Follow follow = createFollow(user, targetUser);
         followRepository.save(follow);
-        return follow.getId();
+        return follow;
+    }
+
+    // 언팔로우하기
+    public void unfollowUser(Long userId, Long targetUserId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
+        Follow follow = followRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).orElseThrow(() -> new NotFoundException("팔로우"));
+
+        user.getFolloweeList().remove(follow);
+        targetUser.getFollowerList().remove(follow);
+        followRepository.delete(follow);
+    }
+
+    // 내가 팔로우하는 유저 전체 조회
+    public List<UserDto> readFolloweeList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        List<UserDto> userDtoList = user.getFolloweeList().stream()
+                .map(f -> new UserDto(f.getId(), f.getTargetUser().getUserProfile().getNickname(), f.getTargetUser().getUserProfile().getImgUrl()))
+                .collect(Collectors.toList());
+
+        return userDtoList;
+    }
+
+    // 나를 팔로우하는 유저 전체 조회
+    public List<UserDto> readFollowerList(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        List<UserDto> userDtoList = user.getFollowerList().stream()
+                .map(f -> new UserDto(f.getId(), f.getUser().getUserProfile().getNickname(), f.getUser().getUserProfile().getImgUrl()))
+                .collect(Collectors.toList());
+
+        return userDtoList;
     }
 
     // 좋아요
-    public Long like(Long userId, Long targetId, LikeType type) {
+    public void like(Long userId, Long targetId, LikeType type) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         switch (type) {
             case PAGE:
                 Page page = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
-                return likePageRepository.save(new LikePage(user, page)).getId();
+                // 자추 금지
+                if (page.getUser().getId().equals(user.getId())) {
+                    throw new MyException("자신의 게시글에는 좋아요 할 수 없습니다.");
+                }
+                // 이미 좋아요 한 게시글이면
+                if (likePageRepository.findByPage_IdAndUser_Id(page.getId(), user.getId()).isPresent()) {
+                    throw new MyException("이미 좋아요 한 게시글입니다.");
+                }
+                likePageRepository.save(createLikePage(user, page));
+                return;
 
             case COMMENT:
                 Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
-                return likeCommentRepository.save(new LikeComment(user, comment)).getId();
+                // 자추 금지
+                if (comment.getUser().getId().equals(user.getId())) {
+                    throw new MyException("자신의 댓글에는 좋아요 할 수 없습니다.");
+                }
+                // 이미 좋아요 한 댓글이면
+                if (likeCommentRepository.findByComment_IdAndUser_Id(comment.getId(), user.getId()).isPresent()) {
+                    throw new MyException("이미 좋아요 한 댓글입니다.");
+                }
+                likeCommentRepository.save(createLikeComment(user, comment));
+                return;
+        }
+
+        throw new RuntimeException();
+    }
+
+    // 좋아요 취소
+    public Long unlike(Long userId, Long targetId, LikeType type) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        switch (type) {
+            case PAGE:
+                Page page = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+                LikePage likePage = likePageRepository.findByPage_IdAndUser_Id(page.getId(), user.getId()).orElseThrow(() -> new MyException("이미 좋아요 취소가 된 게시글입니다."));
+                page.unlikePage();
+                likePageRepository.delete(likePage);
+                return likePage.getId();
+
+            case COMMENT:
+                Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+                LikeComment likeComment = likeCommentRepository.findByComment_IdAndUser_Id(comment.getId(), user.getId()).orElseThrow(() -> new MyException("이미 좋아요 취소가 된 댓글입니다."));
+                comment.unlikeComment();
+                likeCommentRepository.delete(likeComment);
+                return likeComment.getId();
         }
 
         throw new RuntimeException();
