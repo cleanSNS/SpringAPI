@@ -1,4 +1,4 @@
-package cleanbook.com.controller.local;
+package cleanbook.com.controller;
 
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
@@ -16,9 +16,8 @@ import static cleanbook.com.entity.user.UserNotificationSetting.createUserNotifi
 import static cleanbook.com.entity.user.UserProfile.createUserProfile;
 
 @RestController
-@RequestMapping("/local")
 @RequiredArgsConstructor
-public class LocalUserController {
+public class UserController {
 
     private final UserService userService;
     private final TokenProvider tokenProvider;

@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class ReportDto {
     private Long targetId;
-    private ReportType reportType;
+    private ReportType type;
 }

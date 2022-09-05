@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class BlockedUserDto {
     private Long userId;
     private String nickname;
+    private String imgUrl;
 }

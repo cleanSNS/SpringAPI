@@ -8,7 +8,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Embeddable
@@ -27,7 +26,7 @@ public class UserProfile {
     private boolean genderVisible;
 
     private String imgUrl;
-    private String selfIntroduce;
+    private String selfIntroduction;
 
     public UserProfile(String nickname, int age, GenderType gender) {
         this.nickname = nickname;
@@ -43,7 +42,7 @@ public class UserProfile {
                 .gender(dto.getGender())
                 .genderVisible(dto.isGenderVisible())
                 .imgUrl(dto.getImgUrl())
-                .selfIntroduce(dto.getSelfIntroduce())
+                .selfIntroduction(dto.getSelfIntroduction())
                 .build();
     }
 }

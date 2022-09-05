@@ -1,6 +1,5 @@
 package cleanbook.com.service;
 
-import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.page.Comment;
@@ -14,12 +13,10 @@ import cleanbook.com.entity.user.like.LikePage;
 import cleanbook.com.entity.user.like.LikeType;
 import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.exception.exceptions.*;
-import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.*;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
-import cleanbook.com.repository.user.email.EmailAuthRepository;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
 import cleanbook.com.repository.user.report.ReportCommentRepository;
@@ -27,7 +24,6 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,7 +136,7 @@ public class UserService {
     }
 
     // 좋아요 취소
-    public Long unlike(Long userId, Long targetId, LikeType type) {
+    public void unlike(Long userId, Long targetId, LikeType type) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         switch (type) {
@@ -149,14 +145,14 @@ public class UserService {
                 LikePage likePage = likePageRepository.findByPage_IdAndUser_Id(page.getId(), user.getId()).orElseThrow(() -> new MyException("이미 좋아요 취소가 된 게시글입니다."));
                 page.unlikePage();
                 likePageRepository.delete(likePage);
-                return likePage.getId();
+                return;
 
             case COMMENT:
                 Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
                 LikeComment likeComment = likeCommentRepository.findByComment_IdAndUser_Id(comment.getId(), user.getId()).orElseThrow(() -> new MyException("이미 좋아요 취소가 된 댓글입니다."));
                 comment.unlikeComment();
                 likeCommentRepository.delete(likeComment);
-                return likeComment.getId();
+                return;
         }
 
         throw new RuntimeException();
@@ -237,20 +233,20 @@ public class UserService {
 
         List<BlockedUserDto> blockedUserDtoList = user.getBlockUserList()
                 .stream()
-                .map(block -> new BlockedUserDto(block.getTargetUser().getId(), block.getTargetUser().getUserProfile().getNickname()))
+                .map(block -> new BlockedUserDto(block.getTargetUser().getId(), block.getTargetUser().getUserProfile().getNickname(), block.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
 
         return new ResultDto<>(blockedUserDtoList);
     }
 
     // 필터링하지 않을 사용자 추가
-    public Long unfilterUser(Long userId, Long targetUserId) {
+    public void unfilterUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
 
         // todo 필터링 메서드
         Filter filter = createFilter(user, targetUser);
-        return filterRepository.save(filter).getId();
+        filterRepository.save(filter).getId();
     }
 
     // 필터링하지 않을 사용자 해제
@@ -274,7 +270,6 @@ public class UserService {
 
         return new ResultDto<>(userDtoList);
     }
-
 
 
     // 마이페이지
@@ -302,6 +297,7 @@ public class UserService {
         user.changeUserNotificationSetting(userNotificationSetting);
     }
 
+    // todo 이전비밀번호 검사
     // 비밀번호 변경
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
@@ -324,6 +320,7 @@ public class UserService {
     // 유저 검색
     @Transactional(readOnly = true)
     public ResultDto<List<UserDto>> findUsersStartWithNickname(String nickname) {
+        System.out.println("nickname = " + nickname);
         if (hasText(nickname)) {
             return new ResultDto<>(userRepository.findUsersStartWithNickname(nickname));
         }

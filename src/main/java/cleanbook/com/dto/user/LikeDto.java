@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class LikeDto {
     private Long targetId;
-    private LikeType likeType;
+    private LikeType type;
 }
