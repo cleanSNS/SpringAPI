@@ -1,6 +1,7 @@
 package cleanbook.com.service;
 
 import cleanbook.com.config.QuerydslConfig;
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.page.Comment;
@@ -309,67 +310,92 @@ class UserServiceTest {
     }
     
 
+    @Nested
+    @DisplayName("신고")
+    class report {
+
+        @Test
+        @DisplayName("유저신고")
+        void reportUserTest() {
+
+            //given
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+            given(reportUserRepository.save(any(ReportUser.class))).willReturn(new ReportUser(1L, user, targetUser));
+
+            // when
+            Long reportId = userService.report(1L,2L, ReportType.USER);
+            given(reportUserRepository.findById(reportId)).willReturn(Optional.of(new ReportUser(1L, user, targetUser)));
+
+            // then
+            assertThat(targetUser.getWarningCount()).isEqualTo(1);
+            assertThat(reportUserRepository.findById(reportId).get().getUser()).isEqualTo(user);
+            assertThat(reportUserRepository.findById(reportId).get().getTargetUser()).isEqualTo(targetUser);
+        }
+
+        @Test
+        @DisplayName("글신고")
+        void reportPageTest() {
+
+            //given
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+            given(reportPageRepository.save(any(ReportPage.class))).willReturn(new ReportPage(1L,user,page));
 
 
+            // when
+            Long reportId = userService.report(1L, 1L, ReportType.PAGE);
+            given(reportPageRepository.findById(reportId)).willReturn(Optional.of(new ReportPage(1L, user, page)));
 
-    @Test
-    @DisplayName("유저신고")
-    void reportUserTest() {
+            // then
+            assertThat(page.getWarningCount()).isEqualTo(1);
+            assertThat(reportPageRepository.findById(reportId).get().getUser()).isEqualTo(user);
+            assertThat(reportPageRepository.findById(reportId).get().getTargetPage()).isEqualTo(page);
+        }
 
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(reportUserRepository.save(any(ReportUser.class))).willReturn(new ReportUser(1L, user, targetUser));
+        @Test
+        @DisplayName("댓글신고")
+        void reportCommentTest() {
 
-        // when
-        Long reportId = userService.report(1L,2L, ReportType.USER);
-        given(reportUserRepository.findById(reportId)).willReturn(Optional.of(new ReportUser(1L, user, targetUser)));
+            //given
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
+            given(reportCommentRepository.save(any(ReportComment.class))).willReturn(new ReportComment(1L,user,comment));
 
-        // then
-        assertThat(targetUser.getWarningCount()).isEqualTo(1);
-        assertThat(reportUserRepository.findById(reportId).get().getUser()).isEqualTo(user);
-        assertThat(reportUserRepository.findById(reportId).get().getTargetUser()).isEqualTo(targetUser);
+
+            // when
+            Long reportId = userService.report(1L, 1L, ReportType.COMMENT);
+            given(reportCommentRepository.findById(reportId)).willReturn(Optional.of(new ReportComment(1L, user, comment)));
+
+            // then
+            assertThat(comment.getWarningCount()).isEqualTo(1);
+            assertThat(reportCommentRepository.findById(reportId).get().getUser()).isEqualTo(user);
+            assertThat(reportCommentRepository.findById(reportId).get().getTargetComment()).isEqualTo(comment);
+        }
+
+        @Test
+        @DisplayName("중복 신고")
+        void duplicateReport() {
+
+            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+            given(reportUserRepository.save(any(ReportUser.class))).willReturn(new ReportUser(1L, user, targetUser));
+            userService.report(1L,2L, ReportType.USER);
+            given(reportUserRepository.findByUser_IdAndTargetUser_Id(user.getId(), targetUser.getId())).willReturn(Optional.of(new ReportUser()));
+
+            // when
+            // then
+
+            MyException exception = assertThrows(MyException.class, () -> {
+                userService.report(1L, 2L, ReportType.USER);
+            });
+
+            assertThat(exception.getMessage()).isEqualTo("이미 신고한 유저입니다.");
+        }
     }
 
-    @Test
-    @DisplayName("글신고")
-    void reportPageTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
-        given(reportPageRepository.save(any(ReportPage.class))).willReturn(new ReportPage(1L,user,page));
 
 
-        // when
-        Long reportId = userService.report(1L, 1L, ReportType.PAGE);
-        given(reportPageRepository.findById(reportId)).willReturn(Optional.of(new ReportPage(1L, user, page)));
-
-        // then
-        assertThat(page.getWarningCount()).isEqualTo(1);
-        assertThat(reportPageRepository.findById(reportId).get().getUser()).isEqualTo(user);
-        assertThat(reportPageRepository.findById(reportId).get().getTargetPage()).isEqualTo(page);
-    }
-
-    @Test
-    @DisplayName("댓글신고")
-    void reportCommentTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(commentRepository.findById((comment.getId()))).willReturn(Optional.of(comment));
-        given(reportCommentRepository.save(any(ReportComment.class))).willReturn(new ReportComment(1L,user,comment));
-
-
-        // when
-        Long reportId = userService.report(1L, 1L, ReportType.COMMENT);
-        given(reportCommentRepository.findById(reportId)).willReturn(Optional.of(new ReportComment(1L, user, comment)));
-
-        // then
-        assertThat(comment.getWarningCount()).isEqualTo(1);
-        assertThat(reportCommentRepository.findById(reportId).get().getUser()).isEqualTo(user);
-        assertThat(reportCommentRepository.findById(reportId).get().getTargetComment()).isEqualTo(comment);
-    }
 
     @Test
     @DisplayName("차단")
@@ -381,13 +407,34 @@ class UserServiceTest {
         given(blockRepository.save(any(Block.class))).willReturn(new Block(1L, user, targetUser));
 
         // when
-        Long blockId = userService.blockUser(user.getId(), targetUser.getId());
+        userService.blockUser(user.getId(), targetUser.getId());
 
 
         // then
         assertThat(user.getBlockUserList().size()).isEqualTo(1);
         assertThat(user.getBlockUserList().get(0).getTargetUser()).isEqualTo(targetUser);
 
+    }
+
+    @Test
+    @DisplayName("차단 해제")
+    void unblockUserTest() {
+
+        //given
+        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+        Block block = new Block(user, targetUser);
+
+        userService.blockUser(user.getId(), targetUser.getId());
+        given(blockRepository.findByUser_IdAndTargetUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(block));
+
+
+        // when
+        userService.unblockUser(user.getId(), targetUser.getId());
+
+
+        // then
+        assertThat(user.getBlockUserList().size()).isEqualTo(1);
     }
 
     @Test
@@ -403,7 +450,8 @@ class UserServiceTest {
         // when
         userService.blockUser(user.getId(), targetUser.getId());
         userService.blockUser(user.getId(), user3.getId());
-        List<BlockedUserDto> blockedUserDtoList = userService.readBlockedUserList(user.getId());
+        ResultDto<List<BlockedUserDto>> resultDto = userService.readBlockedUserList(user.getId());
+        List<BlockedUserDto> blockedUserDtoList = resultDto.getData();
 
 
         // then
@@ -414,39 +462,7 @@ class UserServiceTest {
         assertThat(blockedUserDtoList.get(1).getNickname()).isEqualTo("c");
     }
     
-    @Test
-    @DisplayName("차단한_유저_삭제")
-    void unblockUserTest() {
 
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
-        given(blockRepository.save(any(Block.class))).willReturn(new Block(++sequence, user, targetUser));
-
-        // when
-        userService.blockUser(user.getId(), targetUser.getId());
-        userService.blockUser(user.getId(), user3.getId());
-        List<BlockedUserDto> blockedUserDtoList = userService.readBlockedUserList(user.getId());
-
-
-        // then
-        assertThat(blockedUserDtoList.size()).isEqualTo(2);
-        assertThat(blockedUserDtoList.get(0).getUserId()).isEqualTo(2L);
-        assertThat(blockedUserDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(blockedUserDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(blockedUserDtoList.get(1).getNickname()).isEqualTo("c");
-
-        // when
-        userService.unblockUser(user.getId(), targetUser.getId());
-        blockedUserDtoList = userService.readBlockedUserList(user.getId());
-
-        // then
-        assertThat(blockedUserDtoList.size()).isEqualTo(1);
-        assertThat(blockedUserDtoList.get(0).getUserId()).isEqualTo(3L);
-        assertThat(blockedUserDtoList.get(0).getNickname()).isEqualTo("c");
-
-    }
 
     @Test
     @DisplayName("내가 팔로우한 유저 전체 조회")
@@ -464,7 +480,8 @@ class UserServiceTest {
 
 
         // when
-        List<UserDto> userDtoList = userService.readFolloweeList(user.getId());
+        ResultDto<List<UserDto>> resultDto = userService.readFolloweeList(user.getId());
+        List<UserDto> userDtoList = resultDto.getData();
 
 
         // then
@@ -489,7 +506,8 @@ class UserServiceTest {
 
 
         // when
-        List<UserDto> userDtoList = userService.readFollowerList(user.getId());
+        ResultDto<List<UserDto>> resultDto = userService.readFollowerList(user.getId());
+        List<UserDto> userDtoList = resultDto.getData();
 
 
         // then

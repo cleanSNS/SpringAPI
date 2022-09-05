@@ -17,7 +17,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private static final String LOCAL = "http://localhost:8080/local";
-    private static final String SERVER = "http://52.78.49.137:8080";
+    private static final String SERVER = "http://api.cleanbook.site";
 
     @Async
     public void sendServer(String email, String authToken) throws MessagingException {

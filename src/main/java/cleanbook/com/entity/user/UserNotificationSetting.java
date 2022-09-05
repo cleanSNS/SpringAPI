@@ -1,7 +1,9 @@
 package cleanbook.com.entity.user;
 
+import cleanbook.com.dto.user.UserNotificationSettingDto;
 import cleanbook.com.entity.enums.SettingType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,6 +18,7 @@ import javax.persistence.Enumerated;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserNotificationSetting {
 
     @Column(columnDefinition = "boolean default false")
@@ -33,8 +36,15 @@ public class UserNotificationSetting {
     private boolean notificationFollowAccept;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean notificationSingleChat;
+    private boolean notificationChat;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean notificationGroupChat;
+    public static UserNotificationSetting createUserNotificationSetting(UserNotificationSettingDto dto) {
+        return UserNotificationSetting.builder()
+                .notificationFollow(dto.isNotificationFollow())
+                .notificationComment(dto.getNotificationComment())
+                .notificationLike(dto.getNotificationLike())
+                .notificationFollowAccept(dto.isNotificationFollowAccept())
+                .notificationChat(dto.isNotificationChat())
+                .build();
+    }
 }

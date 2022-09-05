@@ -1,5 +1,6 @@
 package cleanbook.com.entity.user;
 
+import cleanbook.com.dto.user.UserProfileDto;
 import cleanbook.com.entity.enums.GenderType;
 import lombok.*;
 
@@ -34,11 +35,15 @@ public class UserProfile {
         this.gender = gender;
     }
 
-    public void changeUserProfile(String nickname, int age, GenderType gender, String imgUrl, String selfIntroduce) {
-        this.nickname = nickname;
-        this.age = age;
-        this.gender = gender;
-        this.imgUrl = imgUrl;
-        this.selfIntroduce = selfIntroduce;
+    public static UserProfile createUserProfile(UserProfileDto dto) {
+        return UserProfile.builder()
+                .nickname(dto.getNickname())
+                .age(dto.getAge())
+                .ageVisible(dto.isAgeVisible())
+                .gender(dto.getGender())
+                .genderVisible(dto.isGenderVisible())
+                .imgUrl(dto.getImgUrl())
+                .selfIntroduce(dto.getSelfIntroduce())
+                .build();
     }
 }

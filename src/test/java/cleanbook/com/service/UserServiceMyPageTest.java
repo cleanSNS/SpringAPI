@@ -61,7 +61,7 @@ class UserServiceMyPageTest {
 
         //given
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        UserNotificationSetting newSetting = new UserNotificationSetting(true, SettingType.FOLLOW_ONLY, SettingType.NONE, true, true, true);
+        UserNotificationSetting newSetting = new UserNotificationSetting(true, SettingType.FOLLOW_ONLY, SettingType.NONE, true, true);
 
 
         // when

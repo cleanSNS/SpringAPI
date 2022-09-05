@@ -1,5 +1,6 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.enums.GenderType;
@@ -51,80 +52,5 @@ class UserServiceFilterTest {
         comment = new Comment(1L, user, page, "내용");
     }
 
-    @Test
-    @DisplayName("필터링할_유저_추가")
-    void filterUser() {
 
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(filterRepository.save(any(Filter.class))).willReturn(new Filter(1L, user, targetUser));
-
-        // when
-        Long filterId = userService.filterUser(user.getId(), targetUser.getId());
-
-
-        // then
-        assertThat(user.getNotFilterUserList().size()).isEqualTo(1);
-        assertThat(user.getNotFilterUserList().get(0).getTargetUser()).isEqualTo(targetUser);
-
-    }
-
-    @Test
-    @DisplayName("필터링한_유저_전체조회")
-    void readFilteredUserList() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
-        given(filterRepository.save(any(Filter.class))).willReturn(new Filter(++sequence, user, targetUser));
-
-        // when
-        userService.filterUser(user.getId(), targetUser.getId());
-        userService.filterUser(user.getId(), user3.getId());
-        List<UserDto> userDtoList = userService.readFilteredUserList(user.getId());
-
-
-        // then
-        assertThat(userDtoList.size()).isEqualTo(2);
-        assertThat(userDtoList.get(0).getUserId()).isEqualTo(2L);
-        assertThat(userDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(userDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(userDtoList.get(1).getNickname()).isEqualTo("c");
-    }
-
-    @Test
-    @DisplayName("필터링한_유저_삭제")
-    void unfilterUserTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
-        given(filterRepository.save(any(Filter.class))).willReturn(new Filter(++sequence, user, targetUser));
-
-        // when
-        userService.filterUser(user.getId(), targetUser.getId());
-        userService.filterUser(user.getId(), user3.getId());
-        List<UserDto> userDtoList = userService.readFilteredUserList(user.getId());
-
-
-        // then
-        assertThat(userDtoList.size()).isEqualTo(2);
-        assertThat(userDtoList.get(0).getUserId()).isEqualTo(2L);
-        assertThat(userDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(userDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(userDtoList.get(1).getNickname()).isEqualTo("c");
-
-        // when
-        userService.unfilterUser(user.getId(), targetUser.getId());
-        userDtoList = userService.readFilteredUserList(user.getId());
-
-        // then
-        assertThat(userDtoList.size()).isEqualTo(1);
-        assertThat(userDtoList.get(0).getUserId()).isEqualTo(3L);
-        assertThat(userDtoList.get(0).getNickname()).isEqualTo("c");
-
-    }
 }

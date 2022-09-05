@@ -1,6 +1,7 @@
 package cleanbook.com.entity.user;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +10,6 @@ import javax.persistence.*;
 @Getter
 @Embeddable
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserSetting {
 
     @Embedded
@@ -23,6 +23,12 @@ public class UserSetting {
     }
 
     public void changeUserFilterSetting(UserFilterSetting userFilterSetting) {
+        this.userFilterSetting = userFilterSetting;
+    }
+
+    @Builder
+    public UserSetting(UserNotificationSetting userNotificationSetting, UserFilterSetting userFilterSetting) {
+        this.userNotificationSetting = userNotificationSetting;
         this.userFilterSetting = userFilterSetting;
     }
 }

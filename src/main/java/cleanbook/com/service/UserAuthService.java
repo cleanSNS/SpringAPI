@@ -66,6 +66,10 @@ public class UserAuthService {
                         .age(userSignupDto.getAge())
                         .gender(userSignupDto.getGender())
                         .build())
+                .userSetting(UserSetting.builder()
+                        .userNotificationSetting(UserNotificationSetting.builder().build())
+                        .userFilterSetting(UserFilterSetting.builder().build())
+                        .build())
                 .build();
 
         createUserAuthority(user, authority);
@@ -116,6 +120,8 @@ public class UserAuthService {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
                 .orElseThrow(IllegalAccountException::new);
 
+        System.out.println(passwordEncoder.encode(userLoginDto.getPassword()));
+
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             throw new IllegalAccountException();
         }
@@ -139,7 +145,7 @@ public class UserAuthService {
 
     public void addCookie(HttpServletResponse response, String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .sameSite("None")
+                .sameSite("Lax")
                 .path("/")
                 .httpOnly(true)
                 .build();

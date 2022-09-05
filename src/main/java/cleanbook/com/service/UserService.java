@@ -1,5 +1,7 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
@@ -83,23 +85,23 @@ public class UserService {
     }
 
     // 내가 팔로우하는 유저 전체 조회
-    public List<UserDto> readFolloweeList(Long userId) {
+    public ResultDto<List<UserDto>> readFolloweeList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<UserDto> userDtoList = user.getFolloweeList().stream()
                 .map(f -> new UserDto(f.getId(), f.getTargetUser().getUserProfile().getNickname(), f.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
 
-        return userDtoList;
+        return new ResultDto<>(userDtoList);
     }
 
     // 나를 팔로우하는 유저 전체 조회
-    public List<UserDto> readFollowerList(Long userId) {
+    public ResultDto<List<UserDto>> readFollowerList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<UserDto> userDtoList = user.getFollowerList().stream()
                 .map(f -> new UserDto(f.getId(), f.getUser().getUserProfile().getNickname(), f.getUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
 
-        return userDtoList;
+        return new ResultDto<>(userDtoList);
     }
 
     // 좋아요
@@ -167,14 +169,32 @@ public class UserService {
         switch (type){
             case USER:
                 User targetUser = userRepository.findById(targetId).orElseThrow(UserNotFoundException::new);
+
+                // 중복 신고 방지
+                if (reportUserRepository.findByUser_IdAndTargetUser_Id(userId, targetId).isPresent()) {
+                    throw new MyException("이미 신고한 유저입니다.");
+                }
+
                 return reportUserRepository.save(createReportUser(user, targetUser)).getId();
 
             case PAGE:
                 Page targetPage = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+
+                // 중복 신고 방지
+                if (reportPageRepository.findByUser_IdAndTargetPage_Id(userId, targetId).isPresent()) {
+                    throw new MyException("이미 신고한 게시글입니다.");
+                }
+
                 return reportPageRepository.save(createReportPage(user, targetPage)).getId();
 
             case COMMENT:
                 Comment targetComment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+
+                // 중복 신고 방지
+                if (reportCommentRepository.findByUser_IdAndTargetComment_Id(userId, targetId).isPresent()) {
+                    throw new MyException("이미 신고한 댓글입니다.");
+                }
+
                 return reportCommentRepository.save(createReportComment(user, targetComment)).getId();
 
         }
@@ -184,74 +204,96 @@ public class UserService {
     }
 
     // 차단
-    public Long blockUser(Long userId, Long targetUserId) {
+    public void blockUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
 
-        Block block = createBlock(user, targetUser);
-        return blockRepository.save(block).getId();
+        // 중복 차단 방지
+        if (blockRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).isPresent()) {
+            throw new MyException("이미 차단한 유저입니다.");
+        }
+
+        // 팔로우중이라면 언팔로우
+        if (followRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).isPresent()) {
+            unfollowUser(userId, targetUserId);
+        }
+
+        blockRepository.save(createBlock(user, targetUser));
+    }
+
+    // 차단해제
+    public void unblockUser(Long userId, Long targetUserId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Block block = blockRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).orElseThrow(() -> new MyException("이미 차단 해제된 유저입니다."));
+
+        user.getBlockUserList().remove(block);
+        blockRepository.delete(block);
     }
 
     // 차단한 유저 전체조회
     @Transactional(readOnly = true)
-    public List<BlockedUserDto> readBlockedUserList(Long userId) {
+    public ResultDto<List<BlockedUserDto>> readBlockedUserList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        return user.getBlockUserList()
+        List<BlockedUserDto> blockedUserDtoList = user.getBlockUserList()
                 .stream()
                 .map(block -> new BlockedUserDto(block.getTargetUser().getId(), block.getTargetUser().getUserProfile().getNickname()))
                 .collect(Collectors.toList());
+
+        return new ResultDto<>(blockedUserDtoList);
     }
 
-    // 차단한 유저 차단해제
-    public void unblockUser(Long userId, Long targetUserId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-
-        for (Block block : user.getBlockUserList()) {
-            if (block.getTargetUser().getId().equals(targetUserId)) {
-                user.getBlockUserList().remove(block);
-                blockRepository.delete(block);
-            }
-        }
-    }
-
-    // 필터링하기
-    public Long filterUser(Long userId, Long targetUserId) {
+    // 필터링하지 않을 사용자 추가
+    public Long unfilterUser(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
 
+        // todo 필터링 메서드
         Filter filter = createFilter(user, targetUser);
         return filterRepository.save(filter).getId();
     }
 
+    // 필터링하지 않을 사용자 해제
+    public void filterUser(Long userId, Long targetUserId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Filter filter = filterRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).orElseThrow(() -> new MyException("이미 해제된 유저입니다."));
+
+        user.getNotFilterUserList().remove(filter);
+        filterRepository.delete(filter);
+    }
+
     // 필터링한 유저 전체조회
     @Transactional(readOnly = true)
-    public List<UserDto> readFilteredUserList(Long userId) {
+    public ResultDto<List<UserDto>> readUnfilteredUserList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        return user.getNotFilterUserList()
+        List<UserDto> userDtoList = user.getNotFilterUserList()
                 .stream()
                 .map(dto -> new UserDto(dto.getTargetUser().getId(), dto.getTargetUser().getUserProfile().getNickname(), dto.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
+
+        return new ResultDto<>(userDtoList);
     }
 
-    // 필터링한 유저 필터링해제
-    public void unfilterUser(Long userId, Long targetUserId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        for (Filter filter : user.getNotFilterUserList()) {
-            if (filter.getTargetUser().getId().equals(targetUserId)) {
-                user.getNotFilterUserList().remove(filter);
-                filterRepository.delete(filter);
-            }
-        }
-    }
 
     // 마이페이지
+    // 프로필 보기
+    public ResultDto<UserProfileDto> readUserProfile(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return new ResultDto<>(new UserProfileDto(user.getUserProfile()));
+    }
+
     // 프로필 편집
     public void changeUserProfile(Long userId, UserProfile userProfile) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         user.changeUserProfile(userProfile);
+    }
+
+    // 푸쉬알림 보기
+    public ResultDto<UserNotificationSettingDto> readUserNotificationSetting(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return new ResultDto<>(new UserNotificationSettingDto(user.getUserSetting().getUserNotificationSetting()));
     }
 
     // 푸쉬알림 설정
@@ -266,6 +308,12 @@ public class UserService {
         if(hasText(password)) user.changePassword(password);
         else throw new EmptyStringException();
     }
+
+    // 필터링 보기
+    public ResultDto<UserFilterSettingDto> readUserFilterSetting(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return new ResultDto<>(new UserFilterSettingDto(user.getUserSetting().getUserFilterSetting()));
+    }
     
     // 필터링 설정
     public void changeUserFilterSetting(Long userId, UserFilterSetting userFilterSetting) {
@@ -275,9 +323,13 @@ public class UserService {
 
     // 유저 검색
     @Transactional(readOnly = true)
-    public List<UserDto> findUsersStartWithNickname(String nickname) {
-        if (hasText(nickname)) return userRepository.findUsersStartWithNickname(nickname);
-        else throw new EmptyStringException();
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(String nickname) {
+        if (hasText(nickname)) {
+            return new ResultDto<>(userRepository.findUsersStartWithNickname(nickname));
+        }
+        else {
+            throw new EmptyStringException();
+        }
     }
 
 }

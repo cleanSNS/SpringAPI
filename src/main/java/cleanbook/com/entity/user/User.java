@@ -76,10 +76,11 @@ public class User extends Timestamped {
     }
 
     @Builder
-    public User(String email, String password, UserProfile userProfile, AccountState accountState) {
+    public User(String email, String password, UserProfile userProfile,  UserSetting userSetting, AccountState accountState) {
         this.email = email;
         this.password = password;
         this.userProfile = userProfile;
+        this.userSetting = userSetting;
         this.accountState = accountState;
     }
 
