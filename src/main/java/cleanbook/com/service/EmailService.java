@@ -48,4 +48,17 @@ public class EmailService {
 
         smm.send();
     }
+
+    @Async
+    public void sendNewPassword(String email, String password) throws MessagingException {
+        MailUtils smm = new MailUtils(javaMailSender);
+        smm.setTo(email);
+        smm.setSubject("CleanBook 비밀번호 초기화");
+        smm.setText(
+                "<h1>비밀번호 초기화</h1>" +
+                        "<br/>아래의 비밀번호로 로그인해주시기 바랍니다."+
+                        "<br/>[" + password + "]");
+
+        smm.send();
+    }
 }

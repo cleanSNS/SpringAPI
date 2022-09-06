@@ -7,8 +7,10 @@ import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 import static cleanbook.com.entity.user.UserFilterSetting.createUserFilterSetting;
@@ -165,11 +167,28 @@ public class UserController {
         return ResponseEntity.ok(new Response("success"));
     }
 
+    // 기존 비밀번호 일치 여부확인
+    @PostMapping("/user/mypage/password/check")
+    public ResponseEntity<Response> checkPassword(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserPasswordDto dto) {
+        Long userId = tokenProvider.getUserId(token);
+        userService.checkPassword(userId, dto.getPassword());
+
+        return ResponseEntity.ok(new Response("success"));
+    }
+
     // 비밀번호 변경
-    @PostMapping("/user/mypage/password")
-    public ResponseEntity<Response> changePassword(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserPasswordDto dto) {
+    @PostMapping("/user/mypage/password/change")
+    public ResponseEntity<Response> changePassword(@CookieValue("X-AUTH-TOKEN") String token, @Validated @RequestBody UserPasswordDto dto) {
         Long userId = tokenProvider.getUserId(token);
         userService.changePassword(userId, dto.getPassword());
+
+        return ResponseEntity.ok(new Response("success"));
+    }
+
+    // 비밀번호 초기화
+    @PostMapping("/user/mypage/password/reset")
+    public ResponseEntity<Response> resetPassword(@RequestBody UserEmailDto dto) throws MessagingException {
+        userService.resetPassword(dto.getEmail());
 
         return ResponseEntity.ok(new Response("success"));
     }

@@ -24,10 +24,13 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.user.filter.Filter.createFilter;
@@ -57,6 +60,8 @@ public class UserService {
     private final ReportCommentRepository reportCommentRepository;
     private final BlockRepository blockRepository;
     private final FilterRepository filterRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
 
     // 팔로우하기
@@ -297,12 +302,43 @@ public class UserService {
         user.changeUserNotificationSetting(userNotificationSetting);
     }
 
-    // todo 이전비밀번호 검사
+    // 이전비밀번호 일치 여부 확인
+    public boolean checkPassword(Long userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+
     // 비밀번호 변경
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        if(hasText(password)) user.changePassword(password);
-        else throw new EmptyStringException();
+        user.changePassword(password);
+        log.info("changedPassword = " + password);
+    }
+
+    // 비밀번호 초기화
+    public void resetPassword(String email) throws MessagingException {
+        // 임의로 비밀번호 변경
+        String newPassword = generateNewPassword();
+        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+        user.changePassword(passwordEncoder.encode(newPassword));
+
+        // 변경된 비밀번호 유저 이메일로 전송
+        emailService.sendNewPassword(email, newPassword);
+        log.info("changedPassword = " + newPassword);
+    }
+
+    // 임의의 10자리 문자열
+    public String generateNewPassword(){
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        System.out.println(generatedString);
+        return generatedString;
     }
 
     // 필터링 보기

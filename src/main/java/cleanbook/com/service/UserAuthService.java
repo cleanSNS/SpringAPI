@@ -103,7 +103,6 @@ public class UserAuthService {
                         .expired(false)
                         .build());
 
-        log.info("authToken {}", emailAuth.getAuthToken());
         emailService.sendLocal(email, emailAuth.getAuthToken());
     }
 
@@ -119,8 +118,6 @@ public class UserAuthService {
     public UserLoginDto login(UserLoginDto userLoginDto, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
                 .orElseThrow(IllegalAccountException::new);
-
-        System.out.println(passwordEncoder.encode(userLoginDto.getPassword()));
 
         if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
             throw new IllegalAccountException();
