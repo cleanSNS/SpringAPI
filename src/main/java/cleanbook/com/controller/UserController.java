@@ -169,11 +169,11 @@ public class UserController {
 
     // 기존 비밀번호 일치 여부확인
     @PostMapping("/user/mypage/password/check")
-    public ResponseEntity<Response> checkPassword(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserPasswordDto dto) {
+    public ResponseEntity<Boolean> checkPassword(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserPasswordDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.checkPassword(userId, dto.getPassword());
+        boolean result = userService.checkPassword(userId, dto.getPassword());
 
-        return ResponseEntity.ok(new Response("success"));
+        return ResponseEntity.ok(result);
     }
 
     // 비밀번호 변경

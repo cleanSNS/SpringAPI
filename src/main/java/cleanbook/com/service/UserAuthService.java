@@ -142,9 +142,11 @@ public class UserAuthService {
 
     public void addCookie(HttpServletResponse response, String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .sameSite("Lax")
+                .maxAge(1800)
+                .secure(true)
                 .path("/")
                 .httpOnly(true)
+                .sameSite("None")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());

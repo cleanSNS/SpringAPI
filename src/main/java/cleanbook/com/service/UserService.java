@@ -327,18 +327,17 @@ public class UserService {
         log.info("changedPassword = " + newPassword);
     }
 
-    // 임의의 10자리 문자열
+    // 임의의 숫자,영어소문자, 대문자, 특수기호, 10자리 문자열
     public String generateNewPassword(){
-        int leftLimit = 97; // letter 'a'
+        int leftLimit = 48; // letter '0'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 10;
         Random random = new Random();
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
+
+        return random.ints(leftLimit, rightLimit + 1)
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-        System.out.println(generatedString);
-        return generatedString;
     }
 
     // 필터링 보기
