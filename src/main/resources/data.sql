@@ -13,11 +13,8 @@ insert into user_authority (user_authority_id, authority_name, user_id) values (
 -- user 4
 insert into users (user_id,  account_state, email, password, age, age_visible, gender, gender_visible, img_url, nickname, self_introduction, filter_all, filter_followee, filter_follower, notification_comment, notification_follow, notification_follow_accept, notification_chat, notification_like, warning_count) values (default, 'ACTIVE', 'sky@naver.com', '$2a$10$UALX0n7xu/HwfelvzW2h..9S.lmKKrZHEm6jCWnGdtqJONfJNsosy', NULL, false, 'MALE', false, NULL, '임채민3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,  0);
 insert into user_authority (user_authority_id, authority_name, user_id) values (default, 'ROLE_USER', 1);
--- user 5.
-insert into users (user_id,  account_state, email, password, age, age_visible, gender, gender_visible, img_url, nickname, self_introduction, filter_all, filter_followee, filter_follower, notification_comment, notification_follow, notification_follow_accept, notification_chat, notification_like, warning_count) values (default, 'ACTIVE', 'luckhome5@naver.com', '$2a$10$TegzWNkQpQV1YDWsg/utLOgO0VLQUE.sModrA6zRONlphbeQT3rL2', NULL, false, 'MALE', false, NULL, '성의현', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,  0);
-insert into user_authority (user_authority_id, authority_name, user_id) values (default, 'ROLE_USER', 1);
 
---
+
 -- insert into page (page_id,  content, like_count, comment_read_auth, comment_write_auth, like_read_auth, notification_comment, notification_like, read_auth, user_id, warning_count) values (default,  '내용1', 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0);
 -- insert into page (page_id,  content, like_count, comment_read_auth, comment_write_auth, like_read_auth, notification_comment, notification_like, read_auth, user_id, warning_count) values (default,  '내용2', 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0);
 --
