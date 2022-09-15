@@ -51,7 +51,6 @@ deploy:
     region: ap-northeast-2
     wait-until-deployed: true
 
-
 # CI 실행 완료 후 메일
 notifications:
   email:
