@@ -43,7 +43,6 @@ public class Page extends Timestamped {
     @Embedded
     private PageSetting pageSetting;
 
-
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private List<PageImgUrl> imgUrlList = new ArrayList<>();
 
