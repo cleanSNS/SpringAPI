@@ -45,7 +45,8 @@ class ChatRepositoryImplTest {
             Thread.sleep(10);
         }
     }
-    
+
+
     @Nested
     @DisplayName("채팅방의 채팅 불러오기")
     class readChatList{
