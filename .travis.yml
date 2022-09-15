@@ -18,3 +18,19 @@ notifications:
   email:
     recipients:
       - sky114477@naver.com
+
+before_deploy:
+  - zip -r 프로젝트명 *
+  - mkdir -p deploy
+  - mv 프로젝트명.zip deploy/프로젝트명.zip
+
+deploy:
+  - provider: s3
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  bucket: springboot-build-zip
+  region: ap-northeast-2
+  skip_cleanup: true
+  acl: private
+  local_dir: deploy
+  wait-until-deployed: true
