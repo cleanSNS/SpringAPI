@@ -16,6 +16,7 @@ public class PageImgUrl {
     @JoinColumn(name = "page_id")
     private Page page;
 
+    @Column(columnDefinition = "TEXT")
     private String imgUrl;
 
     public static PageImgUrl createPageImgUrl(Page page, String url) {

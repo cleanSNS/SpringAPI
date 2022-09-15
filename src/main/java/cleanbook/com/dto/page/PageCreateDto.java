@@ -23,15 +23,4 @@ public class PageCreateDto {
     public PageCreateDto(String content) {
         this.content = content;
     }
-
-    public PageCreateDto(String content, List<String> imgUrlList) {
-        this.content = content;
-        this.imgUrlList = imgUrlList;
-    }
-
-    public PageCreateDto(String content, List<String> imgUrlList, List<String> pageHashtagList) {
-        this.content = content;
-        this.imgUrlList = imgUrlList;
-        this.pageHashtagList = pageHashtagList;
-    }
 }

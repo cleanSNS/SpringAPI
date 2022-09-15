@@ -165,6 +165,7 @@ public class ProviderService {
                     .gender(socialProfile.getGender())
                     .build();
 
+            userActiveRepository.save(new UserActive(socialProfile.getEmail(), true));
             userAuthService.signUp(signUpDto);
             user = userRepository.findUserByEmail(socialProfile.getEmail()).orElseThrow(UserNotFoundException::new);
         } else {

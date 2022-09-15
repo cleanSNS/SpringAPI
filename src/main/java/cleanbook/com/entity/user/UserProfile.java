@@ -4,6 +4,7 @@ import cleanbook.com.dto.user.UserProfileDto;
 import cleanbook.com.entity.enums.GenderType;
 import lombok.*;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,6 +26,7 @@ public class UserProfile {
     private GenderType gender;
     private boolean genderVisible;
 
+    @Column(columnDefinition = "TEXT")
     private String imgUrl;
     private String selfIntroduction;
 
