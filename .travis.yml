@@ -13,7 +13,7 @@ cache:
 
 before_install:
   - chmod +x gradlew
-  - openssl aes-256-cbc -K $encrypted_e4f4a41e95ad_key -iv $encrypted_e4f4a41e95ad_iv -in src/main/resources/application.yml -out src/main/resources/application.yml -d
+  - openssl aes-256-cbc -K $encrypted_e4f4a41e95ad_key -iv $encrypted_e4f4a41e95ad_iv -in src/main/resources/application.yml.enc -out src/main/resources/application.yml -d
 
 
 script: "./gradlew clean build"
