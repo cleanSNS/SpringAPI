@@ -152,6 +152,7 @@ class ChatRoomServiceTest {
             chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
 
 
+
             // then
             Throwable exception = assertThrows(NotFoundException.class, () ->
                     chatRoomService.deleteChatRoom(1L, 100L)
