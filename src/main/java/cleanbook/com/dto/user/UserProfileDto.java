@@ -4,10 +4,12 @@ import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.validation.ValidEnum;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 
 @Data
+@NoArgsConstructor
 public class UserProfileDto {
 
     @NotBlank
