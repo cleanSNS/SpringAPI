@@ -7,7 +7,7 @@ build/
 **/src/main/resources/**
 !**/src/main/resources/*.enc
 
-### STS ###a
+### STS ###
 .apt_generated
 .classpath
 .factorypath
