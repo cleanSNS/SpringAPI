@@ -21,6 +21,7 @@ public class UserProfile {
     private String nickname;
     private Integer age;
     private boolean ageVisible;
+
     @NotBlank
     @Enumerated(EnumType.STRING)
     private GenderType gender;
