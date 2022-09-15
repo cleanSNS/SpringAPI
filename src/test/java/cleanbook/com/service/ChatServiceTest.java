@@ -1,6 +1,7 @@
 package cleanbook.com.service;
 
 import cleanbook.com.entity.chat.Chat;
+import cleanbook.com.entity.chat.ChatRoom;
 import cleanbook.com.repository.chat.ChatRepository;
 import cleanbook.com.repository.chatRoom.ChatRoomRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -31,11 +32,11 @@ class ChatServiceTest {
     void createChat() {
 
         //given
-        chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L,2L));
+        ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
 
 
         // when
-        chatService.createChat(1L, 1L, "ㅎㅇ");
+        chatService.createChat(chatRoom.getId(), 1L, "ㅎㅇ");
         Chat chat = chatRepository.findById(1L).get();
 
 
