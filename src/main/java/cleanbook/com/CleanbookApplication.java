@@ -12,5 +12,4 @@ public class CleanbookApplication {
         SpringApplication.run(CleanbookApplication.class, args);
     }
 
-
 }
