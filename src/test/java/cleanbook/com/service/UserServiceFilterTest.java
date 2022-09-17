@@ -50,7 +50,6 @@ class UserServiceFilterTest {
         user3 = new User(3L,"user3", "aaa", userProfile3);
         page = new Page(1L, user, "내용");
         comment = new Comment(1L, user, page, "내용");
-
     }
 
 
