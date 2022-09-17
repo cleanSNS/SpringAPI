@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -22,6 +24,8 @@ class UserServiceMyPageTest {
 
     @Mock
     private UserRepository userRepository;
+    @Spy
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks private UserService userService;
 
@@ -87,7 +91,7 @@ class UserServiceMyPageTest {
 
 
         // then
-        assertThat(user.getPassword()).isEqualTo("new");
+        assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode("new"));
 
     }
 
