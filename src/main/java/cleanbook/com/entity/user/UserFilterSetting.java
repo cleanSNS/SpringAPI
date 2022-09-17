@@ -18,13 +18,13 @@ import javax.persistence.Embeddable;
 @Builder
 public class UserFilterSetting {
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean filterAll;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean filterFollower;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean filterFollowee;
 
     public static UserFilterSetting createUserFilterSetting(UserFilterSettingDto dto) {

@@ -311,7 +311,7 @@ public class UserService {
     // 비밀번호 변경
     public void changePassword(Long userId, String password) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        user.changePassword(password);
+        user.changePassword(passwordEncoder.encode(password));
         log.info("changedPassword = " + password);
     }
 

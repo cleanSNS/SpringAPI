@@ -21,7 +21,7 @@ import javax.persistence.Enumerated;
 @Builder
 public class UserNotificationSetting {
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean notificationFollow;
 
     @Column(columnDefinition = "varchar(15) default 'ALL'")
@@ -32,10 +32,10 @@ public class UserNotificationSetting {
     @Enumerated(EnumType.STRING)
     private SettingType notificationLike;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean notificationFollowAccept;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(columnDefinition = "boolean default true")
     private boolean notificationChat;
 
     public static UserNotificationSetting createUserNotificationSetting(UserNotificationSettingDto dto) {
