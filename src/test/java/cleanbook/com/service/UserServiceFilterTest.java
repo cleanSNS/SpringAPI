@@ -51,7 +51,6 @@ class UserServiceFilterTest {
         page = new Page(1L, user, "내용");
         comment = new Comment(1L, user, page, "내용");
 
-
     }
 
 
