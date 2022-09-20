@@ -129,9 +129,9 @@ class ChatRepositoryImplTest {
             // when
             // then
             Long finalStartId = startId;
-            assertThrows(NoMoreDataException.class, () -> {
-                chatRepository.readChatList(chatRoomId, finalStartId, 100);
-            });
+            resultDto = chatRepository.readChatList(chatRoomId, finalStartId, 100);
+            chatDtoList = resultDto.getData();
+            assertThat(chatDtoList.size()).isEqualTo(0);
         }
     }
 

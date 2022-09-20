@@ -139,8 +139,6 @@ public class UserService {
 
             case COMMENT:
                 Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
-                page = pageRepository.findById(comment.getPage().getId()).orElseThrow(PageNotFoundException::new);
-                targetUser = userRepository.findById(comment.getUser().getId()).orElseThrow(UserNotFoundException::new);
 
                 // 자추 금지
                 if (comment.getUser().getId().equals(user.getId())) {

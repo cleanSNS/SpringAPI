@@ -119,9 +119,10 @@ class CommentRepositoryImplTest {
 
             // when
             // then
-            assertThrows(NoMoreCommentException.class, () -> {
-                commentRepository.readCommentList(pageId, 99999L, 10);
-            });
+            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(pageId, 999999L, 10);
+            List<CommentDto> commentDtoList = resultDto.getData();
+
+            assertThat(commentDtoList.size()).isEqualTo(0);
         }
     }
 
@@ -149,9 +150,10 @@ class CommentRepositoryImplTest {
 
             // when
             // then
-            assertThrows(NoMoreCommentException.class, () -> {
-                commentRepository.readNestedCommentList(pageId, 1, 99999L, 10);
-            });
+            ResultDto<List<CommentDto>> resultDto = commentRepository.readNestedCommentList(pageId, 1, 999999L, 10);
+            List<CommentDto> commentDtoList = resultDto.getData();
+
+            assertThat(commentDtoList.size()).isEqualTo(0);
         }
     }
 

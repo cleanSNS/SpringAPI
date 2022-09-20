@@ -20,6 +20,7 @@ import cleanbook.com.entity.user.report.ReportUser;
 import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.FollowRepository;
+import cleanbook.com.repository.notification.NotificationRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.BlockRepository;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
@@ -74,6 +75,8 @@ class UserServiceTest {
     private LikeCommentRepository likeCommentRepository;
     @Mock
     private BlockRepository blockRepository;
+    @Mock
+    private NotificationRepository notificationRepository;
     @Autowired
     private EntityManager em;
 
@@ -158,6 +161,7 @@ class UserServiceTest {
 
                 //given
                 given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
                 given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
                 given(likePageRepository.findByPage_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
 
@@ -176,6 +180,7 @@ class UserServiceTest {
 
                 //given
                 given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+                given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
                 given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
                 LikePage likePage = new LikePage(user3, page);
 

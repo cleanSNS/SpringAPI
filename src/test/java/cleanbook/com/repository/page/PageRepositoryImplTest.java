@@ -190,9 +190,10 @@ class PageRepositoryImplTest {
         // 조회 완료시
         // when
         // then
-        assertThrows(NoMorePageException.class, () ->
-                pageRepository.readFolloweePageList(user.getId(), 0L, 3)
-        );
+        ResultDto<List<MainPageDto>> resultDto = pageRepository.readFolloweePageList(user.getId(), 0L, 3);
+        List<MainPageDto> data = resultDto.getData();
+
+        assertThat(data.size()).isEqualTo(0);
     }
 
     @Test
