@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
+    Optional<Comment> findFirstByGroupOrderByOrderAsc(int group);
     Optional<Comment> findFirstByGroupOrderByOrderDesc(int group);
     Optional<List<Comment>> findCommentsByGroup(int group);
 }

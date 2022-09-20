@@ -42,14 +42,25 @@ public class CommentService {
         User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
+        // 대댓글일시
         if (comment.isNested()) {
             int order = commentRepository.findFirstByGroupOrderByOrderDesc(dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
             comment.setOrder(order+1);
+
+            // 본인이 작성한 글이 아닐경우 알림 발송
+            if (!userId.equals(page.getUser().getId())) {
+                Comment headComment = commentRepository.findFirstByGroupOrderByOrderAsc(dto.getGroup()).orElseThrow(CommentNotFoundException::new);
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
+            }
+        } else {
+            // 본인이 작성한 글이 아닐경우 알림 발송
+            if (!userId.equals(page.getUser().getId())) {
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
+            }
         }
 
         commentRepository.save(comment);
 
-        notificationRepository.save(createNotification( user, targetUser, dto.isNested() ? NotificationType.NESTED : NotificationType.COMMENT, page.getId()));
     }
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
