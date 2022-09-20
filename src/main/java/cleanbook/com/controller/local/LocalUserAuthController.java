@@ -46,7 +46,7 @@ public class LocalUserAuthController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<UserLoginDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
-        return ResponseEntity.ok(userAuthService.login(userLoginDto, response));
+        return ResponseEntity.ok(userAuthService.loginLocal(userLoginDto, response));
     }
 
     // 로그아웃
@@ -65,7 +65,7 @@ public class LocalUserAuthController {
 
     // refresh accessToken
     @GetMapping("/refresh")
-    public ResponseEntity<Response> refresh(@CookieValue(name = "X-AUTH-TOKEN") String accessToken,
+    public ResponseEntity<Response> refresh(@CookieValue("X-AUTH-TOKEN") String accessToken,
                                             @RequestHeader("Authorization") String refreshToken,
                                         HttpServletResponse response) {
 

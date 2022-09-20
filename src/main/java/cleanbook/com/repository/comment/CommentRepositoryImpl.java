@@ -38,7 +38,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
                 .fetch();
 
         if (commentList.isEmpty()) {
-            throw new NoMoreCommentException();
+            return new ResultDto<>(new ArrayList<>(), 0L);
         }
 
         List<CommentDto> commentDtoList = commentList.stream()
@@ -67,7 +67,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
                 .fetch();
 
         if (commentList.isEmpty()) {
-            throw new NoMoreCommentException();
+            return new ResultDto<>(new ArrayList<>(), 0L);
         }
 
         List<CommentDto> commentDtoList = commentList.stream()

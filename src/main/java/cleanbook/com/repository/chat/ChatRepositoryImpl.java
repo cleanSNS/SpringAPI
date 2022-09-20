@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,9 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom{
                 .fetch();
 
         // 조회를 전부 완료했을때
-        if (chatList.isEmpty()) throw new NoMoreDataException("채팅");
+        if (chatList.isEmpty()) {
+            return new ResultDto<>(new ArrayList<>(), 0L);
+        }
 
         Long nextStartId = chatList.stream().mapToLong(Chat::getId).min().getAsLong()-1;
 

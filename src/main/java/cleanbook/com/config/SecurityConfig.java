@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -88,12 +89,6 @@ public class SecurityConfig {
                 .antMatchers("/local/page/{^[^0]\\d*}/nested").permitAll()
                 .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll()
                 .antMatchers("/local/page/user/{^[^0]\\d*}").permitAll()
-
-                .antMatchers("/local/test/**").permitAll()
-                .antMatchers("/ws/**").permitAll()
-                .antMatchers("/send/**").permitAll()
-                .antMatchers("/room/**").permitAll()
-                .antMatchers("/**").permitAll()
 
                 .anyRequest().authenticated()
 

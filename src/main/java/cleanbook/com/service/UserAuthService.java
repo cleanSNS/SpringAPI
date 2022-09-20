@@ -140,6 +140,32 @@ public class UserAuthService {
         return new UserLoginDto(user);
     }
 
+    // 로컬 로그인
+    public UserLoginDto loginLocal(UserLoginDto userLoginDto, HttpServletResponse response) {
+        User user = userRepository.findUserByEmail(userLoginDto.getEmail())
+                .orElseThrow(IllegalAccountException::new);
+
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
+            throw new IllegalAccountException();
+        }
+
+        // 이메일 인증 검증
+        if (!user.getAccountState().equals(AccountState.ACTIVE)) {
+            throw new EmailAuthFailException();
+        }
+
+        String accessToken = tokenProvider.createAccessToken(user.getId());
+        String refreshToken = tokenProvider.createRefreshToken(user.getId());
+
+        refreshTokenRepository.save(new RefreshToken(user.getEmail(), refreshToken));
+
+        addCookieLocal(response, "X-AUTH-TOKEN", accessToken);
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader("Authorization", "Bearer " + refreshToken);
+
+        return new UserLoginDto(user);
+    }
+
     public void addCookie(HttpServletResponse response, String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .maxAge(1800)
@@ -147,6 +173,16 @@ public class UserAuthService {
                 .path("/")
                 .httpOnly(true)
                 .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public void addCookieLocal(HttpServletResponse response, String name, String value) {
+        ResponseCookie cookie = ResponseCookie.from(name, value)
+                .maxAge(1800)
+                .path("/")
+                .httpOnly(true)
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());

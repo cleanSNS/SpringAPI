@@ -89,7 +89,9 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .fetch();
 
         // 조회를 전부 완료했을때
-        if (pageIdList.isEmpty()) throw new NoMorePageException();
+        if (pageIdList.isEmpty()) {
+            return new ResultDto<>(new ArrayList<>(), 0L);
+        }
 
         List<MainPageDto> pageAndImgDtoList = new ArrayList<>();
         for (Long pageId : pageIdList) {

@@ -3,7 +3,7 @@ package cleanbook.com.service;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
-import cleanbook.com.repository.NotificationRepository;
+import cleanbook.com.repository.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,8 +73,8 @@ public class NotificationService {
         }
     }
 
-    public void send(User sender, User receiver, NotificationType type) {
-        Notification notification = createNotification(sender, receiver, type);
+    public void send(User sender, User receiver, NotificationType type, Long resourceId) {
+        Notification notification = createNotification(sender, receiver, type, resourceId);
         notificationRepository.save(notification);
 
         String id = receiver.getId() + "_" + notification.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));;

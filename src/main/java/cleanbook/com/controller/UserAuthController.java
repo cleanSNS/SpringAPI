@@ -65,7 +65,7 @@ public class UserAuthController {
 
     // refresh accessToken
     @GetMapping("/refresh")
-    public ResponseEntity<Response> refresh(@CookieValue(name = "X-AUTH-TOKEN") String accessToken,
+    public ResponseEntity<Response> refresh(@CookieValue("X-AUTH-TOKEN") String accessToken,
                                         @RequestHeader("Authorization") String refreshToken,
                                         HttpServletResponse response) {
 

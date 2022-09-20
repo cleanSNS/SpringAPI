@@ -1,7 +1,10 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
+import cleanbook.com.entity.notification.Notification;
+import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.*;
@@ -15,6 +18,7 @@ import cleanbook.com.entity.enums.ReportType;
 import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.repository.*;
 import cleanbook.com.repository.comment.CommentRepository;
+import cleanbook.com.repository.notification.NotificationRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.*;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
@@ -33,6 +37,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static cleanbook.com.entity.notification.Notification.createNotification;
 import static cleanbook.com.entity.user.filter.Filter.createFilter;
 import static cleanbook.com.entity.user.block.Block.createBlock;
 import static cleanbook.com.entity.user.follow.Follow.createFollow;
@@ -62,6 +67,7 @@ public class UserService {
     private final FilterRepository filterRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final NotificationRepository notificationRepository;
 
 
     // 팔로우하기
@@ -71,6 +77,9 @@ public class UserService {
 
         Follow follow = createFollow(user, targetUser);
         followRepository.save(follow);
+
+        notificationRepository.save(createNotification(user,targetUser,NotificationType.FOLLOW, targetUser.getId()));
+
         return follow;
     }
 
@@ -112,6 +121,7 @@ public class UserService {
         switch (type) {
             case PAGE:
                 Page page = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+                User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
                 // 자추 금지
                 if (page.getUser().getId().equals(user.getId())) {
                     throw new MyException("자신의 게시글에는 좋아요 할 수 없습니다.");
@@ -121,10 +131,17 @@ public class UserService {
                     throw new MyException("이미 좋아요 한 게시글입니다.");
                 }
                 likePageRepository.save(createLikePage(user, page));
+
+                // 알림 생성
+                notificationRepository.save(createNotification(user,targetUser,NotificationType.LIKE, page.getId()));
+
                 return;
 
             case COMMENT:
                 Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+                page = pageRepository.findById(comment.getPage().getId()).orElseThrow(PageNotFoundException::new);
+                targetUser = userRepository.findById(comment.getUser().getId()).orElseThrow(UserNotFoundException::new);
+
                 // 자추 금지
                 if (comment.getUser().getId().equals(user.getId())) {
                     throw new MyException("자신의 댓글에는 좋아요 할 수 없습니다.");
@@ -134,6 +151,7 @@ public class UserService {
                     throw new MyException("이미 좋아요 한 댓글입니다.");
                 }
                 likeCommentRepository.save(createLikeComment(user, comment));
+
                 return;
         }
 
@@ -364,6 +382,15 @@ public class UserService {
         }
     }
 
+    // 유저 ID 조회
+    public ResultDto<UserIdDto> getUserId(Long userId) {
+        return new ResultDto<>(new UserIdDto(userId));
+    }
+
+    // 알림 내역 전체 조회
+    public ResultDto<List<NotificationDto>> readNotificationList(Long userId, Long startId) {
+        return notificationRepository.readNotificationList(userId, startId, 10);
+    }
 }
 
 

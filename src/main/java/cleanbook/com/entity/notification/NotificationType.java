@@ -1,5 +1,5 @@
 package cleanbook.com.entity.notification;
 
 public enum NotificationType {
-    FOLLOW, COMMENT, NESTED
+    FOLLOW, COMMENT, NESTED, LIKE
 }

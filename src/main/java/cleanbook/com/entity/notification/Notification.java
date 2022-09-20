@@ -34,18 +34,17 @@ public class Notification extends Timestamped {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    @NotBlank
-    private String url;
+    private Long resourceId;
 
     @Column(columnDefinition = "timestamp default null")
     private LocalDateTime readDate;
 
-    public static Notification createNotification(User sender, User receiver, NotificationType type) {
+    public static Notification createNotification(User sender, User receiver, NotificationType type, Long resourceId) {
         Notification notification = new Notification();
         notification.user = sender;
         notification.targetUser = receiver;
         notification.type = type;
-        notification.url = "url";
+        notification.resourceId = resourceId;
         return notification;
     }
 }

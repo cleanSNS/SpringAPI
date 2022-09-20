@@ -33,10 +33,6 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom{
                 .orderBy(chatRoom.modifedDate.desc())
                 .fetch();
 
-        for (ChatRoom room : chatRoomList) {
-            System.out.println("room.getId() = " + room.getId());
-            System.out.println("room.getModifedDate() = " + room.getModifedDate());
-        }
 
         List<ChatRoomDto> chatRoomDtoList = new ArrayList<>();
         for (ChatRoom chatRoom : chatRoomList) {

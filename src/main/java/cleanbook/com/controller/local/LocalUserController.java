@@ -1,5 +1,6 @@
 package cleanbook.com.controller.local;
 
+import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
@@ -29,7 +30,7 @@ public class LocalUserController {
     @PostMapping("/user/follow")
     public ResponseEntity<Response> followUser(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.followUser(userId, dto.getTargetUserId());
+        userService.followUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -38,7 +39,7 @@ public class LocalUserController {
     @PostMapping("/user/unfollow")
     public ResponseEntity<Response> unfollowUser(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.unfollowUser(userId, dto.getTargetUserId());
+        userService.unfollowUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -51,7 +52,7 @@ public class LocalUserController {
     }
 
     // 나를 팔로우하는 유저 전체 조회
-    @GetMapping("/user/follow")
+    @GetMapping("/user/follower")
     public ResultDto<List<UserDto>> readFollowerList(@CookieValue("X-AUTH-TOKEN") String token) {
         Long userId = tokenProvider.getUserId(token);
         return userService.readFollowerList(userId);
@@ -88,7 +89,7 @@ public class LocalUserController {
     @PostMapping("/user/block")
     public ResponseEntity<Response> block(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.blockUser(userId, dto.getTargetUserId());
+        userService.blockUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -97,7 +98,7 @@ public class LocalUserController {
     @PostMapping("/user/unblock")
     public ResponseEntity<Response> unblock(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.unblockUser(userId, dto.getTargetUserId());
+        userService.unblockUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -113,7 +114,7 @@ public class LocalUserController {
     @PostMapping("/user/unfilter")
     public ResponseEntity<Response> unfilter(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.unfilterUser(userId, dto.getTargetUserId());
+        userService.unfilterUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -122,7 +123,7 @@ public class LocalUserController {
     @PostMapping("/user/filter")
     public ResponseEntity<Response> filter(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody UserIdDto dto) {
         Long userId = tokenProvider.getUserId(token);
-        userService.filterUser(userId, dto.getTargetUserId());
+        userService.filterUser(userId, dto.getUserId());
 
         return ResponseEntity.ok(new Response("success"));
     }
@@ -215,5 +216,19 @@ public class LocalUserController {
     @GetMapping("/user/search")
     public ResultDto<List<UserDto>> findUsersStartWithNickname(@RequestParam String nickname) {
         return userService.findUsersStartWithNickname(nickname);
+    }
+
+    // 유저 id 조회
+    @GetMapping("/user/id")
+    public ResultDto<UserIdDto> getUserId(@CookieValue("X-AUTH-TOKEN") String token) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.getUserId(userId);
+    }
+
+    // 알림 내역 전체조회
+    @GetMapping("/user/notification")
+    public ResultDto<List<NotificationDto>> readNotificationList(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long startId) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.readNotificationList(userId, startId);
     }
 }

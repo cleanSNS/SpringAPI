@@ -3,6 +3,7 @@ package cleanbook.com.service;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
+import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
@@ -13,6 +14,7 @@ import cleanbook.com.exception.exceptions.PageNotFoundException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.comment.CommentRepository;
+import cleanbook.com.repository.notification.NotificationRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static cleanbook.com.entity.notification.Notification.createNotification;
 
 @Service
 @Transactional
@@ -29,7 +33,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PageRepository pageRepository;
     private final CommentRepository commentRepository;
-    private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
     // 댓글 생성
     public void createComment(Long userId, CommentCreateDto dto) {
@@ -44,7 +48,8 @@ public class CommentService {
         }
 
         commentRepository.save(comment);
-        notificationService.send(user, targetUser, dto.isNested() ? NotificationType.NESTED : NotificationType.COMMENT);
+
+        notificationRepository.save(createNotification( user, targetUser, dto.isNested() ? NotificationType.NESTED : NotificationType.COMMENT, page.getId()));
     }
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)

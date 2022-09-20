@@ -44,7 +44,7 @@ public class LocalHomeController {
     public String send() {
         User user = userRepository.findById(1L).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(2L).orElseThrow(UserNotFoundException::new);
-        notificationService.send(user, targetUser, NotificationType.COMMENT);
+        notificationService.send(user, targetUser, NotificationType.COMMENT, 1L);
         return "success";
     }
 }
