@@ -81,7 +81,6 @@ class NotificationRepositoryImplTest {
 
             resultDto = notificationRepository.readNotificationList(myUser.getId(), startId, 10);
             List<NotificationDto> notificationDtoList = resultDto.getData();
-            startId = resultDto.getStartId();
 
 
             // then
