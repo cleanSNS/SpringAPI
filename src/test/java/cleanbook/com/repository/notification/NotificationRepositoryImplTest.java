@@ -68,7 +68,7 @@ class NotificationRepositoryImplTest {
 
 
             // then
-            assertThat(notificationDtoList).extracting("resourceId").contains(15L,10L,6L);
+            assertThat(notificationDtoList.size()).isEqualTo(10);
         }
 
         @Test
