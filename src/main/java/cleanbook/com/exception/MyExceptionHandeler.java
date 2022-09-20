@@ -54,6 +54,12 @@ public class MyExceptionHandeler {
         return new Response(exception.getMessage());
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response reportError(NotFoundException exception) {
+        return new Response(exception.getMessage());
+    }
+
     @ExceptionHandler(MyException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportError(MyException exception) {
