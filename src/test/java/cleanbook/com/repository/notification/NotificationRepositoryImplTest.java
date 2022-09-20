@@ -62,7 +62,7 @@ class NotificationRepositoryImplTest {
         void firstPage() {
 
             // when
-            ResultDto<List<NotificationDto>> resultDto = notificationRepository.readNotificationList(myUser.getId(), 99L, 10);
+            ResultDto<List<NotificationDto>> resultDto = notificationRepository.readNotificationList(myUser.getId(), 99999L, 10);
             List<NotificationDto> notificationDtoList = resultDto.getData();
             Long startId = resultDto.getStartId();
 
@@ -76,7 +76,7 @@ class NotificationRepositoryImplTest {
         void secondPage() {
 
             // when
-            ResultDto<List<NotificationDto>> resultDto = notificationRepository.readNotificationList(myUser.getId(), 99L, 10);
+            ResultDto<List<NotificationDto>> resultDto = notificationRepository.readNotificationList(myUser.getId(), 99999L, 10);
             Long startId = resultDto.getStartId();
 
             resultDto = notificationRepository.readNotificationList(myUser.getId(), startId, 10);
