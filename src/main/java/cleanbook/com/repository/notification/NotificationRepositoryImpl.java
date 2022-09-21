@@ -53,7 +53,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
         Long count = queryFactory.query()
                 .select(notification.count())
                 .from(notification)
-                .where(notification.targetUser.id.eq(userId), notification.isChecked.isFalse())
+                .where(notification.targetUser.id.eq(userId), notification.checked.isFalse())
                 .fetchOne();
 
         return new ResultDto<>(new CountDto(count));
