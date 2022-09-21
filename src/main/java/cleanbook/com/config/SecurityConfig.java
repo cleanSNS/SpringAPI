@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll()
                 .antMatchers("/local/page/user/{^[^0]\\d*}").permitAll()
 
-                .antMatchers("/**").permitAll()
+//                .antMatchers("/**").permitAll()
 
                 .anyRequest().authenticated()
 
