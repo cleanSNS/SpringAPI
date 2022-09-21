@@ -1,5 +1,6 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
@@ -389,6 +390,33 @@ public class UserService {
     public ResultDto<List<NotificationDto>> readNotificationList(Long userId, Long startId) {
         return notificationRepository.readNotificationList(userId, startId, 10);
     }
+
+    // 알림 읽음
+    public void checkNotification(Long userId, Long notificationId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new NotFoundException("알림"));
+        if (!notification.getTargetUser().getId().equals(user.getId())) {
+            throw new MyException("잘못된 접근입니다.");
+        }
+        notification.checkNotification();
+    }
+
+    // 알림 삭제
+    public void deleteNotification(Long userId, Long notificationId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new NotFoundException("알림"));
+        if (!notification.getTargetUser().getId().equals(user.getId())) {
+            throw new MyException("잘못된 접근입니다.");
+        }
+        notificationRepository.delete(notification);
+    }
+
+    // 확인하지 않은 알림 갯수
+    public ResultDto<CountDto> notcheckedNotificationCount(Long userId) {
+        return notificationRepository.notcheckedNotificationCount(userId);
+    }
+
+
 }
 
 

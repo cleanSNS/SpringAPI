@@ -102,4 +102,24 @@ class NotificationRepositoryImplTest {
         }
     }
 
+
+    @Test
+    @DisplayName("확인하지 않은 알림 개수")
+    void count() {
+
+        //given
+        List<Notification> notificationList = notificationRepository.findAll();
+        for (int i = 0; i < 3; i++) {
+            notificationList.get(i).checkNotification();
+        }
+
+
+        // when
+        Long count = notificationRepository.notcheckedNotificationCount(myUser.getId()).getData().getCount();
+
+
+        // then
+        assertThat(count).isEqualTo(12);
+
+    }
 }

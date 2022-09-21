@@ -6,9 +6,6 @@ import cleanbook.com.validation.ValidEnum;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -36,8 +33,8 @@ public class Notification extends Timestamped {
 
     private Long resourceId;
 
-    @Column(columnDefinition = "timestamp default null")
-    private LocalDateTime readDate;
+    @Column(columnDefinition = "boolean default false")
+    private boolean checked;
 
     public static Notification createNotification(User sender, User receiver, NotificationType type, Long resourceId) {
         Notification notification = new Notification();
@@ -46,5 +43,9 @@ public class Notification extends Timestamped {
         notification.type = type;
         notification.resourceId = resourceId;
         return notification;
+    }
+
+    public void checkNotification() {
+        this.checked = true;
     }
 }

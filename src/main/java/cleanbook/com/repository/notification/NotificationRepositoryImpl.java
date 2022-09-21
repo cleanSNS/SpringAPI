@@ -1,5 +1,6 @@
 package cleanbook.com.repository.notification;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.notification.Notification;
@@ -44,5 +45,17 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
         Long nextStartId = notificationList.get(notificationList.size()-1).getId()-1;
 
         return new ResultDto<>(notificationDtoList, nextStartId);
+    }
+
+    // 확인하지 않은 알림 갯수
+    public ResultDto<CountDto> notcheckedNotificationCount(Long userId) {
+
+        Long count = queryFactory.query()
+                .select(notification.count())
+                .from(notification)
+                .where(notification.targetUser.id.eq(userId), notification.isChecked.isFalse())
+                .fetchOne();
+
+        return new ResultDto<>(new CountDto(count));
     }
 }

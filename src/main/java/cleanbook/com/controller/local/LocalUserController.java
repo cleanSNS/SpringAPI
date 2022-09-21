@@ -1,5 +1,6 @@
 package cleanbook.com.controller.local;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
@@ -230,5 +231,29 @@ public class LocalUserController {
     public ResultDto<List<NotificationDto>> readNotificationList(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long startId) {
         Long userId = tokenProvider.getUserId(token);
         return userService.readNotificationList(userId, startId);
+    }
+
+    // 알림 읽음
+    @PostMapping("/user/notification")
+    public ResponseEntity<Response> checkNotification(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long notificationId) {
+        Long userId = tokenProvider.getUserId(token);
+        userService.checkNotification(userId, notificationId);
+        return ResponseEntity.ok(new Response("success"));
+    }
+
+    // 알림 삭제
+    @DeleteMapping("/user/notification")
+    public ResponseEntity<Response> deleteNotification(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long notificationId) {
+        Long userId = tokenProvider.getUserId(token);
+        userService.deleteNotification(userId, notificationId);
+        return ResponseEntity.ok(new Response("success"));
+    }
+
+
+    // 확인하지 않은 알림 갯수
+    @GetMapping("/user/notification/count")
+    public ResultDto<CountDto> notcheckedNotificationCount(@CookieValue("X-AUTH-TOKEN") String token){
+        Long userId = tokenProvider.getUserId(token);
+        return userService.notcheckedNotificationCount(userId);
     }
 }

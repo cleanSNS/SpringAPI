@@ -65,6 +65,8 @@ public class UserAuthService {
                         .nickname(userSignupDto.getNickname())
                         .age(userSignupDto.getAge())
                         .gender(userSignupDto.getGender())
+                        .ageVisible(userSignupDto.isAgeVisible())
+                        .genderVisible(userSignupDto.isGenderVisible())
                         .build())
                 .userSetting(UserSetting.builder()
                         .userNotificationSetting(UserNotificationSetting.builder().build())

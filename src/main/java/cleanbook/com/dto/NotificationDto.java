@@ -6,18 +6,24 @@ import lombok.Data;
 
 @Data
 public class NotificationDto {
+    private Long notificationId;
     private Long userId;
+    private String userImgUrl;
     private Long targetUserId;
     private String content;
     private NotificationType type;
     private Long resourceId;
+    private boolean checked;
 
     public static NotificationDto createNotificationDto(Notification notification) {
         NotificationDto notificationDto = new NotificationDto();
+        notificationDto.notificationId = notification.getId();
         notificationDto.userId = notification.getUser().getId();
+        notificationDto.userImgUrl = notification.getUser().getUserProfile().getImgUrl();
         notificationDto.targetUserId = notification.getTargetUser().getId();
         notificationDto.type = notification.getType();
         notificationDto.resourceId = notification.getResourceId();
+        notificationDto.checked = notification.isChecked();
 
         switch (notification.getType()) {
             case COMMENT:
