@@ -386,6 +386,12 @@ public class UserService {
         return new ResultDto<>(new UserIdDto(userId));
     }
 
+    // 유저 프로필 조회
+    public ResultDto<UserNicknameProfileDto> getUserProfile(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        return new ResultDto<>(new UserNicknameProfileDto(user.getUserProfile().getNickname(), user.getUserProfile().getImgUrl()));
+    }
+
     // 알림 내역 전체 조회
     public ResultDto<List<NotificationDto>> readNotificationList(Long userId, Long startId) {
         return notificationRepository.readNotificationList(userId, startId, 10);
@@ -415,6 +421,7 @@ public class UserService {
     public ResultDto<CountDto> notcheckedNotificationCount(Long userId) {
         return notificationRepository.notcheckedNotificationCount(userId);
     }
+
 
 
 }

@@ -90,6 +90,7 @@ public class Page extends Timestamped {
         page.pageSetting = pageCreateDto.getPageSetting();
         page.imgUrlList.clear();
         page.pageHashtagList.clear();
+        page.pageSetting.changePageSetting(pageCreateDto.getPageSetting());
 
         for (String imgUrl : pageCreateDto.getImgUrlList()) {
             createPageImgUrl(page,imgUrl);

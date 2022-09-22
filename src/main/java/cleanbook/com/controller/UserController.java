@@ -225,6 +225,13 @@ public class UserController {
         return userService.getUserId(userId);
     }
 
+    // 유저 닉네임 + 프로필 이미지 조회
+    @GetMapping("/user/profile")
+    public ResultDto<UserNicknameProfileDto> getUserProfile(@CookieValue("X-AUTH-TOKEN") String token) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.getUserProfile(userId);
+    }
+
     // 알림 내역 전체조회
     @GetMapping("/user/notification")
     public ResultDto<List<NotificationDto>> readNotificationList(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long startId) {
