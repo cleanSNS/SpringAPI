@@ -4,6 +4,7 @@ import cleanbook.com.entity.page.Page;
 import cleanbook.com.dto.page.PageCreateDto;
 import cleanbook.com.dto.page.PageUpdateDto;
 import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.page.PageSetting;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.exception.exceptions.NoAuthroizationException;
@@ -50,7 +51,7 @@ class PageServiceTest {
         User findUser = userRepository.findById(1L).get();
 
         // when
-        Page findPage = pageService.createPage(findUser.getId(), new PageCreateDto("bb"));
+        Page findPage = pageService.createPage(findUser.getId(), new PageCreateDto("bb", new PageSetting()));
         findUser = userRepository.findById(1L).get();
 
         // then

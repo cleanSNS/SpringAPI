@@ -20,7 +20,8 @@ public class PageCreateDto {
     private List<String> imgUrlList = new ArrayList<>();
     private List<String> pageHashtagList = new ArrayList<>();
 
-    public PageCreateDto(String content) {
+    public PageCreateDto(String content, PageSetting pageSetting) {
         this.content = content;
+        this.pageSetting = pageSetting;
     }
 }
