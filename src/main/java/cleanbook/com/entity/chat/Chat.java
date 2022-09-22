@@ -33,7 +33,7 @@ public class Chat extends Timestamped {
     private User user;
 
     @NotEmpty
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String message;
 
     @OneToMany(mappedBy = "chat")

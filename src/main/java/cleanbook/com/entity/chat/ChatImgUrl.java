@@ -16,7 +16,7 @@ public class ChatImgUrl {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String url;
 
     void setChat(Chat chat) {

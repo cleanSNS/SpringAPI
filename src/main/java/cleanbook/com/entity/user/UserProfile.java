@@ -27,7 +27,7 @@ public class UserProfile {
     private GenderType gender;
     private boolean genderVisible;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String imgUrl;
     private String selfIntroduction;
 

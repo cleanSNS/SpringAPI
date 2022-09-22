@@ -31,7 +31,7 @@ public class Page extends Timestamped {
     private User user;
 
     @NotEmpty
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Column(columnDefinition = "bigint default 0")
