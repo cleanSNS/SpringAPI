@@ -181,6 +181,7 @@ public class UserService {
         throw new MyException("잘못된 양식입니다.");
     }
 
+
     // 좋아요 여부 확인
     public ResultDto<LikeCheckDto> isLike(Long userId, Long targetId, LikeType type) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
