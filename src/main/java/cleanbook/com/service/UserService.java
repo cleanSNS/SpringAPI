@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -154,7 +155,7 @@ public class UserService {
                 return;
         }
 
-        throw new RuntimeException();
+        throw new MyException("잘못된 양식입니다.");
     }
 
     // 좋아요 취소
@@ -177,7 +178,24 @@ public class UserService {
                 return;
         }
 
-        throw new RuntimeException();
+        throw new MyException("잘못된 양식입니다.");
+    }
+
+    // 좋아요 여부 확인
+    public ResultDto<LikeCheckDto> isLike(Long userId, Long targetId, LikeType type) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        switch (type) {
+            case PAGE:
+                Page page = pageRepository.findById(targetId).orElseThrow(PageNotFoundException::new);
+                return new ResultDto<>(new LikeCheckDto(likePageRepository.findByPage_IdAndUser_Id(page.getId(), user.getId()).isPresent()));
+
+            case COMMENT:
+                Comment comment = commentRepository.findById(targetId).orElseThrow(CommentNotFoundException::new);
+                return new ResultDto<>(new LikeCheckDto(likeCommentRepository.findByComment_IdAndUser_Id(comment.getId(), user.getId()).isPresent()));
+
+        }
+        throw new MyException("잘못된 양식입니다.");
     }
 
     // 신고

@@ -77,6 +77,13 @@ public class LocalUserController {
         return ResponseEntity.ok(new Response("success"));
     }
 
+    // 좋아요 여부 확인(페이지, 댓글)
+    @GetMapping("/user/like")
+    public ResultDto<LikeCheckDto> isLike(@CookieValue("X-AUTH-TOKEN") String token, LikeDto dto) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.isLike(userId, dto.getTargetId(), dto.getType());
+    }
+
     // 신고
     @PostMapping("/user/report")
     public ResponseEntity<Response> report(@CookieValue("X-AUTH-TOKEN") String token, @RequestBody ReportDto dto) {
@@ -227,9 +234,8 @@ public class LocalUserController {
     }
 
     // 유저 닉네임 + 프로필 이미지 조회
-    @GetMapping("/user/profile")
-    public ResultDto<UserNicknameProfileDto> getUserProfile(@CookieValue("X-AUTH-TOKEN") String token) {
-        Long userId = tokenProvider.getUserId(token);
+    @GetMapping("/user/{userId}/profile")
+    public ResultDto<UserNicknameProfileDto> getUserProfile(@PathVariable Long userId) {
         return userService.getUserProfile(userId);
     }
 
