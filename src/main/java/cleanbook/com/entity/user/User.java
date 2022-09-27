@@ -45,6 +45,12 @@ public class User extends Timestamped {
     @Column(columnDefinition = "varchar(10) default 'INACTIVE'")
     private AccountState accountState;
 
+    @Column(columnDefinition = "integer default 0")
+    private Long followerCount;
+
+    @Column(columnDefinition = "integer default 0")
+    private Long followeeCount;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAuthority> userAuthorityList = new ArrayList<>();
 
@@ -121,5 +127,25 @@ public class User extends Timestamped {
 
     public void activateAccount() {
         this.accountState = AccountState.ACTIVE;
+    }
+
+    public void follow(Follow follow) {
+        this.getFolloweeList().add(follow);
+        this.followeeCount++;
+    }
+
+    public void followed(Follow follow) {
+        this.getFollowerList().add(follow);
+        this.followerCount++;
+    }
+
+    public void unfollow(Follow follow) {
+        this.getFolloweeList().remove(follow);
+        this.followeeCount--;
+    }
+
+    public void unfollowed(Follow follow) {
+        this.getFollowerList().remove(follow);
+        this.followerCount--;
     }
 }

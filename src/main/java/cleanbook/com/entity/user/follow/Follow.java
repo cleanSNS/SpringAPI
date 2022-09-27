@@ -35,9 +35,9 @@ public class Follow extends Timestamped {
     public static Follow createFollow(User user, User targetUser) {
         Follow follow = new Follow();
         follow.user = user;
-        user.getFolloweeList().add(follow);
         follow.targetUser = targetUser;
-        targetUser.getFollowerList().add(follow);
+        user.follow(follow);
+        targetUser.followed(follow);
         return follow;
     }
 

@@ -77,6 +77,11 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
 
+        // 이미 팔로우 했으면 에러 발생
+        if (followRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).isPresent()) {
+            throw new MyException("이미 팔로우했습니다.");
+        }
+
         Follow follow = createFollow(user, targetUser);
         followRepository.save(follow);
 
@@ -91,8 +96,8 @@ public class UserService {
         User targetUser = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
         Follow follow = followRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).orElseThrow(() -> new NotFoundException("팔로우"));
 
-        user.getFolloweeList().remove(follow);
-        targetUser.getFollowerList().remove(follow);
+        user.unfollow(follow);
+        targetUser.unfollowed(follow);
         followRepository.delete(follow);
     }
 
@@ -408,7 +413,7 @@ public class UserService {
     // 유저 프로필 조회
     public ResultDto<UserNicknameProfileDto> getUserProfile(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return new ResultDto<>(new UserNicknameProfileDto(user.getUserProfile().getNickname(), user.getUserProfile().getImgUrl()));
+        return new ResultDto<>(new UserNicknameProfileDto(user.getUserProfile().getNickname(), user.getUserProfile().getImgUrl(), user.getUserProfile().getSelfIntroduction(), user.getFollowerCount(), user.getFolloweeCount()));
     }
 
     // 알림 내역 전체 조회
