@@ -102,49 +102,49 @@ class UserServiceTest {
         comment = new Comment(1L, user, page, "내용");
     }
 
-    @Nested
-    @DisplayName("팔로우")
-    class follow{
-
-        @Test
-        @DisplayName("팔로우")
-        void followUserTest() {
-            //given
-
-            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-
-            // when
-            userRepository.save(user);
-            userRepository.save(targetUser);
-            userService.followUser(user.getId(), targetUser.getId());
-
-            // then
-            assertThat(user.getFolloweeList().size()).isEqualTo(1);
-            assertThat(user.getFolloweeList().get(0).getUser()).isEqualTo(user);
-            assertThat(targetUser.getFollowerList().get(0).getTargetUser()).isEqualTo(targetUser);
-        }
-
-        @Test
-        @DisplayName("언팔로우")
-        void unfollowUserTest() {
-            //given
-            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-            userRepository.save(user);
-            userRepository.save(targetUser);
-            Follow follow = userService.followUser(user.getId(), targetUser.getId());
-            given(followRepository.findByUser_IdAndTargetUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(follow));
-
-
-            // when
-            userService.unfollowUser(user.getId(), targetUser.getId());
-
-
-            // then
-            assertThat(user.getFolloweeList().size()).isEqualTo(0);
-        }
-    }
+//    @Nested
+//    @DisplayName("팔로우")
+//    class follow{
+//
+//        @Test
+//        @DisplayName("팔로우")
+//        void followUserTest() {
+//            //given
+//
+//            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+//            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+//
+//            // when
+//            userRepository.save(user);
+//            userRepository.save(targetUser);
+//            userService.followUser(user.getId(), targetUser.getId());
+//
+//            // then
+//            assertThat(user.getFolloweeList().size()).isEqualTo(1);
+//            assertThat(user.getFolloweeList().get(0).getUser()).isEqualTo(user);
+//            assertThat(targetUser.getFollowerList().get(0).getTargetUser()).isEqualTo(targetUser);
+//        }
+//
+//        @Test
+//        @DisplayName("언팔로우")
+//        void unfollowUserTest() {
+//            //given
+//            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+//            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+//            userRepository.save(user);
+//            userRepository.save(targetUser);
+//            Follow follow = userService.followUser(user.getId(), targetUser.getId());
+//            given(followRepository.findByUser_IdAndTargetUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.of(follow));
+//
+//
+//            // when
+//            userService.unfollowUser(user.getId(), targetUser.getId());
+//
+//
+//            // then
+//            assertThat(user.getFolloweeList().size()).isEqualTo(0);
+//        }
+//    }
 
 
     @Nested
@@ -469,55 +469,55 @@ class UserServiceTest {
 
 
 
-    @Test
-    @DisplayName("내가 팔로우한 유저 전체 조회")
-    void readFolloweeListTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
-        userRepository.save(user);
-        userRepository.save(targetUser);
-        userRepository.save(user3);
-        userService.followUser(user.getId(), targetUser.getId());
-        userService.followUser(user.getId(), user3.getId());
-
-
-        // when
-        ResultDto<List<UserDto>> resultDto = userService.readFolloweeList(user.getId());
-        List<UserDto> userDtoList = resultDto.getData();
-
-
-        // then
-        assertThat(userDtoList.size()).isEqualTo(2);
-        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
-
-    }
-
-    @Test
-    @DisplayName("나를 팔로우한 유저 전체 조회")
-    void readFollowerListTest() {
-
-        //given
-        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
-        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
-        userRepository.save(user);
-        userRepository.save(targetUser);
-        userRepository.save(user3);
-        userService.followUser(targetUser.getId(), user.getId());
-        userService.followUser(user3.getId(), user.getId());
-
-
-        // when
-        ResultDto<List<UserDto>> resultDto = userService.readFollowerList(user.getId());
-        List<UserDto> userDtoList = resultDto.getData();
-
-
-        // then
-        assertThat(userDtoList.size()).isEqualTo(2);
-        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
-
-    }
+//    @Test
+//    @DisplayName("내가 팔로우한 유저 전체 조회")
+//    void readFolloweeListTest() {
+//
+//        //given
+//        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+//        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+//        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+//        userRepository.save(user);
+//        userRepository.save(targetUser);
+//        userRepository.save(user3);
+//        userService.followUser(user.getId(), targetUser.getId());
+//        userService.followUser(user.getId(), user3.getId());
+//
+//
+//        // when
+//        ResultDto<List<UserDto>> resultDto = userService.readFolloweeList(user.getId());
+//        List<UserDto> userDtoList = resultDto.getData();
+//
+//
+//        // then
+//        assertThat(userDtoList.size()).isEqualTo(2);
+//        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
+//
+//    }
+//
+//    @Test
+//    @DisplayName("나를 팔로우한 유저 전체 조회")
+//    void readFollowerListTest() {
+//
+//        //given
+//        given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
+//        given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+//        given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
+//        userRepository.save(user);
+//        userRepository.save(targetUser);
+//        userRepository.save(user3);
+//        userService.followUser(targetUser.getId(), user.getId());
+//        userService.followUser(user3.getId(), user.getId());
+//
+//
+//        // when
+//        ResultDto<List<UserDto>> resultDto = userService.readFollowerList(user.getId());
+//        List<UserDto> userDtoList = resultDto.getData();
+//
+//
+//        // then
+//        assertThat(userDtoList.size()).isEqualTo(2);
+//        assertThat(userDtoList).extracting("nickname").containsExactly("b", "c");
+//
+//    }
 }
