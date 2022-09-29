@@ -47,14 +47,16 @@ public class CommentService {
             int order = commentRepository.findFirstByGroupOrderByOrderDesc(dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
             comment.setOrder(order+1);
 
-            // 본인이 작성한 글이 아닐경우 알림 발송
-            if (!userId.equals(page.getUser().getId())) {
+            // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
+            // todo SSE 알림+1
+            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
                 Comment headComment = commentRepository.findFirstByGroupOrderByOrderAsc(dto.getGroup()).orElseThrow(CommentNotFoundException::new);
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
             }
         } else {
-            // 본인이 작성한 글이 아닐경우 알림 발송
-            if (!userId.equals(page.getUser().getId())) {
+            // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
+            // todo SSE 알림+1
+            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
             }
         }

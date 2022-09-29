@@ -2,9 +2,13 @@ package cleanbook.com.repository.page;
 
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.*;
+import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.dto.user.UserDto;
+import cleanbook.com.entity.user.QUser;
+import cleanbook.com.entity.user.follow.QFollow;
 import cleanbook.com.exception.exceptions.NoMorePageException;
+import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -33,6 +37,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
     private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     // 게시글 상세보기
     public PageDetailDto readPageDetail(Long pageId) {
@@ -74,7 +79,12 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     }
 
     // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)
+    // FOLLOW_ONLY일 경우 내가 내 게시글 보려는사람을 팔로우햇을 경우에만 보임
+    // 팔로우 x경우 ALL만
+    // 팔로우 o경우 ALL, FOLLOW_ONLY
     public ResultDto<List<MainPageDto>> readFolloweePageList(Long userId, Long startId, int pageSize) {
+
+        QFollow follow2 = new QFollow("follow2");
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
@@ -83,7 +93,8 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .from(follow)
                 .join(follow.targetUser, user)
                 .join(user.pageList, page)
-                .where(follow.user.id.eq(userId), loePageId(startId))
+                .join(page.user.followeeList, follow2)
+                .where(follow.user.id.eq(userId), loePageId(startId), readAuth(userId, follow2))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
@@ -100,6 +111,11 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         Long nextStartId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 
         return new ResultDto<>(pageAndImgDtoList, nextStartId);
+    }
+
+    private BooleanExpression readAuth(Long userId, QFollow follow2) {
+        return page.pageSetting.readAuth.eq(SettingType.ALL)
+        .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and(follow2.user.id.eq(user.id)).and(follow2.targetUser.id.eq(userId)));
     }
 
     // 특정 유저 게시글 전체조회(유저페이지)
@@ -160,7 +176,9 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .fetch();
 
         // 조회를 전부 완료했을때
-        if (pageList.isEmpty()) throw new NoMorePageException();
+        if (pageList.isEmpty()) {
+            return new ResultDto<>(new ArrayList<>(), 0L);
+        }
 
         List<UserPageDto> userPageDtoList = pageList.stream().map(
                         p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(),
@@ -177,6 +195,8 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     private BooleanExpression loePageId(Long pageId) {
         return pageId == null ? null : page.id.loe(pageId);
     }
+
+
 
     // 테스트용 메서드
     public void testQuery(Long userId) {

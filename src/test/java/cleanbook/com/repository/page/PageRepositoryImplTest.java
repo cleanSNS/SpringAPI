@@ -5,14 +5,17 @@ import cleanbook.com.dto.page.*;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.exception.exceptions.NoMorePageException;
+import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cleanbook.com.entity.page.Page.createPage;
 import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
 import static cleanbook.com.entity.user.follow.Follow.createFollow;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +46,8 @@ class PageRepositoryImplTest {
     private CommentRepository commentRepository;
     @Autowired
     private PageImgUrlRepository pageImgUrlRepository;
+    @Autowired
+    private FollowRepository followRepository;
     @Autowired
     private TestEntityManager em;
 //    @Autowired
@@ -152,49 +158,107 @@ class PageRepositoryImplTest {
 
     }
 
-    @Test
-    @DisplayName("메인페이지_게시물_보기")
-    void readFollowerPageList() {
+    @Nested
+    @DisplayName("메인페이지 게시물 보기")
+    class mainPage{
 
-        //given
-        List<User> userList = userRepository.findAll();
-        User user = userList.get(0);
-        User user2 = userList.get(1);
-        User user3 = userList.get(2);
-        User user4 = userList.get(3);
-        em.persist(createFollow(user,user2));
-        em.persist(createFollow(user,user3));
-        em.persist(createFollow(user,user4));
+        @Test
+        @DisplayName("맞팔 안될시 FOLLOW_ONLY 게시글 조회 불가")
+        void cantReadFollowOnly() {
+
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            User user3 = new User("cc", "cc", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
+            userRepository.save(user3);
+
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
+            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            Page allPage = createPage(user2, new PageCreateDto("all", allSetting));
+            Page followOnlyPage = createPage(user3, new PageCreateDto("follow", followOnlySetting));
+            pageRepository.save(allPage);
+            pageRepository.save(followOnlyPage);
+
+            followRepository.save(createFollow(user,user2));
+            followRepository.save(createFollow(user,user3));
+            followRepository.save(createFollow(user2,user));
 
 
-        // when
-        ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
-        List<MainPageDto> mainPageDtoList = result.getData();
-        Long startPageId = result.getStartId();
-        System.out.println("startPageId = " + startPageId);
+            // when
+            ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
+            List<MainPageDto> mainPageDtoList = result.getData();
+            Long startPageId = result.getStartId();
 
-        // then
-        assertThat(mainPageDtoList.size()).isEqualTo(3);
-        assertThat(mainPageDtoList.get(0).getPageDto().getUserDto().getNickname()).isEqualTo(user4.getUserProfile().getNickname());
-        assertThat(mainPageDtoList.get(2).getPageDto().getUserDto().getNickname()).isEqualTo(user3.getUserProfile().getNickname());
+            // then
+            assertThat(mainPageDtoList.size()).isEqualTo(1);
+            assertThat(mainPageDtoList.get(0).getPageDto().getContent()).isEqualTo("all");
+        }
 
-        // when
-        result = pageRepository.readFolloweePageList(user.getId(), startPageId, 3);
-        mainPageDtoList = result.getData();
+        @Test
+        @DisplayName("맞팔일시 FOLLOW_ONLY 게시글 조회 가능 ")
+        void canReadFollowOnly() {
 
-        // then
-        assertThat(mainPageDtoList.size()).isEqualTo(3);
-        assertThat(mainPageDtoList.get(0).getPageDto().getUserDto().getNickname()).isEqualTo(user3.getUserProfile().getNickname());
-        assertThat(mainPageDtoList.get(2).getPageDto().getUserDto().getNickname()).isEqualTo(user2.getUserProfile().getNickname());
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            User user3 = new User("cc", "cc", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
+            userRepository.save(user3);
 
-        // 조회 완료시
-        // when
-        // then
-        ResultDto<List<MainPageDto>> resultDto = pageRepository.readFolloweePageList(user.getId(), 0L, 3);
-        List<MainPageDto> data = resultDto.getData();
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
+            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            Page allPage = createPage(user2, new PageCreateDto("all", allSetting));
+            Page followOnlyPage = createPage(user3, new PageCreateDto("follow", followOnlySetting));
+            pageRepository.save(allPage);
+            pageRepository.save(followOnlyPage);
 
-        assertThat(data.size()).isEqualTo(0);
+            followRepository.save(createFollow(user,user2));
+            followRepository.save(createFollow(user,user3));
+            followRepository.save(createFollow(user2,user));
+            followRepository.save(createFollow(user3,user));
+
+            // when
+            ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
+            List<MainPageDto> mainPageDtoList = result.getData();
+            Long startPageId = result.getStartId();
+
+            // then
+            assertThat(mainPageDtoList.size()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("맞팔이어도 none게시글은 조회 불가")
+        void cantReadNone() {
+
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
+
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            Page nonePage = createPage(user2, new PageCreateDto("none", noneSetting));
+            pageRepository.save(nonePage);
+
+            followRepository.save(createFollow(user,user2));
+            followRepository.save(createFollow(user2,user));
+
+            // when
+            ResultDto<List<MainPageDto>> result = pageRepository.readFolloweePageList(user.getId(), null, 3);
+            List<MainPageDto> mainPageDtoList = result.getData();
+            Long startPageId = result.getStartId();
+
+            // then
+            assertThat(mainPageDtoList.size()).isEqualTo(0);
+        }
     }
+
 
     @Test
     @DisplayName("특정_유저_전체_게시글_보기")

@@ -139,8 +139,11 @@ public class UserService {
                 }
                 likePageRepository.save(createLikePage(user, page));
 
-                // 알림 생성
-                notificationRepository.save(createNotification(user,targetUser,NotificationType.LIKE, page.getId()));
+                // 좋아요 알림 허용했다면 알림 생성
+                // todo SSE 알림+1
+                if (page.getPageSetting().isNotificationLike()) {
+                    notificationRepository.save(createNotification(user,targetUser,NotificationType.LIKE, page.getId()));
+                }
 
                 return;
 

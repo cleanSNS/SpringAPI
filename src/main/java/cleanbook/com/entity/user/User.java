@@ -46,10 +46,10 @@ public class User extends Timestamped {
     private AccountState accountState;
 
     @Column(columnDefinition = "integer default 0")
-    private Long followerCount;
+    private int followerCount;
 
     @Column(columnDefinition = "integer default 0")
-    private Long followeeCount;
+    private int followeeCount;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAuthority> userAuthorityList = new ArrayList<>();

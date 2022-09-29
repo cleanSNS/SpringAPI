@@ -11,6 +11,6 @@ public class UserNicknameProfileDto {
     private String nickname;
     private String imgUrl;
     private String selfIntroduction;
-    private Long followerCount;
-    private Long followeeCount;
+    private int followerCount;
+    private int followeeCount;
 }
