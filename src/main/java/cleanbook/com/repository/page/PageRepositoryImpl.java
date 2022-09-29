@@ -93,7 +93,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .from(follow)
                 .join(follow.targetUser, user)
                 .join(user.pageList, page)
-                .join(page.user.followeeList, follow2)
+                .leftJoin(page.user.followeeList, follow2)
                 .where(follow.user.id.eq(userId), loePageId(startId), readAuth(userId, follow2))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
@@ -163,17 +163,28 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
     // 특정 유저 게시글 전체조회(유저페이지)
     // 엔티티로 조회 후 dto로 변환
-    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId, int pageSize) {
+    // ALL - 전체
+    // FOLLOW_ONLY 맞팔
+    // NONE - 자신만
+    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long targetUserId, Long startId, int pageSize) {
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
         List<Page> pageList = queryFactory.query()
                 .select(page)
                 .from(page)
-                .where(page.user.id.eq(userId), loePageId(startId))
+                .join(page.user, user)
+                .leftJoin(user.followeeList, follow)
+                .where(page.user.id.eq(targetUserId), loePageId(startId)
+                        ,page.pageSetting.readAuth.eq(SettingType.ALL)
+                        .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and((follow.user.id.eq(targetUserId)).and(follow.targetUser.id.eq(userId)).or(page.user.id.eq(userId))))
+                        .or(page.pageSetting.readAuth.eq(SettingType.NONE).and(page.user.id.eq(userId)))
+                )
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
+
+        System.out.println("pageList.size() = " + pageList.size());
 
         // 조회를 전부 완료했을때
         if (pageList.isEmpty()) {
@@ -195,8 +206,6 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     private BooleanExpression loePageId(Long pageId) {
         return pageId == null ? null : page.id.loe(pageId);
     }
-
-
 
     // 테스트용 메서드
     public void testQuery(Long userId) {

@@ -44,8 +44,8 @@ public class PageService {
     }
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
-    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId) {
-        return pageRepository.readUserPageList(userId, startId, 10);
+    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long targetUserId, Long startId) {
+        return pageRepository.readUserPageList(userId, targetUserId, startId, 10);
     }
 
     // 게시글 수정

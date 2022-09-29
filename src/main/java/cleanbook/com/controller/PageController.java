@@ -44,8 +44,10 @@ public class PageController {
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@PathVariable Long userId, @RequestParam Long startId) {
-        return ResponseEntity.ok(pageService.readUserPageList(userId, startId));
+    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@CookieValue("X-AUTH-TOKEN") String token,
+                                                                         @PathVariable Long userId, @RequestParam Long startId) {
+        Long myUserId = tokenProvider.getUserId(token);
+        return ResponseEntity.ok(pageService.readUserPageList(myUserId, userId, startId));
     }
 
     // 게시글 수정

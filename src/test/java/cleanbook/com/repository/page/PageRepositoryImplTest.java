@@ -259,61 +259,100 @@ class PageRepositoryImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("특정 유저 전체 게시글 보기")
+    class readUserPageList{
 
-    @Test
-    @DisplayName("특정_유저_전체_게시글_보기")
-    void readUserPageListTest() {
+        @Test
+        @DisplayName("ALL")
+        void allTest() {
 
-        //given
-        UserProfile userProfile = new UserProfile("nickname", 25, GenderType.FEMALE);
-        User user = new User("aa", "aa", userProfile);
-        userRepository.save(user);
-        for (int k = 0; k < 10; k++) {
-            Page page = new Page(user, Integer.toString(k));
-            for (int i = 0; i < k; i++) {
-                createPageImgUrl(page, k +"a");
-            }
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
 
-            pageRepository.save(page);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));
+
+            followRepository.save(createFollow(user,user2));
+
+            // when
+            ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user.getId(), user2.getId(), null, 5);
+            List<UserPageDto> userPageDtoList = result.getData();
+
+            // then
+            assertThat(userPageDtoList.size()).isEqualTo(1);
         }
 
-        // when
-        ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user.getId(), null, 2);
-        List<UserPageDto> userPageDtoList = result.getData();
-        Long pageStartIdx = result.getStartId();
+        @Test
+        @DisplayName("followOnly")
+        void followOnlyTest() {
 
-        // then
-        assertThat(userPageDtoList.size()).isEqualTo(2);
-        assertThat(userPageDtoList).extracting("content").containsExactly("9","8");
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
 
-        // when
-        result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 3);
-        userPageDtoList = result.getData();
-        pageStartIdx = result.getStartId();
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));
 
-        // then
-        assertThat(userPageDtoList.size()).isEqualTo(3);
-        assertThat(userPageDtoList).extracting("content").containsExactly("7","6","5");
+            followRepository.save(createFollow(user,user2));
+            followRepository.save(createFollow(user2,user));
 
-        // when
-        result = pageRepository.readUserPageList(user.getId(), pageStartIdx, 6);
-        userPageDtoList = result.getData();
-        pageStartIdx = result.getStartId();
 
-        // then
-        assertThat(userPageDtoList.size()).isEqualTo(5);
-        assertThat(userPageDtoList).extracting("content").containsExactly("4","3","2","1","0");
+            // when
+            ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user.getId(), user2.getId(), null, 5);
+            List<UserPageDto> userPageDtoList = result.getData();
 
-        // 조회 완료시
-        // when
-        // then
-        result = pageRepository.readUserPageList(user.getId(), 0L, 3);
-        userPageDtoList = result.getData();
-        pageStartIdx = result.getStartId();
 
-        assertThat(userPageDtoList.size()).isEqualTo(0);
+            // then
+            assertThat(userPageDtoList.size()).isEqualTo(2);
+        }
 
+        @Test
+        @DisplayName("none은 자신만 볼 수 있음")
+        void noneTest() {
+
+            //given
+            UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
+            User user = new User("aa", "aa", userProfile);
+            User user2 = new User("bb", "bb", userProfile);
+            userRepository.save(user);
+            userRepository.save(user2);
+
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
+            pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));
+
+
+
+            // when
+            ResultDto<List<UserPageDto>> result = pageRepository.readUserPageList(user2.getId(), user2.getId(), null, 5);
+            List<UserPageDto> userPageDtoList = result.getData();
+
+
+            // then
+            assertThat(userPageDtoList.size()).isEqualTo(3);
+        }
     }
+
+
 
 }
 
