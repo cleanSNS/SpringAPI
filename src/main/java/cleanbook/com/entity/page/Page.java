@@ -74,6 +74,14 @@ public class Page extends Timestamped {
         user.getPageList().add(this);
     }
 
+    public Page(Long id, User user, String content, PageSetting pageSetting) {
+        this.id = id;
+        this.user = user;
+        this.content = content;
+        user.getPageList().add(this);
+        this.pageSetting = pageSetting;
+    }
+
     public void reported() {
         this.warningCount++;
     }

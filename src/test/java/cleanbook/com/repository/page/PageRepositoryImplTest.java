@@ -307,9 +307,12 @@ class PageRepositoryImplTest {
         // 조회 완료시
         // when
         // then
-        assertThrows(NoMorePageException.class, () ->
-                pageRepository.readUserPageList(user.getId(), 0L, 3)
-                );
+        result = pageRepository.readUserPageList(user.getId(), 0L, 3);
+        userPageDtoList = result.getData();
+        pageStartIdx = result.getStartId();
+
+        assertThat(userPageDtoList.size()).isEqualTo(0);
+
     }
 
 }

@@ -4,8 +4,10 @@ import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.enums.GenderType;
+import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
+import cleanbook.com.entity.page.PageSetting;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.block.Block;
 import cleanbook.com.dto.user.BlockedUserDto;
@@ -98,7 +100,7 @@ class UserServiceTest {
         user = new User(1L,"user", "aaa", userProfile);
         targetUser = new User(2L,"targetUser", "aaa", userProfile2);
         user3 = new User(3L,"user3", "aaa", userProfile3);
-        page = new Page(1L, user, "내용");
+        page = new Page(1L, user, "내용", new PageSetting(true, true, SettingType.ALL, true, true, true));
         comment = new Comment(1L, user, page, "내용");
     }
 
