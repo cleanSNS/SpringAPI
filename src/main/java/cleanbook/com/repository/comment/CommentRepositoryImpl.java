@@ -43,7 +43,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<CommentDto> commentDtoList = commentList.stream()
                 .map(c -> new CommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                        , c.getId(), c.getContent(), c.getLikeCount(), c.getCreatedDate()))
+                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         Long nextStartId = commentList.get(commentList.size()-1).getId() + 1;
@@ -72,7 +72,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<CommentDto> commentDtoList = commentList.stream()
                 .map(c -> new CommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                        , c.getId(), c.getContent(), c.getLikeCount(), c.getCreatedDate()))
+                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         Long nextStartId = commentList.get(commentList.size()-1).getId() + 1;
