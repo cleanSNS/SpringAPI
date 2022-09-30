@@ -29,20 +29,9 @@ public class PageSetting {
     private SettingType readAuth;
 
     @Column(columnDefinition = "boolean default false")
-    private boolean commentReadAuth;
-
-    @Column(columnDefinition = "boolean default false")
-    private boolean commentWriteAuth;
+    private boolean commentAuth;
 
     @Column(columnDefinition = "boolean default false")
     private boolean likeReadAuth;
 
-    void changePageSetting(PageSetting pageSetting) {
-        this.notificationLike = pageSetting.isNotificationLike();
-        this.notificationComment = pageSetting.isNotificationComment();
-        this.readAuth = pageSetting.getReadAuth();
-        this.commentReadAuth = pageSetting.isCommentReadAuth();
-        this.commentWriteAuth = pageSetting.isCommentWriteAuth();
-        this.likeReadAuth = pageSetting.isLikeReadAuth();
-    }
 }

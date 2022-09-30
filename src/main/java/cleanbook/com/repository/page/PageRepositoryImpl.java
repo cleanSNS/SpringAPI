@@ -49,7 +49,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, page.content, page.likeCount, page.createdDate))
+                            page.id, page.content, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))
@@ -175,16 +175,10 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .from(page)
                 .join(page.user, user)
                 .leftJoin(user.followeeList, follow)
-                .where(page.user.id.eq(targetUserId), loePageId(startId)
-                        ,page.pageSetting.readAuth.eq(SettingType.ALL)
-                        .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and((follow.user.id.eq(targetUserId)).and(follow.targetUser.id.eq(userId)).or(page.user.id.eq(userId))))
-                        .or(page.pageSetting.readAuth.eq(SettingType.NONE).and(page.user.id.eq(userId)))
-                )
+                .where(page.user.id.eq(targetUserId), loePageId(startId),userPageReadAuth(userId, targetUserId))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
-
-        System.out.println("pageList.size() = " + pageList.size());
 
         // 조회를 전부 완료했을때
         if (pageList.isEmpty()) {
@@ -192,7 +186,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         }
 
         List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(),
+                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().isLikeReadAuth(),
                                 p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
@@ -205,6 +199,12 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
     private BooleanExpression loePageId(Long pageId) {
         return pageId == null ? null : page.id.loe(pageId);
+    }
+
+    private BooleanExpression userPageReadAuth(Long userId, Long targetUserId) {
+        return page.pageSetting.readAuth.eq(SettingType.ALL)
+                .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and((follow.user.id.eq(targetUserId)).and(follow.targetUser.id.eq(userId)).or(page.user.id.eq(userId))))
+                .or(page.pageSetting.readAuth.eq(SettingType.NONE).and(page.user.id.eq(userId)));
     }
 
     // 테스트용 메서드

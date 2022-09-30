@@ -175,8 +175,8 @@ class PageRepositoryImplTest {
             userRepository.save(user2);
             userRepository.save(user3);
 
-            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
-            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
+            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
             Page allPage = createPage(user2, new PageCreateDto("all", allSetting));
             Page followOnlyPage = createPage(user3, new PageCreateDto("follow", followOnlySetting));
             pageRepository.save(allPage);
@@ -210,8 +210,8 @@ class PageRepositoryImplTest {
             userRepository.save(user2);
             userRepository.save(user3);
 
-            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
-            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
+            PageSetting followOnlySetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
             Page allPage = createPage(user2, new PageCreateDto("all", allSetting));
             Page followOnlyPage = createPage(user3, new PageCreateDto("follow", followOnlySetting));
             pageRepository.save(allPage);
@@ -242,7 +242,7 @@ class PageRepositoryImplTest {
             userRepository.save(user);
             userRepository.save(user2);
 
-            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
             Page nonePage = createPage(user2, new PageCreateDto("none", noneSetting));
             pageRepository.save(nonePage);
 
@@ -274,9 +274,9 @@ class PageRepositoryImplTest {
             userRepository.save(user);
             userRepository.save(user2);
 
-            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
-            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
-            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
             pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));
@@ -302,9 +302,9 @@ class PageRepositoryImplTest {
             userRepository.save(user);
             userRepository.save(user2);
 
-            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
-            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
-            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
             pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));
@@ -333,9 +333,9 @@ class PageRepositoryImplTest {
             userRepository.save(user);
             userRepository.save(user2);
 
-            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true, true);
-            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true, true);
-            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true, true);
+            PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
+            PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
+            PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
             pageRepository.save(createPage(user2, new PageCreateDto("all", allSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("follow", followSetting)));
             pageRepository.save(createPage(user2, new PageCreateDto("none", noneSetting)));

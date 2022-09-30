@@ -8,10 +8,7 @@ import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
-import cleanbook.com.exception.exceptions.CommentNotFoundException;
-import cleanbook.com.exception.exceptions.NoAuthroizationException;
-import cleanbook.com.exception.exceptions.PageNotFoundException;
-import cleanbook.com.exception.exceptions.UserNotFoundException;
+import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.notification.NotificationRepository;
@@ -42,6 +39,11 @@ public class CommentService {
         User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
+        // 댓글 권한이 없는 게시글
+        if (!page.getPageSetting().isCommentAuth()) {
+            throw new MyException("댓글을 달 수 없는 게시글입니다.");
+        }
+
         // 대댓글일시
         if (comment.isNested()) {
             int order = commentRepository.findFirstByGroupOrderByOrderDesc(dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
@@ -67,11 +69,19 @@ public class CommentService {
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
     public ResultDto<List<CommentDto>> readCommentList(Long pageId, Long startId) {
+        Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
+        if (!page.getPageSetting().isCommentAuth()) {
+            throw new MyException("댓글을 볼 수 없는 게시글입니다.");
+        }
         return commentRepository.readCommentList(pageId, startId, 10);
     }
 
     // 대댓글 조회(한 댓글의 댓글 조회, 10개씩)
     public ResultDto<List<CommentDto>> readNestedCommentList(Long pageId, int group, Long startId) {
+        Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
+        if (!page.getPageSetting().isCommentAuth()) {
+            throw new MyException("댓글을 볼 수 없는 게시글입니다.");
+        }
         return commentRepository.readNestedCommentList(pageId, group, startId, 10);
     }
 

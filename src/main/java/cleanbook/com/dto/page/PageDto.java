@@ -18,5 +18,6 @@ public class PageDto {
     private Long pageId;
     private String content;
     private int likeCount;
+    private boolean likeReadAuth;
     private LocalDateTime createdDate;
 }
