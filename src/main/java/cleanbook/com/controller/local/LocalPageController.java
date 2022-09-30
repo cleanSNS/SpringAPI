@@ -30,8 +30,10 @@ public class LocalPageController {
 
     // 게시글 상세보기
     @GetMapping("/{pageId}/detail")
-    public ResponseEntity<ResultDto<PageDetailDto>> readPageDetail(@PathVariable Long pageId) {
-        return ResponseEntity.ok(pageService.readPageDetail(pageId));
+    public ResponseEntity<ResultDto<PageDetailDto>> readPageDetail(@CookieValue("X-AUTH-TOKEN") String token,
+                                                                   @PathVariable Long pageId) {
+        Long userId = tokenProvider.getUserId(token);
+        return ResponseEntity.ok(pageService.readPageDetail(userId, pageId));
     }
 
     // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)

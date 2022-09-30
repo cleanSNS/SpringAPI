@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -263,6 +262,11 @@ public class UserService {
             unfollowUser(userId, targetUserId);
         }
 
+        // 팔로우중이라면 언팔로우 당함
+        if (followRepository.findByUser_IdAndTargetUser_Id(targetUserId, userId).isPresent()) {
+            unfollowUser(targetUserId, userId);
+        }
+
         blockRepository.save(createBlock(user, targetUser));
     }
 
@@ -271,7 +275,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Block block = blockRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).orElseThrow(() -> new MyException("이미 차단 해제된 유저입니다."));
 
-        user.getBlockUserList().remove(block);
+        user.getBlockedUserList().remove(block);
         blockRepository.delete(block);
     }
 
@@ -280,7 +284,7 @@ public class UserService {
     public ResultDto<List<BlockedUserDto>> readBlockedUserList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        List<BlockedUserDto> blockedUserDtoList = user.getBlockUserList()
+        List<BlockedUserDto> blockedUserDtoList = user.getBlockedUserList()
                 .stream()
                 .map(block -> new BlockedUserDto(block.getTargetUser().getId(), block.getTargetUser().getUserProfile().getNickname(), block.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
@@ -398,10 +402,10 @@ public class UserService {
 
     // 유저 검색
     @Transactional(readOnly = true)
-    public ResultDto<List<UserDto>> findUsersStartWithNickname(String nickname) {
-        System.out.println("nickname = " + nickname);
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(Long userId, String nickname) {
+
         if (hasText(nickname)) {
-            return new ResultDto<>(userRepository.findUsersStartWithNickname(nickname));
+            return new ResultDto<>(userRepository.findUsersStartWithNickname(userId, nickname));
         }
         else {
             throw new EmptyStringException();

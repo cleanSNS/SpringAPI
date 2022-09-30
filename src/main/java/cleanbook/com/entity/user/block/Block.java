@@ -2,7 +2,6 @@ package cleanbook.com.entity.user.block;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +34,7 @@ public class Block extends Timestamped {
 
     public static Block createBlock(User user, User targetUser) {
         Block block = new Block(user, targetUser);
-        user.getBlockUserList().add(block);
+        user.getBlockedUserList().add(block);
         return block;
     }
 }

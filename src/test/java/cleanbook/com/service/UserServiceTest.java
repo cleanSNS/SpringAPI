@@ -2,7 +2,6 @@ package cleanbook.com.service;
 
 import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.dto.ResultDto;
-import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.Comment;
@@ -11,7 +10,6 @@ import cleanbook.com.entity.page.PageSetting;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.block.Block;
 import cleanbook.com.dto.user.BlockedUserDto;
-import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.entity.user.like.LikeComment;
 import cleanbook.com.entity.user.like.LikePage;
 import cleanbook.com.entity.user.like.LikeType;
@@ -46,7 +44,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-import static cleanbook.com.entity.user.like.LikePage.createLikePage;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -418,8 +415,8 @@ class UserServiceTest {
 
 
         // then
-        assertThat(user.getBlockUserList().size()).isEqualTo(1);
-        assertThat(user.getBlockUserList().get(0).getTargetUser()).isEqualTo(targetUser);
+        assertThat(user.getBlockedUserList().size()).isEqualTo(1);
+        assertThat(user.getBlockedUserList().get(0).getTargetUser()).isEqualTo(targetUser);
 
     }
 
@@ -441,7 +438,7 @@ class UserServiceTest {
 
 
         // then
-        assertThat(user.getBlockUserList().size()).isEqualTo(1);
+        assertThat(user.getBlockedUserList().size()).isEqualTo(1);
     }
 
     @Test

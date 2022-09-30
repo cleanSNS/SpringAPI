@@ -4,16 +4,19 @@ import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.exception.exceptions.NoAuthroizationException;
 import cleanbook.com.exception.exceptions.PageNotFoundException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.page.PageRepository;
+import cleanbook.com.repository.user.BlockRepository;
 import cleanbook.com.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +27,7 @@ public class PageService {
     private final PageRepository pageRepository;
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+    private final BlockRepository blockRepository;
 
     // 게시글 생성
     public Page createPage(Long userId ,PageCreateDto pageCreateDto) {
@@ -33,8 +37,15 @@ public class PageService {
     }
 
     // 게시글 상세보기
-    public ResultDto<PageDetailDto> readPageDetail(Long pageId) {
-        pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
+    public ResultDto<PageDetailDto> readPageDetail(Long userId, Long pageId) {
+        Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
+
+        // 차단했거나 당했다면 볼 수 없음
+        if (blockRepository.findByUser_IdAndTargetUser_Id(userId, page.getUser().getId()).isPresent() ||
+            blockRepository.findByUser_IdAndTargetUser_Id(page.getUser().getId(), userId).isPresent()) {
+            throw new MyException("볼 수 없는 게시글입니다.");
+        }
+
         return new ResultDto<>(pageRepository.readPageDetail(pageId));
     }
 
@@ -45,6 +56,13 @@ public class PageService {
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
     public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long targetUserId, Long startId) {
+
+        // 차단했거나 당했다면 볼 수 없음
+        if (blockRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).isPresent() ||
+            blockRepository.findByUser_IdAndTargetUser_Id(targetUserId, userId).isPresent()) {
+            return new ResultDto<>(new ArrayList<>());
+        }
+
         return pageRepository.readUserPageList(userId, targetUserId, startId, 10);
     }
 

@@ -67,7 +67,10 @@ public class User extends Timestamped {
     private List<Filter> notFilterUserList = new ArrayList<>(); // 내가 필터링하지 않을 사람
 
     @OneToMany(mappedBy = "user")
-    private List<Block> blockUserList = new ArrayList<>();
+    private List<Block> blockedUserList = new ArrayList<>(); // 내가 차단한 사람
+
+    @OneToMany(mappedBy = "targetUser")
+    private List<Block> blockUserList = new ArrayList<>(); // 나를 차단한 사람
 
     @OneToMany(mappedBy = "user")
     private List<UserChatRoom> userChatRoomList = new ArrayList<>();

@@ -221,8 +221,9 @@ public class UserController {
 
     // 유저 검색
     @GetMapping("/user/search")
-    public ResultDto<List<UserDto>> findUsersStartWithNickname(@RequestParam String nickname) {
-        return userService.findUsersStartWithNickname(nickname);
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam String nickname) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.findUsersStartWithNickname(userId, nickname);
     }
 
     // 유저 id 조회

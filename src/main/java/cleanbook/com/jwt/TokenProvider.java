@@ -96,6 +96,8 @@ public class TokenProvider implements InitializingBean {
    }
 
    public Long getUserId(String token) {
+      if (token == null) return null;
+
       Claims claims = Jwts
               .parserBuilder()
               .setSigningKey(key)
