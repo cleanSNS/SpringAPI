@@ -30,7 +30,7 @@ public class LocalPageController {
 
     // 게시글 상세보기
     @GetMapping("/{pageId}/detail")
-    public ResponseEntity<ResultDto<PageDetailDto>> readPageDetail(@CookieValue("X-AUTH-TOKEN") String token,
+    public ResponseEntity<ResultDto<PageDetailDto>> readPageDetail(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
                                                                    @PathVariable Long pageId) {
         Long userId = tokenProvider.getUserId(token);
         return ResponseEntity.ok(pageService.readPageDetail(userId, pageId));
@@ -46,7 +46,7 @@ public class LocalPageController {
 
     // 유저 게시글 조회(특정 유저의 게시글 전체, 시간순)
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@CookieValue("X-AUTH-TOKEN") String token,
+    public ResponseEntity<ResultDto<List<UserPageDto>>> readUserPageList(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
                                                                          @PathVariable Long userId, @RequestParam Long startId) {
         Long myUserId = tokenProvider.getUserId(token);
         return ResponseEntity.ok(pageService.readUserPageList(myUserId, userId, startId));

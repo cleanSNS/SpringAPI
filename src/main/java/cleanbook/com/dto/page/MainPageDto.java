@@ -12,4 +12,5 @@ import java.util.List;
 public class MainPageDto {
     private PageDto pageDto;
     private List<String> imgUrlList;
+    private boolean like;
 }

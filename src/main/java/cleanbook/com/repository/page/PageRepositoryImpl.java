@@ -7,9 +7,11 @@ import cleanbook.com.entity.page.*;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.user.QUser;
 import cleanbook.com.entity.user.follow.QFollow;
+import cleanbook.com.entity.user.like.LikePage;
 import cleanbook.com.exception.exceptions.NoMorePageException;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
+import cleanbook.com.repository.user.like.LikePageRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -38,10 +40,11 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     private final JPAQueryFactory queryFactory;
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
+    private final LikePageRepository likePageRepository;
 
     // 게시글 상세보기
-    public PageDetailDto readPageDetail(Long pageId) {
-        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(pageId));
+    public PageDetailDto readPageDetail(Long userId, Long pageId) {
+        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(pageId), isLikePage(userId, pageId));
     }
 
     public PageDto readPageDto(Long pageId) {
@@ -75,7 +78,11 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     }
 
     public ResultDto<List<CommentDto>> readPageCommentList(Long pageId) {
-        return commentRepository.readCommentList(pageId, 1L, 10);
+        return commentRepository.readCommentList(null, pageId, 1L, 10);
+    }
+
+    public boolean isLikePage(Long userId, Long pageId) {
+        return likePageRepository.findByPage_IdAndUser_Id(pageId, userId).isPresent();
     }
 
     // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)
@@ -106,7 +113,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
         List<MainPageDto> pageAndImgDtoList = new ArrayList<>();
         for (Long pageId : pageIdList) {
-            pageAndImgDtoList.add(new MainPageDto(readPageDto(pageId), readPageImgUrlList(pageId)));
+            pageAndImgDtoList.add(new MainPageDto(readPageDto(pageId), readPageImgUrlList(pageId), isLikePage(userId, pageId)));
         }
         Long nextStartId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 

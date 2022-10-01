@@ -31,15 +31,19 @@ public class CommentController {
 
     // 댓글 보기
     @GetMapping("/{pageId}/comment")
-    public ResponseEntity<ResultDto<List<CommentDto>>> readCommentList(@PathVariable Long pageId, @RequestParam Long startId) {
-        ResultDto<List<CommentDto>> resultDto = commentService.readCommentList(pageId, startId);
+    public ResponseEntity<ResultDto<List<CommentDto>>> readCommentList(@PathVariable Long pageId, @RequestParam Long startId,
+                                                                       @CookieValue(value = "X-AUTH-TOKEN", required = false) String token) {
+        Long userId = tokenProvider.getUserId(token);
+        ResultDto<List<CommentDto>> resultDto = commentService.readCommentList(userId, pageId, startId);
         return ResponseEntity.ok(resultDto);
     }
 
     // 대댓글 보기
     @GetMapping("/{pageId}/nested")
-    public ResponseEntity<ResultDto<List<CommentDto>>> readNestedCommentList(@PathVariable Long pageId, @RequestParam int group, @RequestParam Long startId) {
-        ResultDto<List<CommentDto>> resultDto = commentService.readNestedCommentList(pageId, group, startId);
+    public ResponseEntity<ResultDto<List<CommentDto>>> readNestedCommentList(@PathVariable Long pageId, @RequestParam int group,
+                                                                             @RequestParam Long startId, @CookieValue(value = "X-AUTH-TOKEN", required = false) String token) {
+        Long userId = tokenProvider.getUserId(token);
+        ResultDto<List<CommentDto>> resultDto = commentService.readNestedCommentList(userId, pageId, group, startId);
         return ResponseEntity.ok(resultDto);
     }
 

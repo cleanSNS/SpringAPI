@@ -5,7 +5,9 @@ import cleanbook.com.dto.page.CommentDto;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.QComment;
+import cleanbook.com.entity.user.like.LikeComment;
 import cleanbook.com.exception.exceptions.NoMoreCommentException;
+import cleanbook.com.repository.user.like.LikeCommentRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,9 +26,14 @@ import static cleanbook.com.entity.page.QPage.page;
 public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
+    private final LikeCommentRepository likeCommentRepository;
+
+    public boolean isLikeComment(Long userId, Long commentId) {
+        return likeCommentRepository.findByComment_IdAndUser_Id(commentId,userId).isPresent();
+    }
 
     // 댓글 조회
-    public ResultDto<List<CommentDto>> readCommentList(Long pageId, Long startId, int pageSize) {
+    public ResultDto<List<CommentDto>> readCommentList(Long userId, Long pageId, Long startId, int pageSize) {
 
         // nested false인 댓글을 10개씩
         List<Comment> commentList = queryFactory.query()
@@ -43,7 +50,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<CommentDto> commentDtoList = commentList.stream()
                 .map(c -> new CommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), c.getCreatedDate()))
+                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), isLikeComment(userId, c.getId()) , c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         Long nextStartId = commentList.get(commentList.size()-1).getId() + 1;
@@ -56,7 +63,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
     }
 
     // 대댓글 조회
-    public ResultDto<List<CommentDto>> readNestedCommentList(Long pageId, int group, Long startId, int pageSize) {
+    public ResultDto<List<CommentDto>> readNestedCommentList(Long userId, Long pageId, int group, Long startId, int pageSize) {
 
         List<Comment> commentList = queryFactory.query()
                 .select(comment)
@@ -72,7 +79,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<CommentDto> commentDtoList = commentList.stream()
                 .map(c -> new CommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), c.getCreatedDate()))
+                        , c.getId(), c.getContent(), c.getGroup(), c.getLikeCount(), isLikeComment(userId, c.getId()), c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         Long nextStartId = commentList.get(commentList.size()-1).getId() + 1;

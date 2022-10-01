@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PageRepositoryCustom {
 
-    PageDetailDto readPageDetail(Long pageId);
+    PageDetailDto readPageDetail(Long userId, Long pageId);
     PageDto readPageDto(Long pageId);
     List<String> readPageImgUrlList(Long pageId);
     ResultDto<List<CommentDto>> readPageCommentList(Long pageId);

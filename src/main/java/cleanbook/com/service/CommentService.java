@@ -77,21 +77,21 @@ public class CommentService {
     }
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
-    public ResultDto<List<CommentDto>> readCommentList(Long pageId, Long startId) {
+    public ResultDto<List<CommentDto>> readCommentList(Long userId, Long pageId, Long startId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
         if (!page.getPageSetting().isCommentAuth()) {
             throw new MyException("댓글을 볼 수 없는 게시글입니다.");
         }
-        return commentRepository.readCommentList(pageId, startId, 10);
+        return commentRepository.readCommentList(userId, pageId, startId, 10);
     }
 
     // 대댓글 조회(한 댓글의 댓글 조회, 10개씩)
-    public ResultDto<List<CommentDto>> readNestedCommentList(Long pageId, int group, Long startId) {
+    public ResultDto<List<CommentDto>> readNestedCommentList(Long userId, Long pageId, int group, Long startId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
         if (!page.getPageSetting().isCommentAuth()) {
             throw new MyException("댓글을 볼 수 없는 게시글입니다.");
         }
-        return commentRepository.readNestedCommentList(pageId, group, startId, 10);
+        return commentRepository.readNestedCommentList(userId, pageId, group, startId, 10);
     }
 
     // 댓글 삭제

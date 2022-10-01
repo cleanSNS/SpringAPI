@@ -46,7 +46,7 @@ public class PageService {
             throw new MyException("볼 수 없는 게시글입니다.");
         }
 
-        return new ResultDto<>(pageRepository.readPageDetail(pageId));
+        return new ResultDto<>(pageRepository.readPageDetail(userId, pageId));
     }
 
    // 메인페이지 게시글 조회(내가 팔로우 한 사람만, 시간순)

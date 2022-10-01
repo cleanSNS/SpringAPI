@@ -16,4 +16,5 @@ public class PageDetailDto {
     private List<String> imgUrlList;
     private List<String> hashtagList;
     private ResultDto<List<CommentDto>> commentDtoList;
+    private boolean like;
 }

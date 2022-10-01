@@ -15,7 +15,7 @@ public class NotificationController {
 
     // SSE 연결
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public SseEmitter subscribe(@CookieValue(value = "X-AUTH-TOKEN") String token,
+    public SseEmitter subscribe(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
 
         Long userId = tokenProvider.getUserId(token);

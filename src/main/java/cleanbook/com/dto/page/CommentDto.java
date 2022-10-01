@@ -17,5 +17,6 @@ public class CommentDto {
     private String content;
     private int group;
     private int likeCount;
+    private boolean like;
     private LocalDateTime createdDate;
 }

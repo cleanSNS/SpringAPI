@@ -146,7 +146,7 @@ class PageRepositoryImplTest {
 
         // when
         Long pageId = myPage.getId();
-        PageDetailDto pageDetailDto = pageRepository.readPageDetail(pageId);
+        PageDetailDto pageDetailDto = pageRepository.readPageDetail(null, pageId);
         UserDto userDto = pageDetailDto.getPageDto().getUserDto();
         ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(pageId);
         List<CommentDto> commentDtoList = result.getData();
