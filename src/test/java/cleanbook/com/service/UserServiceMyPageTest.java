@@ -73,7 +73,7 @@ class UserServiceMyPageTest {
 
 
         // then
-        assertThat(user.getUserSetting().getUserNotificationSetting().isNotificationFollow()).isEqualTo(true);
+        assertThat(user.getUserSetting().getUserNotificationSetting().getNotificationChat()).isEqualTo(true);
         assertThat(user.getUserSetting().getUserNotificationSetting().getNotificationLike()).isEqualTo(SettingType.NONE);
 
     }
@@ -109,7 +109,7 @@ class UserServiceMyPageTest {
 
 
         // then
-        assertThat(user.getUserSetting().getUserFilterSetting().isFilterAll()).isEqualTo(true);
+        assertThat(user.getUserSetting().getUserFilterSetting().getFilterAll()).isEqualTo(true);
 
     }
 }

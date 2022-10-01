@@ -19,13 +19,13 @@ import javax.persistence.Embeddable;
 public class UserFilterSetting {
 
     @Builder.Default
-    private boolean filterAll = true;
+    private Boolean filterAll = true;
 
     @Builder.Default
-    private boolean filterFollower = true;
+    private Boolean filterFollower = true;
 
     @Builder.Default
-    private boolean filterFollowee = true;
+    private Boolean filterFollowee = true;
 
     public static UserFilterSetting createUserFilterSetting(UserFilterSettingDto dto) {
         return UserFilterSetting.builder()

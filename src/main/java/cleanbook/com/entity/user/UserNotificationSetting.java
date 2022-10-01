@@ -22,7 +22,7 @@ import javax.persistence.Enumerated;
 public class UserNotificationSetting {
 
     @Builder.Default
-    private boolean notificationFollow = true;
+    private Boolean notificationFollow = true;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -33,10 +33,10 @@ public class UserNotificationSetting {
     private SettingType notificationLike = SettingType.ALL;
 
     @Builder.Default
-    private boolean notificationFollowAccept = true;
+    private Boolean notificationFollowAccept = true;
 
     @Builder.Default
-    private boolean notificationChat = true;
+    private Boolean notificationChat = true;
 
     public static UserNotificationSetting createUserNotificationSetting(UserNotificationSettingDto dto) {
         return UserNotificationSetting.builder()

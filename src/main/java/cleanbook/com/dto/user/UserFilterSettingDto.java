@@ -14,8 +14,8 @@ public class UserFilterSettingDto {
     private boolean filterFollowee;
 
     public UserFilterSettingDto(UserFilterSetting userFilterSetting) {
-        this.filterAll = userFilterSetting.isFilterAll();
-        this.filterFollower = userFilterSetting.isFilterFollower();
-        this.filterFollowee = userFilterSetting.isFilterFollowee();
+        this.filterAll = userFilterSetting.getFilterAll();
+        this.filterFollower = userFilterSetting.getFilterFollower();
+        this.filterFollowee = userFilterSetting.getFilterFollowee();
     }
 }

@@ -16,10 +16,10 @@ public class UserNotificationSettingDto {
     private boolean notificationChat;
 
     public UserNotificationSettingDto(UserNotificationSetting userNotificationSetting) {
-        this.notificationFollow = userNotificationSetting.isNotificationFollow();
+        this.notificationFollow = userNotificationSetting.getNotificationFollow();
         this.notificationComment = userNotificationSetting.getNotificationComment();
         this.notificationLike = userNotificationSetting.getNotificationLike();
-        this.notificationFollowAccept = userNotificationSetting.isNotificationFollowAccept();
-        this.notificationChat = userNotificationSetting.isNotificationChat();
+        this.notificationFollowAccept = userNotificationSetting.getNotificationFollowAccept();
+        this.notificationChat = userNotificationSetting.getNotificationChat();
     }
 }
