@@ -44,7 +44,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
     // 게시글 상세보기
     public PageDetailDto readPageDetail(Long userId, Long pageId) {
-        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(pageId), isLikePage(userId, pageId));
+        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(userId, pageId), isLikePage(userId, pageId));
     }
 
     public PageDto readPageDto(Long pageId) {
@@ -77,8 +77,8 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .fetch();
     }
 
-    public ResultDto<List<CommentDto>> readPageCommentList(Long pageId) {
-        return commentRepository.readCommentList(null, pageId, 1L, 10);
+    public ResultDto<List<CommentDto>> readPageCommentList(Long userId, Long pageId) {
+        return commentRepository.readCommentList(userId, pageId, 1L, 10);
     }
 
     public boolean isLikePage(Long userId, Long pageId) {
