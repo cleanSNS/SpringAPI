@@ -95,4 +95,8 @@ public class Comment extends Timestamped {
 
     public void unlikeComment() {this.likeCount--;}
 
+    public void changeGroup(int group) {
+        this.group = group;
+    }
+
 }

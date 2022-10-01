@@ -8,6 +8,7 @@ import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.entity.user.UserProfile;
+import cleanbook.com.exception.exceptions.CommentNotFoundException;
 import cleanbook.com.exception.exceptions.NoMoreCommentException;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
@@ -32,10 +33,10 @@ class CommentRepositoryImplTest {
     private PageRepository pageRepository;
     @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private TestEntityManager em;
+
 
     Long pageId;
+    Long pageId2;
 
     @BeforeEach
     void init() {
@@ -44,8 +45,11 @@ class CommentRepositoryImplTest {
         User user = new User("aa", "aa", userProfile);
         userRepository.save(user);
         Page page = new Page(user, "글내용");
+        Page page2 = new Page(user, "글내용2");
         pageRepository.save(page);
+        pageRepository.save(page2);
         pageId = page.getId();
+        pageId2 = page2.getId();
 
         for (int j = 0; j < 15; j++) {
             Comment comment = Comment.builder()
@@ -157,5 +161,19 @@ class CommentRepositoryImplTest {
         }
     }
 
+    @Test
+    @DisplayName("게시글의 마지막 댓글그룹 가져오기")
+    void getLastGroup() {
 
+
+        // when
+        int group = commentRepository.findFirstByPage_IdOrderByGroupDesc(pageId).orElseThrow(CommentNotFoundException::new).getGroup();
+        int group2 = commentRepository.findFirstByPage_IdOrderByGroupDesc(pageId2).orElseThrow(CommentNotFoundException::new).getGroup();
+
+
+        // then
+        assertThat(group).isEqualTo(15);
+        assertThat(group2).isEqualTo(2);
+
+    }
 }

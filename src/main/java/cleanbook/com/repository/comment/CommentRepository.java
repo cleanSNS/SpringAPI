@@ -10,5 +10,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
 
     Optional<Comment> findFirstByGroupOrderByOrderAsc(int group);
     Optional<Comment> findFirstByGroupOrderByOrderDesc(int group);
-    Optional<List<Comment>> findCommentsByGroup(int group);
+    Optional<Comment> findFirstByPage_IdAndGroupOrderByOrderDesc(Long pageId, int group);
+    Optional<Comment> findFirstByPage_IdAndGroupOrderByOrderAsc(Long pageId, int group);
+    Optional<Comment> findFirstByPage_IdOrderByGroupDesc(Long pageId);
 }

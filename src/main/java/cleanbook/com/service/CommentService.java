@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static cleanbook.com.entity.notification.Notification.createNotification;
 
@@ -44,20 +45,28 @@ public class CommentService {
             throw new MyException("댓글을 달 수 없는 게시글입니다.");
         }
 
-        // 대댓글일시
-        if (comment.isNested()) {
-            int order = commentRepository.findFirstByGroupOrderByOrderDesc(dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
+        if (comment.isNested()) { // 대댓글일시
+            int order = commentRepository.findFirstByPage_IdAndGroupOrderByOrderDesc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
             comment.setOrder(order+1);
 
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             // todo SSE 알림+1
             if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
-                Comment headComment = commentRepository.findFirstByGroupOrderByOrderAsc(dto.getGroup()).orElseThrow(CommentNotFoundException::new);
+                Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
             }
-        } else {
+        } else { // 댓글일시
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             // todo SSE 알림+1
+
+            // 그룹 설정
+            Optional<Comment> optional = commentRepository.findFirstByPage_IdOrderByGroupDesc(page.getId());
+            if (optional.isPresent()) {
+                comment.changeGroup(optional.get().getGroup()+1);
+            } else { // 댓글이 없을 경우 -> 첫 댓글은 그룹 1
+                comment.changeGroup(1);
+            }
+
             if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
             }
