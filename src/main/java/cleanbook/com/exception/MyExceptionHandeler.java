@@ -3,6 +3,7 @@ package cleanbook.com.exception;
 import cleanbook.com.exception.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -114,4 +115,12 @@ public class MyExceptionHandeler {
     public Response reportEmptyError() {
         return new Response("잘못된 양식입니다.");
     }
+
+    @ExceptionHandler(MissingRequestCookieException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Response reportNoCookie() {
+        return new Response("access token이 존재하지 않습니다.");
+    }
+
+
 }

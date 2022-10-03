@@ -13,10 +13,25 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final TokenProvider tokenProvider;
 
+    // SSE 테스트 페이지
+    @GetMapping(value = "/test")
+    public String home() {
+        return "notification/notification";
+    }
+
+    // SSE 연결
+    @GetMapping(value = "/test/{id}", produces = "text/event-stream")
+    public SseEmitter subscribe(@PathVariable Long id,
+                                @RequestParam("last_event_id") String lastEventId) {
+        System.out.println("sse 연결");
+        System.out.println("lastEventId = " + lastEventId);
+        return notificationService.subscribe(id, lastEventId);
+    }
+
     // SSE 연결
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public SseEmitter subscribe(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
-                                @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+    public SseEmitter subscribe(@CookieValue(value = "X-AUTH-TOKEN") String token,
+                                @RequestParam("last_event_id") String lastEventId) {
 
         Long userId = tokenProvider.getUserId(token);
         return notificationService.subscribe(userId, lastEventId);

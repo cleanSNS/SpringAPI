@@ -47,13 +47,16 @@ public class NotificationService {
         sendToClient(emitter, id, "EventStream Created. [userId=" + userId + "]");
 
         log.info("lastEventId {}", lastEventId);
+
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.equals("")){
+            log.info("lastEventID exist");
             String getTime = lastEventId.substring(lastEventId.indexOf('_') + 1);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
             LocalDateTime lastConnectionTime = LocalDateTime.parse(getTime, formatter);
 
             List<Notification> notificationList = notificationRepository.findAllByCreatedDateAfter(lastConnectionTime);
+            log.info("size {}", notificationList.size());
             for (Notification notification : notificationList) {
                 sendToClient(emitter, id, createNotificationDto(notification));
             }
@@ -81,7 +84,9 @@ public class NotificationService {
 
         SseEmitter emitter = emitterMap.get(receiver.getId());
 
-        sendToClient(emitter, id, createNotificationDto(notification));
+        if (emitter != null) {
+            sendToClient(emitter, id, createNotificationDto(notification));
+        }
     }
 
 

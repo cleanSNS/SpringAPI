@@ -69,6 +69,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
 
     // 팔로우하기
@@ -84,7 +85,7 @@ public class UserService {
         Follow follow = createFollow(user, targetUser);
         followRepository.save(follow);
 
-        notificationRepository.save(createNotification(user,targetUser,NotificationType.FOLLOW, targetUser.getId()));
+        notificationService.send(user, targetUser, NotificationType.FOLLOW, null);
 
         return follow;
     }
