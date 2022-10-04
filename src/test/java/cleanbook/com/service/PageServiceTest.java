@@ -51,7 +51,7 @@ class PageServiceTest {
         User findUser = userRepository.findById(1L).get();
 
         // when
-        Page findPage = pageService.createPage(findUser.getId(), new PageCreateDto("bb", new PageSetting()));
+        Page findPage = pageService.createPage(findUser.getId(), PageCreateDto.builder().build());
         findUser = userRepository.findById(1L).get();
 
         // then

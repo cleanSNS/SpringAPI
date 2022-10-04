@@ -41,7 +41,7 @@ public class CommentService {
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
         // 댓글 권한이 없는 게시글
-        if (!page.getPageSetting().isCommentAuth()) {
+        if (!page.getPageSetting().getCommentAuth()) {
             throw new MyException("댓글을 달 수 없는 게시글입니다.");
         }
 
@@ -51,7 +51,7 @@ public class CommentService {
 
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             // todo SSE 알림+1
-            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
+            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
             }
@@ -67,7 +67,7 @@ public class CommentService {
                 comment.changeGroup(1);
             }
 
-            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().isNotificationComment()) {
+            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
             }
         }
@@ -79,7 +79,7 @@ public class CommentService {
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
     public ResultDto<List<CommentDto>> readCommentList(Long userId, Long pageId, Long startId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
-        if (!page.getPageSetting().isCommentAuth()) {
+        if (!page.getPageSetting().getCommentAuth()) {
             throw new MyException("댓글을 볼 수 없는 게시글입니다.");
         }
         return commentRepository.readCommentList(userId, pageId, startId, 10);
@@ -88,7 +88,7 @@ public class CommentService {
     // 대댓글 조회(한 댓글의 댓글 조회, 10개씩)
     public ResultDto<List<CommentDto>> readNestedCommentList(Long userId, Long pageId, int group, Long startId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
-        if (!page.getPageSetting().isCommentAuth()) {
+        if (!page.getPageSetting().getCommentAuth()) {
             throw new MyException("댓글을 볼 수 없는 게시글입니다.");
         }
         return commentRepository.readNestedCommentList(userId, pageId, group, startId, 10);

@@ -143,7 +143,7 @@ public class UserService {
 
                 // 좋아요 알림 허용했다면 알림 생성
                 // todo SSE 알림+1
-                if (page.getPageSetting().isNotificationLike()) {
+                if (page.getPageSetting().getNotificationLike()) {
                     notificationRepository.save(createNotification(user,targetUser,NotificationType.LIKE, page.getId()));
                 }
 

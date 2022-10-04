@@ -21,19 +21,19 @@ import javax.persistence.Enumerated;
 public class PageSetting {
 
     @Builder.Default
-    private boolean notificationLike = false;
+    private Boolean notificationLike = false;
 
     @Builder.Default
-    private boolean notificationComment = true;
+    private Boolean notificationComment = true;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private SettingType readAuth = SettingType.ALL;
 
     @Builder.Default
-    private boolean commentAuth = true;
+    private Boolean commentAuth = true;
 
     @Builder.Default
-    private boolean likeReadAuth = true;
+    private Boolean likeReadAuth = true;
 
 }

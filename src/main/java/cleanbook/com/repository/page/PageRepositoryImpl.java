@@ -5,10 +5,7 @@ import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.dto.user.UserDto;
-import cleanbook.com.entity.user.QUser;
 import cleanbook.com.entity.user.follow.QFollow;
-import cleanbook.com.entity.user.like.LikePage;
-import cleanbook.com.exception.exceptions.NoMorePageException;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
@@ -16,8 +13,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -194,7 +189,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         }
 
         List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().isLikeReadAuth(),
+                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
                                 p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
@@ -233,7 +228,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         }
 
         List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().isLikeReadAuth(),
+                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
                                 p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
 
