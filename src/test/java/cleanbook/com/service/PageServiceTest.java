@@ -68,7 +68,7 @@ class PageServiceTest {
 
             //given
             User user = new User(1L, "email", "password", null);
-            Page oldPage = new Page(1L, user, "old");
+            Page oldPage = Page.builder().id(1L).user(user).content("old").build();
             userRepository.save(user);
 
             given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(oldPage));
@@ -78,7 +78,6 @@ class PageServiceTest {
 
 
             // then
-
         }
 
         @Test

@@ -72,6 +72,7 @@ public class Page extends Timestamped {
         user.getPageList().add(this);
     }
 
+    @Builder
     public Page(Long id, User user, String content) {
         this.id = id;
         this.user = user;
