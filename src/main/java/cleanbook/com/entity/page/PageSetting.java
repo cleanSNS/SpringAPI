@@ -2,6 +2,7 @@ package cleanbook.com.entity.page;
 
 import cleanbook.com.entity.enums.SettingType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,22 +17,23 @@ import javax.persistence.Enumerated;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PageSetting {
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean notificationLike;
+    @Builder.Default
+    private boolean notificationLike = false;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean notificationComment;
+    @Builder.Default
+    private boolean notificationComment = true;
 
-    @Column(columnDefinition = "varchar(20) default 'ALL'")
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private SettingType readAuth;
+    private SettingType readAuth = SettingType.ALL;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean commentAuth;
+    @Builder.Default
+    private boolean commentAuth = true;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean likeReadAuth;
+    @Builder.Default
+    private boolean likeReadAuth = true;
 
 }

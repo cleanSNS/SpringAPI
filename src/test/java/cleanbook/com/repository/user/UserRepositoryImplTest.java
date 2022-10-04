@@ -45,7 +45,7 @@ class UserRepositoryImplTest {
 
 
             // when
-            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(1L, "lac");
+            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(1L, "lac").getData();
 
 
             // then
@@ -68,7 +68,7 @@ class UserRepositoryImplTest {
             blockRepository.save(createBlock(user,user2));
 
             // when
-            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(user.getId(), "de");
+            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(user.getId(), "de").getData();
 
 
             // then
@@ -91,7 +91,7 @@ class UserRepositoryImplTest {
             blockRepository.save(createBlock(user2,user));
 
             // when
-            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(user.getId(), "de");
+            List<UserDto> userDtoList = userRepository.findUsersStartWithNickname(user.getId(), "de").getData();
 
 
             // then

@@ -3,6 +3,8 @@ package cleanbook.com.service;
 import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
+import cleanbook.com.dto.page.MainPageDto;
+import cleanbook.com.dto.page.UserPageDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
@@ -406,7 +408,19 @@ public class UserService {
     public ResultDto<List<UserDto>> findUsersStartWithNickname(Long userId, String nickname) {
 
         if (hasText(nickname)) {
-            return new ResultDto<>(userRepository.findUsersStartWithNickname(userId, nickname));
+            return userRepository.findUsersStartWithNickname(userId, nickname);
+        }
+        else {
+            throw new EmptyStringException();
+        }
+    }
+
+    // 유저 + 해시태그 검색
+    @Transactional(readOnly = true)
+    public ResultDto<List<UserPageDto>> findUsersStartWithNicknameAndPageByHashtag(Long userId, Long startId, String keyword) {
+
+        if (hasText(keyword)) {
+            return pageRepository.readPageByHashtag(keyword, startId, 10);
         }
         else {
             throw new EmptyStringException();
@@ -419,9 +433,18 @@ public class UserService {
     }
 
     // 유저 프로필 조회
-    public ResultDto<UserNicknameProfileDto> getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return new ResultDto<>(new UserNicknameProfileDto(user.getUserProfile().getNickname(), user.getUserProfile().getImgUrl(), user.getUserProfile().getSelfIntroduction(), user.getFollowerCount(), user.getFolloweeCount()));
+    public ResultDto<UserNicknameProfileDto> getUserProfile(Long userId, Long targetUserId) {
+        User user = userRepository.findById(targetUserId).orElseThrow(UserNotFoundException::new);
+        UserNicknameProfileDto userNicknameProfileDto = UserNicknameProfileDto.builder()
+                .nickname(user.getUserProfile().getNickname())
+                .imgUrl(user.getUserProfile().getImgUrl())
+                .selfIntroduction(user.getUserProfile().getSelfIntroduction())
+                .followerCount(user.getFollowerCount())
+                .followeeCount(user.getFolloweeCount())
+                .follow(followRepository.findByUser_IdAndTargetUser_Id(userId, targetUserId).isPresent())
+                .build();
+
+        return new ResultDto<>(userNicknameProfileDto);
     }
 
     // 알림 내역 전체 조회

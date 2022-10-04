@@ -1,5 +1,6 @@
 package cleanbook.com.repository.user;
 
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.user.block.QBlock;
 import com.querydsl.core.types.Projections;
@@ -21,7 +22,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     // 차단 했거나 당했으면 검색 불가
-    public List<UserDto> findUsersStartWithNickname(Long userId, String nickname) {
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(Long userId, String nickname) {
         QBlock block2 = new QBlock("block2");
 
         List<UserDto> result = jpaQueryFactory.query()
@@ -38,7 +39,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 )
                 .fetch();
 
-        return result;
+        return new ResultDto<>(result);
     }
 
     // 차단한 경우

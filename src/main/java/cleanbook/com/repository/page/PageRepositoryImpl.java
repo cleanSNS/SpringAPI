@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.page.QComment.comment;
+import static cleanbook.com.entity.page.QHashtag.hashtag;
 import static cleanbook.com.entity.page.QPage.page;
 import static cleanbook.com.entity.page.QPageHashtag.pageHashtag;
 import static cleanbook.com.entity.page.QPageImgUrl.pageImgUrl;
@@ -213,6 +214,37 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and((follow.user.id.eq(targetUserId)).and(follow.targetUser.id.eq(userId)).or(page.user.id.eq(userId))))
                 .or(page.pageSetting.readAuth.eq(SettingType.NONE).and(page.user.id.eq(userId)));
     }
+
+    //
+    public ResultDto<List<UserPageDto>> readPageByHashtag(String hashtagName, Long startId, int pageSize) {
+        List<Page> pageList = queryFactory.query()
+                .select(page)
+                .from(page)
+                .leftJoin(page.pageHashtagList, pageHashtag)
+                .join(pageHashtag.hashtag, hashtag)
+                .where(hashtag.name.eq(hashtagName), loePageId(startId))
+                .orderBy(page.id.desc())
+                .limit(pageSize)
+                .fetch();
+
+        // 조회를 전부 완료했을때
+        if (pageList.isEmpty()) {
+            return new ResultDto<>(new ArrayList<>(), 0L);
+        }
+
+        List<UserPageDto> userPageDtoList = pageList.stream().map(
+                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().isLikeReadAuth(),
+                                p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
+                .collect(Collectors.toList());
+
+        Long nextStartId = pageList.stream()
+                .map(p -> p.getId())
+                .mapToLong(x -> x).min().getAsLong() - 1;
+
+        return new ResultDto<>(userPageDtoList, nextStartId);
+    }
+
+
 
     // 테스트용 메서드
     public void testQuery(Long userId) {

@@ -4,9 +4,7 @@ import cleanbook.com.dto.page.PageCreateDto;
 import cleanbook.com.dto.page.PageUpdateDto;
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -20,6 +18,8 @@ import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
 @Getter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Page extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,14 +41,18 @@ public class Page extends Timestamped {
     private int likeCount;
 
     @Embedded
-    private PageSetting pageSetting;
+    @Builder.Default
+    private PageSetting pageSetting = PageSetting.builder().build();
 
+    @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private List<PageImgUrl> imgUrlList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private List<Comment> commentList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private List<PageHashtag> pageHashtagList = new ArrayList<>();
 
@@ -61,12 +65,14 @@ public class Page extends Timestamped {
         this.content = content;
     }
 
+    @Builder
     public Page(User user, String content) {
         this.user = user;
         this.content = content;
         user.getPageList().add(this);
     }
 
+    @Builder
     public Page(Long id, User user, String content) {
         this.id = id;
         this.user = user;
@@ -91,13 +97,11 @@ public class Page extends Timestamped {
     public void unlikePage() {this.likeCount--;}
 
     public static Page createPage(User user, PageCreateDto pageCreateDto) {
-        Page page = new Page();
-        page.user = user;
-        user.getPageList().add(page);
-        page.content = pageCreateDto.getContent();
-        page.imgUrlList.clear();
-        page.pageHashtagList.clear();
-        page.pageSetting = pageCreateDto.getPageSetting();
+        Page page = Page.builder()
+                .user(user)
+                .content(pageCreateDto.getContent())
+                .pageSetting(pageCreateDto.getPageSetting())
+                .build();
 
         for (String imgUrl : pageCreateDto.getImgUrlList()) {
             createPageImgUrl(page,imgUrl);
@@ -107,6 +111,8 @@ public class Page extends Timestamped {
             Hashtag hashtag = new Hashtag(name);
             createPageHashtag(page, hashtag);
         }
+        user.getPageList().add(page);
+
         return page;
     }
 

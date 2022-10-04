@@ -3,6 +3,7 @@ package cleanbook.com.controller;
 import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
+import cleanbook.com.dto.page.UserPageDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
 import cleanbook.com.jwt.TokenProvider;
@@ -221,9 +222,17 @@ public class UserController {
 
     // 유저 검색
     @GetMapping("/user/search")
-    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam String nickname) {
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token, @RequestParam String nickname) {
         Long userId = tokenProvider.getUserId(token);
         return userService.findUsersStartWithNickname(userId, nickname);
+    }
+
+    // 해시태그 검색
+    @GetMapping("/user/search/hashtag")
+    public ResultDto<List<UserPageDto>> findUsersStartWithNicknameAndHashtag(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
+                                                                             @RequestParam String hashtag, @RequestParam Long startId) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.findUsersStartWithNicknameAndPageByHashtag(userId, startId, hashtag);
     }
 
     // 유저 id 조회
@@ -233,10 +242,12 @@ public class UserController {
         return userService.getUserId(userId);
     }
 
-    // 유저 닉네임 + 프로필 이미지 조회
+    // 유저 프로필 조회
     @GetMapping("/user/{userId}/profile")
-    public ResultDto<UserNicknameProfileDto> getUserProfile(@PathVariable Long userId) {
-        return userService.getUserProfile(userId);
+    public ResultDto<UserNicknameProfileDto> getUserProfile(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
+                                                            @PathVariable("userId") Long targetUserId) {
+        Long userId = tokenProvider.getUserId(token);
+        return userService.getUserProfile(userId, targetUserId);
     }
 
     // 알림 내역 전체조회
