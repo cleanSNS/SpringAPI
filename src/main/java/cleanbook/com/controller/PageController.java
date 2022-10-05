@@ -1,5 +1,6 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.*;
 import cleanbook.com.exception.Response;
@@ -78,8 +79,8 @@ public class PageController {
 
     // 해시태그 검색수
     @GetMapping("/user/search/hashtag/count")
-    public ResultDto<List<UserPageDto>> getPageListCountByHashtag(@RequestParam String hashtag, @RequestParam Long startId) {
-        return pageService.readPageListByHashtag(startId, hashtag);
+    public ResultDto<CountDto> getPageListCountByHashtag(@RequestParam String hashtag) {
+        return pageService.getPageListCountByHashtag(hashtag);
     }
 }
 
