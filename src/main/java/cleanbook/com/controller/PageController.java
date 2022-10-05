@@ -72,13 +72,13 @@ public class PageController {
 
 
     // 해시태그 검색
-    @GetMapping("/page/search/hashtag")
+    @GetMapping("/search/hashtag")
     public ResultDto<List<UserPageDto>> readPageListByHashtag(@RequestParam String hashtag, @RequestParam Long startId) {
         return pageService.readPageListByHashtag(startId, hashtag);
     }
 
     // 해시태그 검색수
-    @GetMapping("/page/search/hashtag/count")
+    @GetMapping("/search/hashtag/count")
     public ResultDto<CountDto> getPageListCountByHashtag(@RequestParam String hashtag) {
         return pageService.getPageListCountByHashtag(hashtag);
     }
