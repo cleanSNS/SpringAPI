@@ -415,17 +415,6 @@ public class UserService {
         }
     }
 
-    // 유저 + 해시태그 검색
-    @Transactional(readOnly = true)
-    public ResultDto<List<UserPageDto>> findUsersStartWithNicknameAndPageByHashtag(Long userId, Long startId, String keyword) {
-
-        if (hasText(keyword)) {
-            return pageRepository.readPageByHashtag(keyword, startId, 10);
-        }
-        else {
-            throw new EmptyStringException();
-        }
-    }
 
     // 유저 ID 조회
     public ResultDto<UserIdDto> getUserId(Long userId) {

@@ -69,6 +69,18 @@ public class PageController {
         return ResponseEntity.ok(new Response("success"));
     }
 
+
+    // 해시태그 검색
+    @GetMapping("/user/search/hashtag")
+    public ResultDto<List<UserPageDto>> readPageListByHashtag(@RequestParam String hashtag, @RequestParam Long startId) {
+        return pageService.readPageListByHashtag(startId, hashtag);
+    }
+
+    // 해시태그 검색수
+    @GetMapping("/user/search/hashtag/count")
+    public ResultDto<List<UserPageDto>> getPageListCountByHashtag(@RequestParam String hashtag, @RequestParam Long startId) {
+        return pageService.readPageListByHashtag(startId, hashtag);
+    }
 }
 
 

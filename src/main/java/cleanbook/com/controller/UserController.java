@@ -227,13 +227,6 @@ public class UserController {
         return userService.findUsersStartWithNickname(userId, nickname);
     }
 
-    // 해시태그 검색
-    @GetMapping("/user/search/hashtag")
-    public ResultDto<List<UserPageDto>> findUsersStartWithNicknameAndHashtag(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
-                                                                             @RequestParam String hashtag, @RequestParam Long startId) {
-        Long userId = tokenProvider.getUserId(token);
-        return userService.findUsersStartWithNicknameAndPageByHashtag(userId, startId, hashtag);
-    }
 
     // 유저 id 조회
     @GetMapping("/user/id")
@@ -280,6 +273,4 @@ public class UserController {
         Long userId = tokenProvider.getUserId(token);
         return userService.notcheckedNotificationCount(userId);
     }
-
-
 }

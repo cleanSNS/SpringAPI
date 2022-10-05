@@ -214,7 +214,7 @@ public class LocalUserController {
     // 필터링 설정
     @PostMapping("/user/mypage/filter")
     public ResponseEntity<Response> changeUserFilterSetting(@CookieValue("X-AUTH-TOKEN") String token,
-                                                                  @RequestBody UserFilterSettingDto dto) {
+                                                            @RequestBody UserFilterSettingDto dto) {
         Long userId = tokenProvider.getUserId(token);
         userService.changeUserFilterSetting(userId, createUserFilterSetting(dto));
 
@@ -223,18 +223,11 @@ public class LocalUserController {
 
     // 유저 검색
     @GetMapping("/user/search")
-    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam String nickname) {
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token, @RequestParam String nickname) {
         Long userId = tokenProvider.getUserId(token);
         return userService.findUsersStartWithNickname(userId, nickname);
     }
 
-    // 해시태그 검색
-    @GetMapping("/user/search/hashtag")
-    public ResultDto<List<UserPageDto>> findUsersStartWithNicknameAndHashtag(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
-                                                                             @RequestParam String hashtag, @RequestParam Long startId) {
-        Long userId = tokenProvider.getUserId(token);
-        return userService.findUsersStartWithNicknameAndPageByHashtag(userId, startId, hashtag);
-    }
 
     // 유저 id 조회
     @GetMapping("/user/id")

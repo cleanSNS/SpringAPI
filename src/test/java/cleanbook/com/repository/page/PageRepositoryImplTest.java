@@ -1,6 +1,7 @@
 package cleanbook.com.repository.page;
 
 import cleanbook.com.config.QuerydslConfig;
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.page.*;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.dto.ResultDto;
@@ -358,52 +359,92 @@ class PageRepositoryImplTest {
         }
     }
 
-    @Test
-    @DisplayName("해시태그 검색")
-    void readPageByHashtag() {
+    @Nested
+    @DisplayName("해시태그")
+    class hashtag{
+
+        @Test
+        @DisplayName("해시태그 검색")
+        void readPageByHashtag() {
+
+            //given
+            PageCreateDto pageCreateDto = PageCreateDto.builder()
+                    .content("내용")
+                    .pageHashtagList(Arrays.asList("바다", "수영"))
+                    .build();
+
+            PageCreateDto pageCreateDto2 = PageCreateDto.builder()
+                    .content("내용2")
+                    .pageHashtagList(Arrays.asList("바다1", "수영"))
+                    .build();
+
+            PageCreateDto pageCreateDto3 = PageCreateDto.builder()
+                    .content("내용3")
+                    .pageHashtagList(Arrays.asList("수염", "수영"))
+                    .build();
+
+            pageRepository.save(createPage(myUser, pageCreateDto));
+            pageRepository.save(createPage(myUser, pageCreateDto2));
+            pageRepository.save(createPage(myUser, pageCreateDto3));
+
+
+            // when
+            ResultDto<List<UserPageDto>> resultDto = pageRepository.readPageByHashtag("바다", null, 10);
+            ResultDto<List<UserPageDto>> resultDto2 = pageRepository.readPageByHashtag("수영", null, 10);
+            List<UserPageDto> userPageDtoList = resultDto.getData();
+            List<UserPageDto> userPageDtoList2 = resultDto2.getData();
+            Long startId = resultDto.getStartId();
+
+
+            // then
+            assertThat(userPageDtoList.size()).isEqualTo(1);
+            assertThat(userPageDtoList2.size()).isEqualTo(3);
+
+            assertThat(userPageDtoList2.get(0).getContent()).isEqualTo("내용3");
+            assertThat(userPageDtoList2.get(2).getContent()).isEqualTo("내용");
+
+            resultDto = pageRepository.readPageByHashtag("바다", startId, 10);
+
+            assertThat(resultDto.getData().size()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("해시태그 검색")
+        void getPageListCountByHashtag() {
 
 
 
-        //given
-        PageCreateDto pageCreateDto = PageCreateDto.builder()
-                .content("내용")
-                .pageHashtagList(Arrays.asList("바다", "수영"))
-                .build();
+            //given
+            PageCreateDto pageCreateDto = PageCreateDto.builder()
+                    .content("내용")
+                    .pageHashtagList(Arrays.asList("바다", "수영"))
+                    .build();
 
-        PageCreateDto pageCreateDto2 = PageCreateDto.builder()
-                .content("내용2")
-                .pageHashtagList(Arrays.asList("바다1", "수영"))
-                .build();
+            PageCreateDto pageCreateDto2 = PageCreateDto.builder()
+                    .content("내용2")
+                    .pageHashtagList(Arrays.asList("바다1", "수영"))
+                    .build();
 
-        PageCreateDto pageCreateDto3 = PageCreateDto.builder()
-                .content("내용3")
-                .pageHashtagList(Arrays.asList("수염", "수영"))
-                .build();
+            PageCreateDto pageCreateDto3 = PageCreateDto.builder()
+                    .content("내용3")
+                    .pageHashtagList(Arrays.asList("수염", "수영"))
+                    .build();
 
-        pageRepository.save(createPage(myUser, pageCreateDto));
-        pageRepository.save(createPage(myUser, pageCreateDto2));
-        pageRepository.save(createPage(myUser, pageCreateDto3));
-
-
-        // when
-        ResultDto<List<UserPageDto>> resultDto = pageRepository.readPageByHashtag("바다", null, 10);
-        ResultDto<List<UserPageDto>> resultDto2 = pageRepository.readPageByHashtag("수영", null, 10);
-        List<UserPageDto> userPageDtoList = resultDto.getData();
-        List<UserPageDto> userPageDtoList2 = resultDto2.getData();
-        Long startId = resultDto.getStartId();
+            pageRepository.save(createPage(myUser, pageCreateDto));
+            pageRepository.save(createPage(myUser, pageCreateDto2));
+            pageRepository.save(createPage(myUser, pageCreateDto3));
 
 
-        // then
-        assertThat(userPageDtoList.size()).isEqualTo(1);
-        assertThat(userPageDtoList2.size()).isEqualTo(3);
+            ResultDto<CountDto> resultDto = pageRepository.getPageListCountByHashtag("수영");
+            ResultDto<CountDto> resultDto2 = pageRepository.getPageListCountByHashtag("바다");
+            CountDto countDto = resultDto.getData();
+            CountDto countDto2 = resultDto2.getData();
 
-        assertThat(userPageDtoList2.get(0).getContent()).isEqualTo("내용3");
-        assertThat(userPageDtoList2.get(2).getContent()).isEqualTo("내용");
-
-        resultDto = pageRepository.readPageByHashtag("바다", startId, 10);
-
-        assertThat(resultDto.getData().size()).isEqualTo(0);
+            assertThat(countDto.getCount()).isEqualTo(3);
+            assertThat(countDto2.getCount()).isEqualTo(1);
+        }
     }
+
 
 }
 

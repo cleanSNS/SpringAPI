@@ -1,13 +1,11 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.User;
-import cleanbook.com.exception.exceptions.MyException;
-import cleanbook.com.exception.exceptions.NoAuthroizationException;
-import cleanbook.com.exception.exceptions.PageNotFoundException;
-import cleanbook.com.exception.exceptions.UserNotFoundException;
+import cleanbook.com.exception.exceptions.*;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.BlockRepository;
@@ -18,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.StringUtils.hasText;
 
 @Service
 @RequiredArgsConstructor
@@ -90,5 +90,28 @@ public class PageService {
 
         user.getPageList().remove(page);
         pageRepository.delete(page);
+    }
+
+
+    // 해시태그 검색
+    @Transactional(readOnly = true)
+    public ResultDto<List<UserPageDto>> readPageListByHashtag(Long startId, String keyword) {
+        if (hasText(keyword)) {
+            return pageRepository.readPageByHashtag(keyword, startId, 10);
+        }
+        else {
+            throw new EmptyStringException();
+        }
+    }
+
+    // 해시태그 개수 검색
+    @Transactional(readOnly = true)
+    public ResultDto<CountDto> getPageListCountByHashtag(String hashtagName) {
+        if (hasText(hashtagName)) {
+            return pageRepository.getPageListCountByHashtag(hashtagName);
+        }
+        else {
+            throw new EmptyStringException();
+        }
     }
 }

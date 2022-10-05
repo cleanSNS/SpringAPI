@@ -1,5 +1,6 @@
 package cleanbook.com.repository.page;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.enums.SettingType;
@@ -239,6 +240,17 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         return new ResultDto<>(userPageDtoList, nextStartId);
     }
 
+    public ResultDto<CountDto> getPageListCountByHashtag(String hashtagName) {
+        Long count = queryFactory.query()
+                .select(page.count())
+                .from(page)
+                .leftJoin(page.pageHashtagList, pageHashtag)
+                .join(pageHashtag.hashtag, hashtag)
+                .where(hashtag.name.eq(hashtagName))
+                .fetchOne();
+
+        return new ResultDto<>(new CountDto(count));
+    }
 
 
     // 테스트용 메서드
