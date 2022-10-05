@@ -45,11 +45,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     // 차단한 경우
     // 차단한 사람이 없을 경우를 생각해 null을 넣어줘야함
     BooleanExpression exceptBlockedUser(Long userId) {
+        if (userId == null) {
+            return null;
+        }
         return block.isNull().or(block.targetUser.id.ne(userId));
     }
 
     // 차단당한 경우
     BooleanExpression exceptBlockUser(Long userId, QBlock block2) {
+        if (userId == null) {
+            return null;
+        }
         return block2.isNull().or(block2.user.id.ne(userId));
     }
 }
