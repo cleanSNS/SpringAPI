@@ -9,8 +9,6 @@ import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.*;
-import cleanbook.com.entity.user.follow.Follow;
-import cleanbook.com.exception.exceptions.NoMorePageException;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
@@ -20,25 +18,19 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.page.Page.createPage;
-import static cleanbook.com.entity.page.PageHashtag.createPageHashtag;
 import static cleanbook.com.entity.page.PageImgUrl.createPageImgUrl;
 import static cleanbook.com.entity.user.follow.Follow.createFollow;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 @Import(QuerydslConfig.class)
-//@SpringBootTest
-//@Transactional
 class PageRepositoryImplTest {
 
     @Autowired
@@ -46,15 +38,7 @@ class PageRepositoryImplTest {
     @Autowired
     private PageRepository pageRepository;
     @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private PageImgUrlRepository pageImgUrlRepository;
-    @Autowired
     private FollowRepository followRepository;
-    @Autowired
-    private TestEntityManager em;
-//    @Autowired
-//    private EntityManager em;
 
     private User myUser;
     private Page myPage;
@@ -284,9 +268,9 @@ class PageRepositoryImplTest {
             PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
             PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
             PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").pageSetting(allSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").pageSetting(followSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").pageSetting(noneSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").imgUrlList(List.of("url")).pageSetting(allSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").imgUrlList(List.of("url")).pageSetting(followSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").imgUrlList(List.of("url")).pageSetting(noneSetting).build()));
 
             followRepository.save(createFollow(user,user2));
 
@@ -312,9 +296,9 @@ class PageRepositoryImplTest {
             PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
             PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
             PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").pageSetting(allSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").pageSetting(followSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").pageSetting(noneSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").imgUrlList(List.of("url")).pageSetting(allSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").imgUrlList(List.of("url")).pageSetting(followSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").imgUrlList(List.of("url")).pageSetting(noneSetting).build()));
 
             followRepository.save(createFollow(user,user2));
             followRepository.save(createFollow(user2,user));
@@ -343,9 +327,9 @@ class PageRepositoryImplTest {
             PageSetting allSetting = new PageSetting(true, true, SettingType.ALL, true, true);
             PageSetting followSetting = new PageSetting(true, true, SettingType.FOLLOW_ONLY, true, true);
             PageSetting noneSetting = new PageSetting(true, true, SettingType.NONE, true, true);
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").pageSetting(allSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").pageSetting(followSetting).build()));
-            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").pageSetting(noneSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("all").imgUrlList(List.of("url")).pageSetting(allSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("follow").imgUrlList(List.of("url")).pageSetting(followSetting).build()));
+            pageRepository.save(createPage(user2, PageCreateDto.builder().content("none").imgUrlList(List.of("url")).pageSetting(noneSetting).build()));
 
 
 
@@ -370,16 +354,19 @@ class PageRepositoryImplTest {
             //given
             PageCreateDto pageCreateDto = PageCreateDto.builder()
                     .content("내용")
+                    .imgUrlList(List.of("url"))
                     .pageHashtagList(Arrays.asList("바다", "수영"))
                     .build();
 
             PageCreateDto pageCreateDto2 = PageCreateDto.builder()
                     .content("내용2")
+                    .imgUrlList(List.of("url"))
                     .pageHashtagList(Arrays.asList("바다1", "수영"))
                     .build();
 
             PageCreateDto pageCreateDto3 = PageCreateDto.builder()
                     .content("내용3")
+                    .imgUrlList(List.of("url"))
                     .pageHashtagList(Arrays.asList("수염", "수영"))
                     .build();
 
@@ -400,8 +387,8 @@ class PageRepositoryImplTest {
             assertThat(userPageDtoList.size()).isEqualTo(1);
             assertThat(userPageDtoList2.size()).isEqualTo(3);
 
-            assertThat(userPageDtoList2.get(0).getContent()).isEqualTo("내용3");
-            assertThat(userPageDtoList2.get(2).getContent()).isEqualTo("내용");
+            // 최신순으로
+            assertThat(userPageDtoList2.get(0).getPageId()).isGreaterThan(userPageDtoList2.get(2).getPageId());
 
             resultDto = pageRepository.readPageByHashtag("바다", startId, 10);
 

@@ -11,8 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserPageDto {
     private Long pageId;
-    private String content;
     private int likeCount;
     private boolean likeReadAuth;
-    private List<String> imgUrlList;
+    private String imgUrl;
 }

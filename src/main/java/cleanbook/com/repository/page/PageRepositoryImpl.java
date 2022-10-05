@@ -189,10 +189,10 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
             return new ResultDto<>(new ArrayList<>(), 0L);
         }
 
-        List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
-                                p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        List<UserPageDto> userPageDtoList = pageList.stream()
+                    .map(p -> new UserPageDto(p.getId(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
+                                p.getImgUrlList().get(0).getImgUrl()))
+                    .collect(Collectors.toList());
 
         Long nextStartId = pageList.stream()
                 .map(p -> p.getId())
@@ -211,7 +211,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .or(page.pageSetting.readAuth.eq(SettingType.NONE).and(page.user.id.eq(userId)));
     }
 
-    //
+    // 해시태그로 페이지 검색
     public ResultDto<List<UserPageDto>> readPageByHashtag(String hashtagName, Long startId, int pageSize) {
         List<Page> pageList = queryFactory.query()
                 .select(page)
@@ -228,10 +228,10 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
             return new ResultDto<>(new ArrayList<>(), 0L);
         }
 
-        List<UserPageDto> userPageDtoList = pageList.stream().map(
-                        p -> new UserPageDto(p.getId(), p.getContent(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
-                                p.getImgUrlList().stream().map(u -> u.getImgUrl()).collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        List<UserPageDto> userPageDtoList = pageList.stream()
+                        .map(p -> new UserPageDto(p.getId(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
+                                p.getImgUrlList().get(0).getImgUrl()))
+                        .collect(Collectors.toList());
 
         Long nextStartId = pageList.stream()
                 .map(p -> p.getId())
