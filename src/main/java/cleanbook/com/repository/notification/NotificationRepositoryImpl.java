@@ -25,7 +25,6 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
     // 알림내역 조회
     public ResultDto<List<NotificationDto>> readNotificationList(Long userId, Long startId, int pageSize) {
 
-        // nested false인 댓글을 10개씩
         List<Notification> notificationList = queryFactory.query()
                 .select(notification)
                 .from(notification)

@@ -107,7 +107,7 @@ public class UserService {
     public ResultDto<List<UserDto>> readFolloweeList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<UserDto> userDtoList = user.getFolloweeList().stream()
-                .map(f -> new UserDto(f.getId(), f.getTargetUser().getUserProfile().getNickname(), f.getTargetUser().getUserProfile().getImgUrl()))
+                .map(f -> new UserDto(f.getTargetUser().getId(), f.getTargetUser().getUserProfile().getNickname(), f.getTargetUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
 
         return new ResultDto<>(userDtoList);
@@ -117,7 +117,7 @@ public class UserService {
     public ResultDto<List<UserDto>> readFollowerList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<UserDto> userDtoList = user.getFollowerList().stream()
-                .map(f -> new UserDto(f.getId(), f.getUser().getUserProfile().getNickname(), f.getUser().getUserProfile().getImgUrl()))
+                .map(f -> new UserDto(f.getUser().getId(), f.getUser().getUserProfile().getNickname(), f.getUser().getUserProfile().getImgUrl()))
                 .collect(Collectors.toList());
 
         return new ResultDto<>(userDtoList);
@@ -302,7 +302,7 @@ public class UserService {
 
         // todo 필터링 메서드
         Filter filter = createFilter(user, targetUser);
-        filterRepository.save(filter).getId();
+        filterRepository.save(filter);
     }
 
     // 필터링하지 않을 사용자 해제
