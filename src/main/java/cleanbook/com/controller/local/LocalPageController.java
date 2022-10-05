@@ -71,13 +71,13 @@ public class LocalPageController {
     }
 
     // 해시태그 검색
-    @GetMapping("/user/search/hashtag")
+    @GetMapping("/search/hashtag")
     public ResultDto<List<UserPageDto>> readPageListByHashtag(@RequestParam String hashtag, @RequestParam Long startId) {
         return pageService.readPageListByHashtag(startId, hashtag);
     }
 
     // 해시태그 검색수
-    @GetMapping("/user/search/hashtag/count")
+    @GetMapping("/search/hashtag/count")
     public ResultDto<CountDto> getPageListCountByHashtag(@RequestParam String hashtag) {
         return pageService.getPageListCountByHashtag(hashtag);
     }
