@@ -37,7 +37,6 @@ public class CommentService {
     public void createComment(Long userId, CommentCreateDto dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Page page = pageRepository.findById(dto.getPageId()).orElseThrow(PageNotFoundException::new);
-        User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
         // 댓글 권한이 없는 게시글
@@ -49,12 +48,20 @@ public class CommentService {
             int order = commentRepository.findFirstByPage_IdAndGroupOrderByOrderDesc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
             comment.setOrder(order+1);
 
-            // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             // todo SSE 알림+1
-            if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
-                Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
+
+            // 댓글이 본인 댓글이 아닐시 대댓글 알림
+            Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
+            if (!userId.equals(headComment.getUser().getId())) {
+                User targetUser = userRepository.findById(headComment.getUser().getId()).orElseThrow(UserNotFoundException::new);
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
             }
+            // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
+            else if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
+                User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, page.getId()));
+            }
+
         } else { // 댓글일시
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             // todo SSE 알림+1
@@ -68,12 +75,12 @@ public class CommentService {
             }
 
             if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
+                User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
             }
         }
 
         commentRepository.save(comment);
-
     }
 
     // 댓글 조회(한 게시글의 댓글 전체 조회, 대댓글 제외, 10개씩)
