@@ -63,7 +63,7 @@ public class PageService {
             return new ResultDto<>(new ArrayList<>());
         }
 
-        return pageRepository.readUserPageList(userId, targetUserId, startId, 10);
+        return pageRepository.readUserPageList(userId, targetUserId, startId, 9);
     }
 
     // 게시글 수정
@@ -97,7 +97,7 @@ public class PageService {
     @Transactional(readOnly = true)
     public ResultDto<List<UserPageDto>> readPageListByHashtag(Long startId, String keyword) {
         if (hasText(keyword)) {
-            return pageRepository.readPageByHashtag(keyword, startId, 10);
+            return pageRepository.readPageByHashtag(keyword, startId, 9);
         }
         else {
             throw new EmptyStringException();
