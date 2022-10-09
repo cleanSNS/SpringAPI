@@ -88,7 +88,7 @@ public class UserService {
         followRepository.save(follow);
 
         // 알림 저장
-        notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, null));
+        notificationRepository.save(createNotification(user, targetUser,NotificationType.FOLLOW, null));
         // SSE 송신
         Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
         notificationService.sendNotificationCount(targetUser, count);
