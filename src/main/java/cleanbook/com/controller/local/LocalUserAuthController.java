@@ -1,5 +1,6 @@
 package cleanbook.com.controller.local;
 
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
 import cleanbook.com.service.EmailService;
@@ -45,8 +46,8 @@ public class LocalUserAuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<UserLoginDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
-        return ResponseEntity.ok(userAuthService.loginLocal(userLoginDto, response));
+    public ResultDto<UserIdDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
+        return new ResultDto<>(userAuthService.login(userLoginDto, response));
     }
 
     // 로그아웃

@@ -1,9 +1,6 @@
 package cleanbook.com.service;
 
-import cleanbook.com.dto.user.EmailAuthDto;
-import cleanbook.com.dto.user.UserDeleteDto;
-import cleanbook.com.dto.user.UserLoginDto;
-import cleanbook.com.dto.user.UserSignUpDto;
+import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.enums.AccountState;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.authority.Authority;
@@ -117,7 +114,7 @@ public class UserAuthService {
     }
 
     // 로그인
-    public UserLoginDto login(UserLoginDto userLoginDto, HttpServletResponse response) {
+    public UserIdDto login(UserLoginDto userLoginDto, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
                 .orElseThrow(IllegalAccountException::new);
 
@@ -139,7 +136,7 @@ public class UserAuthService {
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader("Authorization", "Bearer " + refreshToken);
 
-        return new UserLoginDto(user);
+        return new UserIdDto(user.getId());
     }
 
     // 로컬 로그인

@@ -55,12 +55,20 @@ public class CommentService {
             Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
             if (!userId.equals(headComment.getUser().getId())) {
                 User targetUser = userRepository.findById(headComment.getUser().getId()).orElseThrow(UserNotFoundException::new);
-                notificationService.send(user, targetUser, NotificationType.NESTED, headComment.getId());
+                // 알림 저장
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
+                // SSE 송신
+                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser, count);
             }
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             else if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
-                notificationService.send(user, targetUser, NotificationType.COMMENT, page.getId());
+                // 알림 저장
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, page.getId()));
+                // SSE 송신
+                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser, count);
             }
 
         } else { // 댓글일시
@@ -77,7 +85,11 @@ public class CommentService {
 
             if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
+                // 알림 저장
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
+                // SSE 송신
+                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser, count);
             }
         }
 

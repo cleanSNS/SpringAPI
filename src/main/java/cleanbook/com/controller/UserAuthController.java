@@ -1,5 +1,6 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
 import cleanbook.com.service.EmailService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.xml.transform.Result;
 
 @Slf4j
 @RestController
@@ -45,8 +47,8 @@ public class UserAuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<UserLoginDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
-        return ResponseEntity.ok(userAuthService.login(userLoginDto, response));
+    public ResultDto<UserIdDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
+        return new ResultDto<>(userAuthService.login(userLoginDto, response));
     }
 
     // 로그아웃

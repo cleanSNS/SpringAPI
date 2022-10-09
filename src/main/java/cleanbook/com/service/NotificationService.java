@@ -1,5 +1,6 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
@@ -65,6 +66,16 @@ public class NotificationService {
         return emitter;
     }
 
+    private void sendToClient(SseEmitter emitter, Object data) {
+        try {
+            emitter.send(SseEmitter.event()
+                    .name("sse")
+                    .data(data));
+        } catch (IOException exception) {
+            throw new RuntimeException("연결 오류!");
+        }
+    }
+
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()
@@ -89,6 +100,14 @@ public class NotificationService {
         }
     }
 
+    public void sendNotificationCount(User receiver, Long count) {
+
+        SseEmitter emitter = emitterMap.get(receiver.getId());
+
+        if (emitter != null) {
+            sendToClient(emitter, new CountDto(count));
+        }
+    }
 
 
 }
