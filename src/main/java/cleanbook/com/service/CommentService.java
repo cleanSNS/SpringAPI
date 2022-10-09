@@ -32,6 +32,7 @@ public class CommentService {
     private final PageRepository pageRepository;
     private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     // 댓글 생성
     public void createComment(Long userId, CommentCreateDto dto) {
@@ -54,12 +55,12 @@ public class CommentService {
             Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);
             if (!userId.equals(headComment.getUser().getId())) {
                 User targetUser = userRepository.findById(headComment.getUser().getId()).orElseThrow(UserNotFoundException::new);
-                notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
+                notificationService.send(user, targetUser, NotificationType.NESTED, headComment.getId());
             }
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             else if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
-                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, page.getId()));
+                notificationService.send(user, targetUser, NotificationType.COMMENT, page.getId());
             }
 
         } else { // 댓글일시
