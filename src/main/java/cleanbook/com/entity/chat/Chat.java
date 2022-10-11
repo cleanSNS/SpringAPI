@@ -26,7 +26,7 @@ public class Chat extends Timestamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
-    private ChatRoom chatRoom;
+    private Chatroom chatroom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -39,14 +39,14 @@ public class Chat extends Timestamped {
     @OneToMany(mappedBy = "chat")
     private List<ChatImgUrl> chatImgUrlList = new ArrayList<>();
 
-    public static Chat createChat(ChatRoom chatRoom, User user, String message, LocalDateTime createdDate) {
+    public static Chat createChat(Chatroom chatroom, User user, String message, LocalDateTime createdDate) {
         Chat chat = new Chat();
-        chat.chatRoom = chatRoom;
+        chat.chatroom = chatroom;
         chat.user = user;
         chat.message = message;
         chat.setCreatedDate(createdDate);
-        chatRoom.getChatList().add(chat);
-        chatRoom.modify(LocalDateTime.now());
+        chatroom.getChatList().add(chat);
+        chatroom.modify(LocalDateTime.now());
 
         return chat;
     }

@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoomDto {
+public class ChatroomDto {
     private String name;
     private List<String> userList;
     private int headCount;

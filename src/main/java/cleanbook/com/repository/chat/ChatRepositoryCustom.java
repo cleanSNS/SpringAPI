@@ -7,5 +7,5 @@ import cleanbook.com.entity.chat.Chat;
 import java.util.List;
 
 public interface ChatRepositoryCustom {
-    ResultDto<List<ChatDto>> readChatList(Long chatRoomId, Long startId, int pageSize);
+    ResultDto<List<ChatDto>> readChatList(Long chatroomId, Long startId, int pageSize);
 }

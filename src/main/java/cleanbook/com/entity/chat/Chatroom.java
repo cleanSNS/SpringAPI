@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cleanbook.com.entity.chat.UserChatRoom.createUserChatRoom;
+import static cleanbook.com.entity.chat.UserChatroom.createUserChatroom;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Slf4j
-public class ChatRoom extends Timestamped {
+public class Chatroom extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_room_id")
+    @Column(name = "chatroom_id")
     private Long id;
 
     private String name;
@@ -30,19 +30,19 @@ public class ChatRoom extends Timestamped {
     @CreatedDate
     private LocalDateTime modifedDate;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
     private List<Chat> chatList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<UserChatRoom> userChatRoomList = new ArrayList<>();
+    @OneToMany(mappedBy = "chatroom", cascade = CascadeType.ALL)
+    private List<UserChatroom> userChatroomList = new ArrayList<>();
 
-    public static ChatRoom createChatRoom(String name, List<User> userList) {
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.name = name;
+    public static Chatroom createChatroom(String name, List<User> userList) {
+        Chatroom chatroom = new Chatroom();
+        chatroom.name = name;
         for (User user : userList) {
-            chatRoom.getUserChatRoomList().add(createUserChatRoom(user, chatRoom));
+            chatroom.getUserChatroomList().add(createUserChatroom(user, chatroom));
         }
-        return chatRoom;
+        return chatroom;
     }
 
     public void changeName(String name) {
@@ -55,7 +55,7 @@ public class ChatRoom extends Timestamped {
     }
 
 
-    public ChatRoom(String name) {
+    public Chatroom(String name) {
         this.name = name;
     }
 }

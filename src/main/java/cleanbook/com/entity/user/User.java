@@ -3,7 +3,7 @@ package cleanbook.com.entity.user;
 import cleanbook.com.entity.enums.AccountState;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.Timestamped;
-import cleanbook.com.entity.chat.UserChatRoom;
+import cleanbook.com.entity.chat.UserChatroom;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.authority.UserAuthority;
 import cleanbook.com.entity.user.block.Block;
@@ -73,7 +73,7 @@ public class User extends Timestamped {
     private List<Block> blockUserList = new ArrayList<>(); // 나를 차단한 사람
 
     @OneToMany(mappedBy = "user")
-    private List<UserChatRoom> userChatRoomList = new ArrayList<>();
+    private List<UserChatroom> userChatroomList = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetUser")
     private List<Notification> notificationList = new ArrayList<>();

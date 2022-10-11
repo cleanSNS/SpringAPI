@@ -2,10 +2,7 @@ package cleanbook.com.dto.chat;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class ChatRoomForm {
+public class ChatroomUpdateDto {
     private String name;
-    private List<Long> userIdList;
 }

@@ -25,12 +25,12 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom{
 
     // 채팅방의 채팅, 최신순으로 100개씩
     @Transactional
-    public ResultDto<List<ChatDto>> readChatList(Long chatRoomId, Long startId, int pageSize) {
+    public ResultDto<List<ChatDto>> readChatList(Long chatroomId, Long startId, int pageSize) {
 
         List<Chat> chatList = queryFactory.query()
                 .select(chat)
                 .from(chat)
-                .where(chat.chatRoom.id.eq(chatRoomId), chat.id.loe(startId))
+                .where(chat.chatroom.id.eq(chatroomId), chat.id.loe(startId))
                 .orderBy(chat.createdDate.desc())
                 .limit(pageSize)
                 .fetch();

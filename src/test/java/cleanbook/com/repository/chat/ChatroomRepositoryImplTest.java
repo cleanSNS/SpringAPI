@@ -1,10 +1,10 @@
 package cleanbook.com.repository.chat;
 
-import cleanbook.com.dto.chat.ChatRoomDto;
-import cleanbook.com.entity.chat.ChatRoom;
-import cleanbook.com.repository.chatRoom.ChatRoomRepository;
+import cleanbook.com.dto.chat.ChatroomDto;
+import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.repository.chatroom.ChatroomRepository;
 import cleanbook.com.repository.user.UserRepository;
-import cleanbook.com.service.ChatRoomService;
+import cleanbook.com.service.ChatroomService;
 import cleanbook.com.service.ChatService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,12 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class ChatRoomRepositoryImplTest {
+class ChatroomRepositoryImplTest {
 
     @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    private ChatroomRepository chatRoomRepository;
     @Autowired
-    private ChatRoomService chatRoomService;
+    private ChatroomService chatRoomService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -35,12 +35,12 @@ class ChatRoomRepositoryImplTest {
 
     @Test
     @DisplayName("채팅방 전체 조회")
-    void readChatRoomList() {
+    void readChatroomList() {
 
         //given
-        ChatRoom chatRoom1 = chatRoomService.createChatRoom("채팅방1", Arrays.asList(1L, 2L, 3L));
-        ChatRoom chatRoom2 = chatRoomService.createChatRoom("채팅방2", Arrays.asList(1L, 3L));
-        ChatRoom chatRoom3 = chatRoomService.createChatRoom("채팅방3", Arrays.asList(1L, 2L));
+        Chatroom chatRoom1 = chatRoomService.createChatroom(1L,"채팅방1", Arrays.asList(1L, 2L, 3L));
+        Chatroom chatRoom2 = chatRoomService.createChatroom(1L,"채팅방2", Arrays.asList(1L, 3L));
+        Chatroom chatRoom3 = chatRoomService.createChatroom(1L,"채팅방3", Arrays.asList(1L, 2L));
         chatService.createChat(chatRoom2.getId(), "유저1" , "안녕", LocalDateTime.now());
         chatService.createChat(chatRoom3.getId(), "유저1" , "방가", LocalDateTime.now());
         chatService.createChat(chatRoom1.getId(), "유저1" , "안녕", LocalDateTime.now());
@@ -48,12 +48,12 @@ class ChatRoomRepositoryImplTest {
 
 
         // when
-        List<ChatRoomDto> chatRoomDtoList = chatRoomRepository.readChatRoomList(1L);
-        for (ChatRoomDto chatRoomDto : chatRoomDtoList) {
+        List<ChatroomDto> chatRoomDtoList = chatRoomRepository.readChatroomList(1L);
+        for (ChatroomDto chatRoomDto : chatRoomDtoList) {
             System.out.println("chatRoomDto.toString() = " + chatRoomDto.toString());
         }
-        ChatRoomDto first = chatRoomDtoList.get(0);
-        ChatRoomDto second = chatRoomDtoList.get(1);
+        ChatroomDto first = chatRoomDtoList.get(0);
+        ChatroomDto second = chatRoomDtoList.get(1);
 
 
         // then

@@ -1,9 +1,9 @@
 package cleanbook.com.service;
 
 import cleanbook.com.entity.chat.Chat;
-import cleanbook.com.entity.chat.ChatRoom;
+import cleanbook.com.entity.chat.Chatroom;
 import cleanbook.com.repository.chat.ChatRepository;
-import cleanbook.com.repository.chatRoom.ChatRoomRepository;
+import cleanbook.com.repository.chatroom.ChatroomRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +22,22 @@ class ChatServiceTest {
     @Autowired
     private ChatService chatService;
     @Autowired
-    private ChatRoomService chatRoomService;
+    private ChatroomService chatRoomService;
     @Autowired
     private ChatRepository chatRepository;
     @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    private ChatroomRepository chatRoomRepository;
 
     @Test
     @DisplayName("채팅 생성")
     void createChat() {
 
         //given
-        ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
+        Chatroom chatroom = chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
 
 
         // when
-        Chat chat1 = chatService.createChat(chatRoom.getId(), "유저1", "ㅎㅇ", LocalDateTime.now());
+        Chat chat1 = chatService.createChat(chatroom.getId(), "유저1", "ㅎㅇ", LocalDateTime.now());
         Chat chat = chatRepository.findById(chat1.getId()).get();
 
 

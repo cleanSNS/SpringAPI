@@ -1,8 +1,8 @@
 package cleanbook.com.service;
 
-import cleanbook.com.entity.chat.ChatRoom;
+import cleanbook.com.entity.chat.Chatroom;
 import cleanbook.com.exception.exceptions.NotFoundException;
-import cleanbook.com.repository.chatRoom.ChatRoomRepository;
+import cleanbook.com.repository.chatroom.ChatroomRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,72 +21,72 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class ChatRoomServiceTest {
+class ChatroomServiceTest {
 
     @Autowired
-    private ChatRoomService chatRoomService;
+    private ChatroomService chatRoomService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    private ChatroomRepository chatRoomRepository;
     @Autowired
     private ChatService chatService;
 
     @Test
     @DisplayName("채팅방 생성")
-    void noneFollowCreateChatRoomTest() {
+    void noneFollowCreateChatroomTest() {
 
         //given
         // 유저 2명은 이미 저장되어있음
 
 
         // when
-        chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L,2L));
+        chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L,2L));
 
 
         // then
-        List<ChatRoom> chatRoomList = chatRoomRepository.findAll();
+        List<Chatroom> chatRoomList = chatRoomRepository.findAll();
         assertThat(chatRoomList.size()).isEqualTo(1);
         assertThat(chatRoomList.get(0).getName()).isEqualTo("내채팅방");
     }
 
     @Nested
     @DisplayName("채팅방 이름 수정")
-    class changeChatRoomName {
+    class changeChatroomName {
 
         @Test
         @DisplayName("존재하는 채팅방 이름 수정")
-        void changeExistChatRoomName() {
+        void changeExistChatroomName() {
 
             //given
             // 유저 2명은 이미 저장되어있음
 
 
             // when
-            ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
-            chatRoomService.changeName(chatRoom.getId(), "채팅방");
-            ChatRoom changedChatRoom = chatRoomRepository.findById(chatRoom.getId()).get();
+            Chatroom chatroom = chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
+            chatRoomService.changeName(1L, chatroom.getId(), "채팅방");
+            Chatroom changedChatroom = chatRoomRepository.findById(chatroom.getId()).get();
 
 
             // then
-            assertThat(changedChatRoom.getName()).isEqualTo("채팅방");
+            assertThat(changedChatroom.getName()).isEqualTo("채팅방");
         }
 
         @Test
         @DisplayName("존재하지 않는 채팅방 이름 수정")
-        void changeNotExistChatRoomName() {
+        void changeNotExistChatroomName() {
 
             //given
             // 유저 2명은 이미 저장되어있음
 
 
             // when
-            chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
+            chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
 
 
             // then
             Throwable exception = assertThrows(NotFoundException.class, () ->
-                    chatRoomService.changeName(2L, "채팅방")
+                    chatRoomService.changeName(1L, 2L, "채팅방")
             );
             assertEquals("존재하지 않는 채팅방입니다.", exception.getMessage());
         }
@@ -94,11 +94,11 @@ class ChatRoomServiceTest {
 
     @Nested
     @DisplayName("채팅방 삭제")
-    class deleteChatRoom {
+    class deleteChatroom {
 
         @Nested
         @DisplayName("존재하는 채팅방 삭제")
-        class deleteExistChatRoom {
+        class deleteExistChatroom {
 
             @Test
             @DisplayName("2명이상일 때")
@@ -109,18 +109,18 @@ class ChatRoomServiceTest {
 
 
                 // when
-                ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
-                chatService.createChat(chatRoom.getId(), "유저1" , "ㅎㅇ", LocalDateTime.now());
-                chatService.createChat(chatRoom.getId(), "유저2" , "hi", LocalDateTime.now());
+                Chatroom chatroom = chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
+                chatService.createChat(chatroom.getId(), "유저1" , "ㅎㅇ", LocalDateTime.now());
+                chatService.createChat(chatroom.getId(), "유저2" , "hi", LocalDateTime.now());
 
-                chatRoomService.deleteChatRoom(1L, chatRoom.getId());
-                ChatRoom newChatRoom = chatRoomRepository.findById(chatRoom.getId()).get();
+                chatRoomService.deleteChatroom(1L, chatroom.getId());
+                Chatroom newChatroom = chatRoomRepository.findById(chatroom.getId()).get();
 
 
                 // then
-                assertThat(newChatRoom.getUserChatRoomList().size()).isEqualTo(1);
-                assertThat(newChatRoom.getUserChatRoomList().get(0).getUser().getId()).isEqualTo(2L);
-                assertThat(newChatRoom.getChatList().size()).isEqualTo(2);
+                assertThat(newChatroom.getUserChatroomList().size()).isEqualTo(1);
+                assertThat(newChatroom.getUserChatroomList().get(0).getUser().getId()).isEqualTo(2L);
+                assertThat(newChatroom.getChatList().size()).isEqualTo(2);
             }
 
             @Test
@@ -132,31 +132,31 @@ class ChatRoomServiceTest {
 
 
                 // when
-                ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
-                chatRoomService.deleteChatRoom(1L, chatRoom.getId());
-                Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(1L);
+                Chatroom chatroom = chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
+                chatRoomService.deleteChatroom(1L, chatroom.getId());
+                Optional<Chatroom> optionalChatroom = chatRoomRepository.findById(1L);
 
 
                 // then
-                assertThat(optionalChatRoom.isPresent()).isFalse();
+                assertThat(optionalChatroom.isPresent()).isFalse();
             }
         }
 
         @Test
         @DisplayName("존재하지 않는 채팅방 삭제")
-        void deleteNotExistChatRoom() {
+        void deleteNotExistChatroom() {
 
             //given
             // 유저 2명은 이미 저장되어있음
 
 
             // when
-            chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
+            chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
 
 
             // then
             Throwable exception = assertThrows(NotFoundException.class, () ->
-                    chatRoomService.deleteChatRoom(1L, 100L)
+                    chatRoomService.deleteChatroom(1L, 100L)
             );
             assertEquals("존재하지 않는 채팅방입니다.", exception.getMessage());
         }
