@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ class ChatServiceTest {
 
 
         // when
-        Chat chat1 = chatService.createChat(chatRoom.getId(), 1L, "ㅎㅇ");
+        Chat chat1 = chatService.createChat(chatRoom.getId(), "유저1", "ㅎㅇ", LocalDateTime.now());
         Chat chat = chatRepository.findById(chat1.getId()).get();
 
 

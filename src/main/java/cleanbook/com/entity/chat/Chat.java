@@ -39,11 +39,12 @@ public class Chat extends Timestamped {
     @OneToMany(mappedBy = "chat")
     private List<ChatImgUrl> chatImgUrlList = new ArrayList<>();
 
-    public static Chat createChat(ChatRoom chatRoom, User user, String message) {
+    public static Chat createChat(ChatRoom chatRoom, User user, String message, LocalDateTime createdDate) {
         Chat chat = new Chat();
         chat.chatRoom = chatRoom;
         chat.user = user;
         chat.message = message;
+        chat.setCreatedDate(createdDate);
         chatRoom.getChatList().add(chat);
         chatRoom.modify(LocalDateTime.now());
 

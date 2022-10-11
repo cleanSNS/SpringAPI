@@ -47,7 +47,7 @@ public class LocalUserAuthController {
     // 로그인
     @PostMapping("/login")
     public ResultDto<UserIdDto> login(@Validated @RequestBody UserLoginDto userLoginDto, HttpServletResponse response) {
-        return new ResultDto<>(userAuthService.login(userLoginDto, response));
+        return new ResultDto<>(userAuthService.loginLocal(userLoginDto, response));
     }
 
     // 로그아웃

@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,10 +41,10 @@ class ChatRoomRepositoryImplTest {
         ChatRoom chatRoom1 = chatRoomService.createChatRoom("채팅방1", Arrays.asList(1L, 2L, 3L));
         ChatRoom chatRoom2 = chatRoomService.createChatRoom("채팅방2", Arrays.asList(1L, 3L));
         ChatRoom chatRoom3 = chatRoomService.createChatRoom("채팅방3", Arrays.asList(1L, 2L));
-        chatService.createChat(chatRoom2.getId(), 1L , "안녕");
-        chatService.createChat(chatRoom3.getId(), 1L , "방가");
-        chatService.createChat(chatRoom1.getId(), 1L , "안녕");
-        chatService.createChat(chatRoom1.getId(), 2L , "ㅎㅇ");
+        chatService.createChat(chatRoom2.getId(), "유저1" , "안녕", LocalDateTime.now());
+        chatService.createChat(chatRoom3.getId(), "유저1" , "방가", LocalDateTime.now());
+        chatService.createChat(chatRoom1.getId(), "유저1" , "안녕", LocalDateTime.now());
+        chatService.createChat(chatRoom1.getId(), "유저2" , "ㅎㅇ", LocalDateTime.now());
 
 
         // when

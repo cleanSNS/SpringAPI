@@ -99,6 +99,8 @@ public class SecurityConfig {
                 .antMatchers("/local/page/{^[^0]\\d*}/nested").permitAll()
                 .antMatchers("/local/user/{^[^0]\\d*}/profile").permitAll()
 
+                .antMatchers("/ws/**").permitAll()
+
                 .anyRequest().authenticated()
 
                 .and()

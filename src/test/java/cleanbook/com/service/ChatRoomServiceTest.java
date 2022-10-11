@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -109,8 +110,9 @@ class ChatRoomServiceTest {
 
                 // when
                 ChatRoom chatRoom = chatRoomService.createChatRoom("내채팅방", Arrays.asList(1L, 2L));
-                chatService.createChat(chatRoom.getId(), 1L, "ㅎㅇ");
-                chatService.createChat(chatRoom.getId(), 2L, "hi");
+                chatService.createChat(chatRoom.getId(), "유저1" , "ㅎㅇ", LocalDateTime.now());
+                chatService.createChat(chatRoom.getId(), "유저2" , "hi", LocalDateTime.now());
+
                 chatRoomService.deleteChatRoom(1L, chatRoom.getId());
                 ChatRoom newChatRoom = chatRoomRepository.findById(chatRoom.getId()).get();
 

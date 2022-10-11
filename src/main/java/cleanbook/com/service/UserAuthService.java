@@ -140,7 +140,7 @@ public class UserAuthService {
     }
 
     // 로컬 로그인
-    public UserLoginDto loginLocal(UserLoginDto userLoginDto, HttpServletResponse response) {
+    public UserIdDto loginLocal(UserLoginDto userLoginDto, HttpServletResponse response) {
         User user = userRepository.findUserByEmail(userLoginDto.getEmail())
                 .orElseThrow(IllegalAccountException::new);
 
@@ -162,7 +162,7 @@ public class UserAuthService {
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader("Authorization", "Bearer " + refreshToken);
 
-        return new UserLoginDto(user);
+        return new UserIdDto(user.getId());
     }
 
     public void addCookie(HttpServletResponse response, String name, String value) {
