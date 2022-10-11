@@ -37,7 +37,7 @@ class ChatServiceTest {
 
 
         // when
-        Chat chat1 = chatService.createChat(chatroom.getId(), "유저1", "ㅎㅇ", LocalDateTime.now());
+        Chat chat1 = chatService.createChat(chatroom.getId(), "user1", "ㅎㅇ", LocalDateTime.now());
         Chat chat = chatRepository.findById(chat1.getId()).get();
 
 

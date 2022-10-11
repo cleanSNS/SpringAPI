@@ -143,7 +143,7 @@ class PageRepositoryImplTest {
         List<CommentDto> commentDtoList = result.getData();
 
         // then
-        assertThat(userDto.getNickname()).isEqualTo("유저1");
+        assertThat(userDto.getNickname()).isEqualTo("user1");
         assertThat(commentDtoList.size()).isEqualTo(10);
 
 
