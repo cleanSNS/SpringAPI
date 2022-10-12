@@ -4,6 +4,7 @@ import cleanbook.com.dto.CountDto;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.repository.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class NotificationService {
     private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
     public SseEmitter subscribe(Long userId) {
+        if (emitterMap.containsKey(userId)) {
+            throw new MyException("이미 SSE연결이 되었습니다.");
+        }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterMap.put(userId, emitter);
@@ -52,6 +56,13 @@ public class NotificationService {
         sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
 
         return emitter;
+    }
+
+    public void remove(Long userId) {
+        SseEmitter emitter = emitterMap.get(userId);
+        emitter.complete();
+        emitterMap.remove(userId);
+        System.out.println("removed");
     }
 
     private void sendToClient(SseEmitter emitter, Object data) {

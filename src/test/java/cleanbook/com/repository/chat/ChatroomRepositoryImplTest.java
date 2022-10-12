@@ -48,7 +48,7 @@ class ChatroomRepositoryImplTest {
 
 
         // when
-        List<ChatroomDto> chatRoomDtoList = chatRoomRepository.readChatroomList(1L);
+        List<ChatroomDto> chatRoomDtoList = chatRoomRepository.readChatroomList(1L).getData();
         for (ChatroomDto chatRoomDto : chatRoomDtoList) {
             System.out.println("chatRoomDto.toString() = " + chatRoomDto.toString());
         }

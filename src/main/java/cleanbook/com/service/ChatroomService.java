@@ -39,7 +39,7 @@ public class ChatroomService {
     // 채팅방 전체 조회
     public ResultDto<List<ChatroomDto>> readChatroomList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        return new ResultDto<>(chatRoomRepository.readChatroomList(userId));
+        return chatRoomRepository.readChatroomList(userId);
     }
 
     // 채팅방 이름수정

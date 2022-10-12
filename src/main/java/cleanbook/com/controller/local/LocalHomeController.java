@@ -2,10 +2,12 @@ package cleanbook.com.controller.local;
 
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.exception.Response;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -24,5 +26,9 @@ public class LocalHomeController {
         return "hello";
     }
 
-
+    @GetMapping("/testaa/{userId}")
+    public ResponseEntity<Response> test(@PathVariable Long userId) {
+        notificationService.remove(userId);
+        return ResponseEntity.ok(new Response("success"));
+    }
 }

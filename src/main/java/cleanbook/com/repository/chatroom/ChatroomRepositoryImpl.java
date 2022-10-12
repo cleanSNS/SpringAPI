@@ -1,5 +1,6 @@
 package cleanbook.com.repository.chatroom;
 
+import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatroomDto;
 import cleanbook.com.entity.chat.Chat;
 import cleanbook.com.entity.chat.Chatroom;
@@ -23,7 +24,7 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
     private final JPAQueryFactory queryFactory;
 
     @Transactional
-    public List<ChatroomDto> readChatroomList(Long userId) {
+    public ResultDto<List<ChatroomDto>> readChatroomList(Long userId) {
         // 채팅방을 최신순으로 얻기
         List<Chatroom> chatRoomList = queryFactory.query()
                 .select(chatroom)
@@ -44,7 +45,7 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
             chatRoomDtoList.add(new ChatroomDto(chatroom.getName(), userNickNameList, headCount, getLastChat(chatroom.getId())));
         }
 
-        return chatRoomDtoList;
+        return new ResultDto<>(chatRoomDtoList);
     }
 
     public String getLastChat(Long chatroomId) {
