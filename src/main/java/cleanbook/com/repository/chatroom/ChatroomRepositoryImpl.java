@@ -26,7 +26,7 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
     @Transactional
     public ResultDto<List<ChatroomDto>> readChatroomList(Long userId) {
         // 채팅방을 최신순으로 얻기
-        List<Chatroom> chatRoomList = queryFactory.query()
+        List<Chatroom> chatroomList = queryFactory.query()
                 .select(chatroom)
                 .from(userChatroom)
                 .where(userChatroom.user.id.eq(userId))
@@ -35,17 +35,17 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
                 .fetch();
 
 
-        List<ChatroomDto> chatRoomDtoList = new ArrayList<>();
-        for (Chatroom chatroom : chatRoomList) {
-            List<String> userNickNameList = chatroom.getUserChatroomList().stream()
-                    .map(u -> u.getUser().getUserProfile().getNickname())
+        List<ChatroomDto> chatroomDtoList = new ArrayList<>();
+        for (Chatroom chatroom : chatroomList) {
+            List<String> userImgUrlList = chatroom.getUserChatroomList().stream()
+                    .map(u -> u.getUser().getUserProfile().getImgUrl())
                     .collect(Collectors.toList());
             int headCount = chatroom.getUserChatroomList().size();
 
-            chatRoomDtoList.add(new ChatroomDto(chatroom.getName(), userNickNameList, headCount, getLastChat(chatroom.getId())));
+            chatroomDtoList.add(new ChatroomDto(chatroom.getId(), chatroom.getName(), userImgUrlList, headCount, getLastChat(chatroom.getId())));
         }
 
-        return new ResultDto<>(chatRoomDtoList);
+        return new ResultDto<>(chatroomDtoList);
     }
 
     public String getLastChat(Long chatroomId) {

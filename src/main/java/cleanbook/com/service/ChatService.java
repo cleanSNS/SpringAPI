@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatroomRepository chatRoomRepository;
+    private final ChatroomRepository chatroomRepository;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final UserChatroomRepository userChatroomRepository;
@@ -32,15 +32,21 @@ public class ChatService {
     // 채팅 생성
     public Chat createChat(Long chatroomId, String nickname, String message, LocalDateTime createdDate) {
         User user = userRepository.findUserByUserProfileNickname(nickname).orElseThrow(UserNotFoundException::new);
-        Chatroom Chatroom = chatRoomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
-        return chatRepository.save(Chat.createChat(Chatroom, user, message, createdDate));
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
+
+        // 해당 채팅방에 속하지 않은 유저가 채팅을 보낼시 에러 발생
+        if (userChatroomRepository.findByUser_IdAndChatroom_Id(user.getId(), chatroomId).isEmpty()) {
+            throw new MyException("해당 채팅방에 속하지 않는 유저입니다.");
+        }
+
+        return chatRepository.save(Chat.createChat(chatroom, user, message, createdDate));
     }
 
     // 채팅방 채팅내용 불러오기, 100개씩 최근순으로
     public ResultDto<List<ChatDto>> readChatList(Long userId, Long chatroomId, Long startId) {
         // 채팅방의 참여자가 아닐경우 확인 불가
         if (userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).isEmpty()) {
-            throw new MyException("채팅방의 참여자가 아닙니다.");
+            throw new MyException("해당 채팅방에 속하지 않는 유저입니다.");
         }
         return chatRepository.readChatList(chatroomId, startId, 100);
     }

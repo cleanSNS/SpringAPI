@@ -24,9 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChatroomRepositoryImplTest {
 
     @Autowired
-    private ChatroomRepository chatRoomRepository;
+    private ChatroomRepository chatroomRepository;
     @Autowired
-    private ChatroomService chatRoomService;
+    private ChatroomService chatroomService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -38,27 +38,27 @@ class ChatroomRepositoryImplTest {
     void readChatroomList() {
 
         //given
-        Chatroom chatRoom1 = chatRoomService.createChatroom(1L,"채팅방1", Arrays.asList(1L, 2L, 3L));
-        Chatroom chatRoom2 = chatRoomService.createChatroom(1L,"채팅방2", Arrays.asList(1L, 3L));
-        Chatroom chatRoom3 = chatRoomService.createChatroom(1L,"채팅방3", Arrays.asList(1L, 2L));
-        chatService.createChat(chatRoom2.getId(), "user1" , "안녕", LocalDateTime.now());
-        chatService.createChat(chatRoom3.getId(), "user1" , "방가", LocalDateTime.now());
-        chatService.createChat(chatRoom1.getId(), "user1" , "안녕", LocalDateTime.now());
-        chatService.createChat(chatRoom1.getId(), "user2" , "ㅎㅇ", LocalDateTime.now());
+        Chatroom chatroom1 = chatroomService.createChatroom(1L,"채팅방1", Arrays.asList(1L, 2L, 3L));
+        Chatroom chatroom2 = chatroomService.createChatroom(1L,"채팅방2", Arrays.asList(1L, 3L));
+        Chatroom chatroom3 = chatroomService.createChatroom(1L,"채팅방3", Arrays.asList(1L, 2L));
+        chatService.createChat(chatroom2.getId(), "user1" , "안녕", LocalDateTime.now());
+        chatService.createChat(chatroom3.getId(), "user1" , "방가", LocalDateTime.now());
+        chatService.createChat(chatroom1.getId(), "user1" , "안녕", LocalDateTime.now());
+        chatService.createChat(chatroom1.getId(), "user2" , "ㅎㅇ", LocalDateTime.now());
 
 
         // when
-        List<ChatroomDto> chatRoomDtoList = chatRoomRepository.readChatroomList(1L).getData();
-        for (ChatroomDto chatRoomDto : chatRoomDtoList) {
-            System.out.println("chatRoomDto.toString() = " + chatRoomDto.toString());
+        List<ChatroomDto> chatroomDtoList = chatroomRepository.readChatroomList(1L).getData();
+        for (ChatroomDto chatroomDto : chatroomDtoList) {
+            System.out.println("chatroomDto.toString() = " + chatroomDto.toString());
         }
-        ChatroomDto first = chatRoomDtoList.get(0);
-        ChatroomDto second = chatRoomDtoList.get(1);
+        ChatroomDto first = chatroomDtoList.get(0);
+        ChatroomDto second = chatroomDtoList.get(1);
 
 
         // then
-        assertThat(chatRoomDtoList.size()).isEqualTo(3);
-        assertThat(chatRoomDtoList.get(1).getHeadCount()).isEqualTo(2);
+        assertThat(chatroomDtoList.size()).isEqualTo(3);
+        assertThat(chatroomDtoList.get(1).getHeadCount()).isEqualTo(2);
 
         assertThat(first.getHeadCount()).isEqualTo(3);
         assertThat(second.getLastChat()).isEqualTo("방가");

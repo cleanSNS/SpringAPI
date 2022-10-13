@@ -2,6 +2,7 @@ package cleanbook.com.repository.chat;
 
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatDto;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.chat.Chat;
 import cleanbook.com.entity.chat.QChat;
 import cleanbook.com.exception.exceptions.NoMoreDataException;
@@ -43,7 +44,8 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom{
         Long nextStartId = chatList.stream().mapToLong(Chat::getId).min().getAsLong()-1;
 
         List<ChatDto> chatDtoList = chatList.stream()
-                .map(c -> new ChatDto(c.getUser().getUserProfile().getNickname(), c.getMessage(),  c.getCreatedDate()))
+                .map(c -> new ChatDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
+                                                , c.getMessage(),  c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return new ResultDto<>(chatDtoList, nextStartId);

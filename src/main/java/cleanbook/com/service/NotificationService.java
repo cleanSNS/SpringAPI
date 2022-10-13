@@ -34,23 +34,27 @@ public class NotificationService {
 
     private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
+    void print(String process) {
+        log.info(process);
+        for (Map.Entry<Long, SseEmitter> entrySet : emitterMap.entrySet()) {
+            log.info("userId {}: emitter {}", entrySet.getKey(), entrySet.getValue());
+        }
+        log.info("");
+    }
+
     public SseEmitter subscribe(Long userId) {
+        print("SSE 연결시작");
+
+        // 이미 sse연결이 되었을시 해제하고 재연결함
         if (emitterMap.containsKey(userId)) {
-            throw new MyException("이미 SSE연결이 되었습니다.");
+            log.info("SSE 연결 존재");
+            removeSseEmitter(userId);
         }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterMap.put(userId, emitter);
 
-        emitter.onCompletion(() -> {
-            System.out.println("ON COMPLETION CALLED!");
-            emitterMap.remove(userId);
-        });
-        emitter.onTimeout(() -> {
-            System.out.println("ON TIMEOUT CALLED!");
-            emitterMap.remove(userId);
-        });
-
+        print("SSE 연결완료");
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
         sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
@@ -58,11 +62,11 @@ public class NotificationService {
         return emitter;
     }
 
-    public void remove(Long userId) {
+    public void removeSseEmitter(Long userId) {
         SseEmitter emitter = emitterMap.get(userId);
         emitter.complete();
         emitterMap.remove(userId);
-        System.out.println("removed");
+        print("SSE 삭제완료");
     }
 
     private void sendToClient(SseEmitter emitter, Object data) {

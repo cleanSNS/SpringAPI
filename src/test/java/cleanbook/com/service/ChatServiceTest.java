@@ -22,18 +22,18 @@ class ChatServiceTest {
     @Autowired
     private ChatService chatService;
     @Autowired
-    private ChatroomService chatRoomService;
+    private ChatroomService chatroomService;
     @Autowired
     private ChatRepository chatRepository;
     @Autowired
-    private ChatroomRepository chatRoomRepository;
+    private ChatroomRepository chatroomRepository;
 
     @Test
     @DisplayName("채팅 생성")
     void createChat() {
 
         //given
-        Chatroom chatroom = chatRoomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
+        Chatroom chatroom = chatroomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
 
 
         // when
