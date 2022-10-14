@@ -15,5 +15,4 @@ public class ChatDto {
     private UserDto userDto;
     private String message;
     private LocalDateTime createdDate;
-
 }

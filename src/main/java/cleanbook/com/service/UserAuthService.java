@@ -134,6 +134,7 @@ public class UserAuthService {
 
         addCookie(response, "X-AUTH-TOKEN", accessToken);
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
         response.setHeader("Authorization", "Bearer " + refreshToken);
 
         return new UserIdDto(user.getId());
@@ -160,6 +161,7 @@ public class UserAuthService {
 
         addCookieLocal(response, "X-AUTH-TOKEN", accessToken);
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
         response.setHeader("Authorization", "Bearer " + refreshToken);
 
         return new UserIdDto(user.getId());
@@ -189,6 +191,9 @@ public class UserAuthService {
 
     // refresh access token
     public void refreshToken(String accessToken, String refreshToken, HttpServletResponse response) {
+        // bearer 제거
+        refreshToken = refreshToken.substring("bearer".length()+1);
+        System.out.println("accessToken = " + accessToken);
 
         if (!StringUtils.hasText(accessToken) || !StringUtils.hasText(refreshToken)) {
             throw new IllegalTokenException();

@@ -32,8 +32,8 @@ public class ChatController {
     public ChatMessage chat(@DestinationVariable Long chatroomId, ChatMessage message) {
         log.info("채팅 생성");
 
-        //채팅 저장
-        chatService.createChat(chatroomId, message.getSender(), message.getMessage(), message.getCreatedDate());
+        // 채팅 저장
+        chatService.createChat(chatroomId, message.getUserDto().getNickname(), message.getMessage(), message.getCreatedDate());
         return message;
     }
 

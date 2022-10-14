@@ -23,7 +23,6 @@ import javax.xml.transform.Result;
 public class UserAuthController {
 
     private final UserAuthService userAuthService;
-    private final EmailService emailService;
 
     // 회원가입
     @PostMapping("/signup")

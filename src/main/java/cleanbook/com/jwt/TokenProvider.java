@@ -1,5 +1,7 @@
 package cleanbook.com.jwt;
 
+import cleanbook.com.exception.exceptions.MyException;
+import cleanbook.com.exception.exceptions.TokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -85,12 +87,16 @@ public class TokenProvider implements InitializingBean {
          return true;
       } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
          log.info("잘못된 JWT 서명입니다.");
+//         throw new MyException("잘못된 JWT 서명입니다.");
       } catch (ExpiredJwtException e) {
-         log.info("만료된 JWT 토큰입니다.");
+         log.info("만료된 토큰입니다.");
+//         throw new TokenExpiredException();
       } catch (UnsupportedJwtException e) {
          log.info("지원되지 않는 JWT 토큰입니다.");
+//         throw new MyException("지원되지 않는 JWT 토큰입니다.");
       } catch (IllegalArgumentException e) {
          log.info("JWT 토큰이 잘못되었습니다.");
+//         throw new MyException("JWT 토큰이 잘못되었습니다.");
       }
       return false;
    }
