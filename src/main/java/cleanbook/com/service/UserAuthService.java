@@ -193,35 +193,58 @@ public class UserAuthService {
     public void refreshToken(String accessToken, String refreshToken, HttpServletResponse response) {
         // bearer 제거
         refreshToken = refreshToken.substring("bearer".length()+1);
-        System.out.println("accessToken = " + accessToken);
-
-        if (!StringUtils.hasText(accessToken) || !StringUtils.hasText(refreshToken)) {
-            throw new IllegalTokenException();
-        }
 
         // accessToken이 만료되지 않았거나 토큰이 비어있을시
         if (tokenProvider.validateToken(accessToken)) {
             throw new NotExpiredTokenException();
         }
-        User user = userRepository.findById(tokenProvider.getUserId(refreshToken)).orElseThrow(UserNotFoundException::new);
 
         // refreshToken이 만료되지 않음
         if (tokenProvider.validateToken(refreshToken)) {
+            User user = userRepository.findById(tokenProvider.getUserId(refreshToken)).orElseThrow(UserNotFoundException::new);
             String token = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new).getToken();
 
             // db에 저장된 refreshToken과 일치하지 않을시
             if (!token.equals(refreshToken)) {
-                throw new IllegalTokenException();
+                throw new MyException("올바르지 않은 refresh token입니다.");
             }
 
             // accessToken 재발급
             String newAccessToken = tokenProvider.createAccessToken(user.getId());
             addCookie(response, "X-AUTH-TOKEN", newAccessToken);
-            return;
+
+        } else { // refreshToken이 만료됨
+            throw new MyException("refresh token이 만료되었습니다.");
+        }
+    }
+
+    // refresh access token
+    public void refreshTokenLocal(String accessToken, String refreshToken, HttpServletResponse response) {
+        // bearer 제거
+        refreshToken = refreshToken.substring("bearer".length()+1);
+
+        // accessToken이 만료되지 않았거나 토큰이 비어있을시
+        if (tokenProvider.validateToken(accessToken)) {
+            throw new NotExpiredTokenException();
         }
 
-        // refreshToken이 만료됨
-        throw new TokenExpiredException();
+        // refreshToken이 만료되지 않음
+        if (tokenProvider.validateToken(refreshToken)) {
+            User user = userRepository.findById(tokenProvider.getUserId(refreshToken)).orElseThrow(UserNotFoundException::new);
+            String token = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new).getToken();
+
+            // db에 저장된 refreshToken과 일치하지 않을시
+            if (!token.equals(refreshToken)) {
+                throw new MyException("올바르지 않은 refresh token입니다.");
+            }
+
+            // accessToken 재발급
+            String newAccessToken = tokenProvider.createAccessToken(user.getId());
+            addCookieLocal(response, "X-AUTH-TOKEN", newAccessToken);
+
+        } else { // refreshToken이 만료됨
+            throw new MyException("refresh token이 만료되었습니다.");
+        }
     }
 
     // 로그아웃

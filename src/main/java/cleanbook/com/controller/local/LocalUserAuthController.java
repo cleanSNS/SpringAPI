@@ -70,7 +70,7 @@ public class LocalUserAuthController {
                                             @RequestHeader("Authorization") String refreshToken,
                                         HttpServletResponse response) {
 
-        userAuthService.refreshToken(accessToken, refreshToken, response);
+        userAuthService.refreshTokenLocal(accessToken, refreshToken, response);
         return ResponseEntity.ok(new Response("success"));
     }
 }

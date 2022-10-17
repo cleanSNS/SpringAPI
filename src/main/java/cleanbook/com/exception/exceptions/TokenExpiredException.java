@@ -2,7 +2,7 @@ package cleanbook.com.exception.exceptions;
 
 public class TokenExpiredException extends RuntimeException{
     public TokenExpiredException() {
-        super("만료된 토큰입니다.");
+        super("refresh token이 만료되었습니다.");
     }
 
     public TokenExpiredException(String message) {
