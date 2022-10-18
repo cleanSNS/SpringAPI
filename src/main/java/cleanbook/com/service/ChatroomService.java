@@ -2,6 +2,8 @@ package cleanbook.com.service;
 
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatroomDto;
+import cleanbook.com.dto.chat.ChatroomNameAndUserDto;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.chat.Chatroom;
 import cleanbook.com.entity.chat.UserChatroom;
 import cleanbook.com.entity.user.User;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static cleanbook.com.dto.user.UserDto.createUserDto;
 
 @Service
 @Transactional
@@ -66,8 +71,11 @@ public class ChatroomService {
 
     }
 
-    public String getChatroomName(Long chatroomId) {
+    // 채팅방 조회
+    public ResultDto<ChatroomNameAndUserDto> getChatroom(Long chatroomId) {
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
-        return chatroom.getName();
+        List<UserDto> userDtoList = chatroom.getUserChatroomList().stream()
+                .map(u -> createUserDto(u.getUser())).collect(Collectors.toList());
+        return new ResultDto<>(new ChatroomNameAndUserDto(chatroom.getName(), userDtoList));
     }
 }

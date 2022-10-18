@@ -44,8 +44,7 @@ public class ChatRepositoryImpl implements ChatRepositoryCustom{
         Long nextStartId = chatList.stream().mapToLong(Chat::getId).min().getAsLong()-1;
 
         List<ChatDto> chatDtoList = chatList.stream()
-                .map(c -> new ChatDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                                                , c.getMessage(),  c.getCreatedDate()))
+                .map(c -> new ChatDto(c.getUser().getId(), c.getMessage(),  c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         return new ResultDto<>(chatDtoList, nextStartId);

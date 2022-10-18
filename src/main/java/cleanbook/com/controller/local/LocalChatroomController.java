@@ -2,6 +2,7 @@ package cleanbook.com.controller.local;
 
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.*;
+import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.exception.Response;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.ChatroomService;
@@ -34,6 +35,12 @@ public class LocalChatroomController {
         return chatroomService.readChatroomList(userId);
     }
 
+    // 채팅방 조회
+    @GetMapping("/chat/chatroom/{chatroomId}")
+    public ResultDto<ChatroomNameAndUserDto> getChatroomName(@PathVariable Long chatroomId) {
+        return chatroomService.getChatroom(chatroomId);
+    }
+
     // 채팅방 이름 수정
     @PostMapping("/chat/chatroom/{chatroomId}")
     public ResponseEntity<Response> changeChatroomName(@CookieValue("X-AUTH-TOKEN") String token,
@@ -52,11 +59,6 @@ public class LocalChatroomController {
         return ResponseEntity.ok(new Response("success"));
     }
 
-    // 채팅방 이름 검색
-    @GetMapping("/chat/chatroom/{chatroomId}/name")
-    public ResultDto<ChatroomNameDto> getChatroomName(@PathVariable Long chatroomId) {
-        return new ResultDto<>(new ChatroomNameDto(chatroomService.getChatroomName(chatroomId)));
-    }
 
 
 }
