@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -26,8 +27,8 @@ public class PageService {
 
     private final PageRepository pageRepository;
     private final UserRepository userRepository;
-    private final TokenProvider tokenProvider;
     private final BlockRepository blockRepository;
+    private final AwsS3Service awsS3Service;
 
     // 게시글 생성
     public Page createPage(Long userId ,PageCreateDto pageCreateDto) {
@@ -88,6 +89,8 @@ public class PageService {
             throw new NoAuthroizationException();
         }
 
+        // page 이미지 삭제
+        awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
         user.getPageList().remove(page);
         pageRepository.delete(page);
     }

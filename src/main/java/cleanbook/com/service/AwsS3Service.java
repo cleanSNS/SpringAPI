@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,26 +28,34 @@ public class AwsS3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadFile(String category, MultipartFile multipartFile) {
-        validateFileExists(multipartFile);
+    public List<String> uploadFiles(String category, List<MultipartFile> multipartFiles) {
+        List<String> fileUrlList = new ArrayList<>();
 
-        String fileName = CommonUtils.buildFileName(category, multipartFile.getOriginalFilename());
+        for (MultipartFile multipartFile : multipartFiles) {
+            validateFileExists(multipartFile);
 
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
+            String fileName = CommonUtils.createFileName(category, multipartFile.getOriginalFilename());
 
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (IOException e) {
-            throw new MyException("파일 업로드에 실패했습니다.");
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(multipartFile.getContentType());
+
+            try (InputStream inputStream = multipartFile.getInputStream()) {
+                amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                fileUrlList.add(amazonS3Client.getUrl(bucketName, fileName).toString());
+            } catch (IOException e) {
+                throw new MyException("파일 업로드에 실패했습니다.");
+            }
         }
 
-        return amazonS3Client.getUrl(bucketName, fileName).toString();
+        return fileUrlList;
     }
 
-    public void deleteFile(String fileName) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    public void deleteFiles(List<String> filenameList) {
+        for (String filename : filenameList) {
+            filename = filename.substring(filenameList.indexOf(".com"));
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, filename));
+        }
     }
 
     private void validateFileExists(MultipartFile multipartFile) {

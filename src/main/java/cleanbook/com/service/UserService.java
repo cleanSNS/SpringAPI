@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -72,6 +73,7 @@ public class UserService {
     private final EmailService emailService;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
+    private final AwsS3Service awsS3Service;
 
 
     // 팔로우하기
@@ -342,6 +344,10 @@ public class UserService {
     // 프로필 편집
     public void changeUserProfile(Long userId, UserProfile userProfile) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        // 프로필 이미지가 변경 되었을시 기존 이미지 s3에서 삭제
+        if (user.getUserProfile().getImgUrl() != null && !user.getUserProfile().getImgUrl().equals(userProfile.getImgUrl())) {
+            awsS3Service.deleteFiles(Collections.singletonList(user.getUserProfile().getImgUrl()));
+        }
         user.changeUserProfile(userProfile);
     }
 

@@ -2,6 +2,8 @@ package cleanbook.com.service;
 
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.enums.AccountState;
+import cleanbook.com.entity.page.Page;
+import cleanbook.com.entity.page.PageImgUrl;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.authority.Authority;
 import cleanbook.com.exception.exceptions.*;
@@ -23,7 +25,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static cleanbook.com.entity.user.authority.UserAuthority.createUserAuthority;
 
@@ -40,6 +44,7 @@ public class UserAuthService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserActiveRepository userActiveRepository;
+    private final AwsS3Service awsS3Service;
 
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
@@ -272,6 +277,12 @@ public class UserAuthService {
         logout(response);
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new);
         refreshTokenRepository.delete(refreshToken);
+        // s3 프로필 이미지 삭제
+        awsS3Service.deleteFiles(Collections.singletonList(user.getUserProfile().getImgUrl()));
+        // page 이미지 삭제
+        for (Page page : user.getPageList()) {
+            awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
+        }
         userRepository.delete(user);
     }
 }

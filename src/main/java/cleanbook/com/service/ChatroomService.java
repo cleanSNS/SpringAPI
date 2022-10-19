@@ -10,6 +10,7 @@ import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.exception.exceptions.NotFoundException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
+import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.chatroom.ChatroomRepository;
 import cleanbook.com.repository.chatroom.UserChatroomRepository;
 import cleanbook.com.repository.user.UserRepository;
@@ -31,6 +32,7 @@ public class ChatroomService {
     private final ChatroomRepository chatroomRepository;
     private final UserRepository userRepository;
     private final UserChatroomRepository userChatroomRepository;
+    private final FollowRepository followRepository;
 
     // 채팅방 생성(서로 팔로우 중인 경우에만 가능)
     public Chatroom createChatroom(Long userId, String name, List<Long> userIdList) {
@@ -38,6 +40,7 @@ public class ChatroomService {
         List<User> userList = new ArrayList<>();
         for (Long id : userIdList) {
             userList.add(userRepository.findById(id).orElseThrow(UserNotFoundException::new));
+            followRepository.findByUser_IdAndTargetUser_Id(user.getId(), id).orElseThrow(()->new MyException("팔로우"));
         }
         return chatroomRepository.save(Chatroom.createChatroom(name, userList));
     }
