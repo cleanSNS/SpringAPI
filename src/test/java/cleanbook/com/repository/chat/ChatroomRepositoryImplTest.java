@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@WebAppConfiguration
 @SpringBootTest
 @Transactional
 class ChatroomRepositoryImplTest {

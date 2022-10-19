@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+@WebAppConfiguration
 @SpringBootTest
 @Transactional
 class CommentServiceTest {

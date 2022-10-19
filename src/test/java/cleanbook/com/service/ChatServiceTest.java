@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@WebAppConfiguration
 @SpringBootTest
 @Transactional
 class ChatServiceTest {

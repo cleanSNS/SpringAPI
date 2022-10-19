@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 //@DataJpaTest
 //@Import(QuerydslConfig.class)
+@WebAppConfiguration
 @SpringBootTest
 @Transactional
 class MyTest {
