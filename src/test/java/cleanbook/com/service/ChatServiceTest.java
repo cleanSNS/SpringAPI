@@ -43,10 +43,6 @@ class ChatServiceTest {
     void createChat() {
 
         //given
-        User user = userRepository.findById(1L).orElseThrow(UserNotFoundException::new);
-        User user2 = userRepository.findById(2L).orElseThrow(UserNotFoundException::new);
-        followRepository.save(new Follow(user,user2));
-        followRepository.save(new Follow(user2,user));
         Chatroom chatroom = chatroomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
 
 
