@@ -40,7 +40,10 @@ public class ChatroomService {
         List<User> userList = new ArrayList<>();
         for (Long id : userIdList) {
             userList.add(userRepository.findById(id).orElseThrow(UserNotFoundException::new));
-            followRepository.findByUser_IdAndTargetUser_Id(user.getId(), id).orElseThrow(()->new MyException("팔로우"));
+            if (!userId.equals(id)) {
+                followRepository.findByUser_IdAndTargetUser_Id(userId, id).orElseThrow(()-> new MyException("서로 팔로우중인 경우에만 채팅방 생성이 가능합니다"));
+                followRepository.findByUser_IdAndTargetUser_Id(id, userId).orElseThrow(()-> new MyException("서로 팔로우중인 경우에만 채팅방 생성이 가능합니다"));
+            }
         }
         return chatroomRepository.save(Chatroom.createChatroom(name, userList));
     }

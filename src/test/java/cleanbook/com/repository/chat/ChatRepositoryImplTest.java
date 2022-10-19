@@ -3,8 +3,13 @@ package cleanbook.com.repository.chat;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatDto;
 import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.exception.exceptions.NoMoreDataException;
+import cleanbook.com.exception.exceptions.UserNotFoundException;
+import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.chatroom.ChatroomRepository;
+import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.service.ChatroomService;
 import cleanbook.com.service.ChatService;
 import org.assertj.core.api.Assertions;
@@ -34,11 +39,20 @@ class ChatRepositoryImplTest {
     private ChatroomService chatroomService;
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private FollowRepository followRepository;
 
     Long chatroomId;
 
     @BeforeEach
     void init() throws InterruptedException {
+        User user = userRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        User user2 = userRepository.findById(2L).orElseThrow(UserNotFoundException::new);
+        User user3 = userRepository.findById(3L).orElseThrow(UserNotFoundException::new);
+        followRepository.save(new Follow(user,user3));
+        followRepository.save(new Follow(user3,user));
         chatroomId = chatroomService.createChatroom(1L, "채팅방", Arrays.asList(1L, 2L, 3L)).getId();
         for (int i = 0; i < 140; i++) {
             chatService.createChat(chatroomId, 1L, "ㅎㅇ" + i, LocalDateTime.now());

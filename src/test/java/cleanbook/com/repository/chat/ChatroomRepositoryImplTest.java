@@ -2,6 +2,10 @@ package cleanbook.com.repository.chat;
 
 import cleanbook.com.dto.chat.ChatroomDto;
 import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.follow.Follow;
+import cleanbook.com.exception.exceptions.UserNotFoundException;
+import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.chatroom.ChatroomRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.service.ChatroomService;
@@ -31,6 +35,8 @@ class ChatroomRepositoryImplTest {
     private UserRepository userRepository;
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private FollowRepository followRepository;
 
 
     @Test
@@ -38,6 +44,11 @@ class ChatroomRepositoryImplTest {
     void readChatroomList() {
 
         //given
+        User user = userRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        User user3 = userRepository.findById(3L).orElseThrow(UserNotFoundException::new);
+        followRepository.save(new Follow(user,user3));
+        followRepository.save(new Follow(user3,user));
+
         Chatroom chatroom1 = chatroomService.createChatroom(1L,"채팅방1", Arrays.asList(1L, 2L, 3L));
         Chatroom chatroom2 = chatroomService.createChatroom(1L,"채팅방2", Arrays.asList(1L, 3L));
         Chatroom chatroom3 = chatroomService.createChatroom(1L,"채팅방3", Arrays.asList(1L, 2L));

@@ -90,7 +90,9 @@ public class PageService {
         }
 
         // page 이미지 삭제
-        awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
+        if (page.getImgUrlList() != null) {
+            awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
+        }
         user.getPageList().remove(page);
         pageRepository.delete(page);
     }

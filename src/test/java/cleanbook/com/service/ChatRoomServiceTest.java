@@ -134,6 +134,7 @@ class ChatroomServiceTest {
                 // when
                 Chatroom chatroom = chatroomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
                 chatroomService.deleteChatroom(1L, chatroom.getId());
+                chatroomService.deleteChatroom(2L, chatroom.getId());
                 Optional<Chatroom> optionalChatroom = chatroomRepository.findById(1L);
 
 
