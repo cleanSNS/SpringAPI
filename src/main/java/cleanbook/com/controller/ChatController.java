@@ -33,7 +33,7 @@ public class ChatController {
         log.info("채팅 생성");
 
         // 채팅 저장
-        chatService.createChat(chatroomId, message.getUserDto().getNickname(), message.getMessage(), message.getCreatedDate());
+        chatService.createChat(chatroomId, message.getUserId(), message.getMessage(), message.getCreatedDate());
         return message;
     }
 

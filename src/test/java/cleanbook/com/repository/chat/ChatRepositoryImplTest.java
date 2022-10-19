@@ -41,7 +41,7 @@ class ChatRepositoryImplTest {
     void init() throws InterruptedException {
         chatroomId = chatroomService.createChatroom(1L, "채팅방", Arrays.asList(1L, 2L, 3L)).getId();
         for (int i = 0; i < 140; i++) {
-            chatService.createChat(chatroomId, "user1", "ㅎㅇ" + i, LocalDateTime.now());
+            chatService.createChat(chatroomId, 1L, "ㅎㅇ" + i, LocalDateTime.now());
             // 동시에 생성되어 순서가 뒤집히는 경우가 있음
             Thread.sleep(10);
         }

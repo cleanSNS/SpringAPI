@@ -41,10 +41,10 @@ class ChatroomRepositoryImplTest {
         Chatroom chatroom1 = chatroomService.createChatroom(1L,"채팅방1", Arrays.asList(1L, 2L, 3L));
         Chatroom chatroom2 = chatroomService.createChatroom(1L,"채팅방2", Arrays.asList(1L, 3L));
         Chatroom chatroom3 = chatroomService.createChatroom(1L,"채팅방3", Arrays.asList(1L, 2L));
-        chatService.createChat(chatroom2.getId(), "user1" , "안녕", LocalDateTime.now());
-        chatService.createChat(chatroom3.getId(), "user1" , "방가", LocalDateTime.now());
-        chatService.createChat(chatroom1.getId(), "user1" , "안녕", LocalDateTime.now());
-        chatService.createChat(chatroom1.getId(), "user2" , "ㅎㅇ", LocalDateTime.now());
+        chatService.createChat(chatroom2.getId(), 1L , "안녕", LocalDateTime.now());
+        chatService.createChat(chatroom3.getId(), 1L , "방가", LocalDateTime.now());
+        chatService.createChat(chatroom1.getId(), 1L , "안녕", LocalDateTime.now());
+        chatService.createChat(chatroom1.getId(), 2L , "ㅎㅇ", LocalDateTime.now());
 
 
         // when

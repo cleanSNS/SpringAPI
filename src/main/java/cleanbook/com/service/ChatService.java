@@ -30,8 +30,8 @@ public class ChatService {
     private final UserChatroomRepository userChatroomRepository;
 
     // 채팅 생성
-    public Chat createChat(Long chatroomId, String nickname, String message, LocalDateTime createdDate) {
-        User user = userRepository.findUserByUserProfileNickname(nickname).orElseThrow(UserNotFoundException::new);
+    public Chat createChat(Long chatroomId, Long userId, String message, LocalDateTime createdDate) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
 
         // 해당 채팅방에 속하지 않은 유저가 채팅을 보낼시 에러 발생

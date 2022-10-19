@@ -7,6 +7,7 @@ import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.validation.ConstraintViolationException;
 
@@ -114,6 +115,12 @@ public class MyExceptionHandeler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response reportEmptyError() {
         return new Response("잘못된 양식입니다.");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response MaxUploadSizeExceededError() {
+        return new Response("파일크기가 업로드 제한보다 큽니다.");
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)

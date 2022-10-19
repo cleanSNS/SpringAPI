@@ -110,8 +110,8 @@ class ChatroomServiceTest {
 
                 // when
                 Chatroom chatroom = chatroomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
-                chatService.createChat(chatroom.getId(), "user1" , "ㅎㅇ", LocalDateTime.now());
-                chatService.createChat(chatroom.getId(), "user2" , "hi", LocalDateTime.now());
+                chatService.createChat(chatroom.getId(), 1L , "ㅎㅇ", LocalDateTime.now());
+                chatService.createChat(chatroom.getId(), 2L , "hi", LocalDateTime.now());
 
                 chatroomService.deleteChatroom(1L, chatroom.getId());
                 Chatroom newChatroom = chatroomRepository.findById(chatroom.getId()).get();
