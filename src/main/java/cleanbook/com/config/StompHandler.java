@@ -3,6 +3,8 @@ package cleanbook.com.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -13,10 +15,13 @@ import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
 
-    private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+    private final WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+
+    public StompHandler(@Lazy WebSocketMessageBrokerStats webSocketMessageBrokerStats) {
+        this.webSocketMessageBrokerStats = webSocketMessageBrokerStats;
+    }
 
     @Override
     public void postSend(Message message, MessageChannel channel, boolean sent) {
