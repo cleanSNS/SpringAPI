@@ -75,7 +75,7 @@ public class NotificationService {
                     .name("sse")
                     .data(data));
         } catch (IOException exception) {
-            throw new RuntimeException("연결 오류!");
+            throw new MyException("SSE 연결 오류!");
         }
     }
 
@@ -86,7 +86,7 @@ public class NotificationService {
                     .name("sse")
                     .data(data));
         } catch (IOException exception) {
-            throw new RuntimeException("연결 오류!");
+            throw new MyException("SSE 연결 오류!");
         }
     }
 
