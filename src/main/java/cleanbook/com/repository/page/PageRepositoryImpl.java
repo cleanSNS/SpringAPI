@@ -175,7 +175,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         // no offset방식
         // 페이지 pk 조회 및 페이징
         List<Page> pageList = queryFactory.query()
-                .select(page)
+                .select(page).distinct()
                 .from(page)
                 .join(page.user, user)
                 .leftJoin(user.followeeList, follow)
