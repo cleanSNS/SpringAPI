@@ -1,5 +1,6 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatDto;
 import cleanbook.com.dto.chat.ChatMessage;
@@ -46,5 +47,12 @@ public class ChatController {
                                                  @PathVariable Long chatroomId,@RequestParam Long startId) {
         Long userId = tokenProvider.getUserId(token);
         return chatService.readChatList(userId, chatroomId, startId);
+    }
+
+    // 읽지 않은 전체채팅 수
+    @GetMapping("/chat/count")
+    public ResultDto<CountDto> getUnchecked(@CookieValue("X-AUTH-TOKEN") String token) {
+        Long userId = tokenProvider.getUserId(token);
+        return new ResultDto<>(new CountDto(chatService.getTotalUncheckedChatCount(userId)));
     }
 }

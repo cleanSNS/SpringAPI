@@ -74,8 +74,8 @@ public class UserService {
     private final NotificationService notificationService;
     private final AwsS3Service awsS3Service;
 
-    @Value("${s3.default.profile.img}")
-    private final String DEFAULT_PROFILE_IMG_URL;
+    @Value("${s3.default.profile.imgurl}")
+    private String DEFAULT_PROFILE_IMG_URL;
 
     // 팔로우하기
     public Follow followUser(Long userId, Long targetUserId) {

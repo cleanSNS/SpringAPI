@@ -44,13 +44,24 @@ public class NotificationService {
     public SseEmitter subscribeNotification(Long userId) {
         print("notification SSE 연결시작");
 
-        // 이미 sse연결이 되었을시 해제하고 재연결함
+//        // 이미 sse연결이 되었을시 해제하고 재연결함
+//        if (notificationEmitterMap.containsKey(userId)) {
+//            log.info("notification SSE 연결 존재");
+//            removeSseEmitter(userId);
+//        }
+
         if (notificationEmitterMap.containsKey(userId)) {
-            log.info("notification SSE 연결 존재");
-            removeSseEmitter(userId);
+            SseEmitter emitter = notificationEmitterMap.get(userId);
+            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+            return emitter;
         }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+
+        emitter.onTimeout(()-> {
+            removeSseEmitter(userId);
+        });
+
         notificationEmitterMap.put(userId, emitter);
 
         print("notification SSE 연결완료");
@@ -64,13 +75,24 @@ public class NotificationService {
     public SseEmitter subscribeChat(Long userId) {
         print("chat SSE 연결시작");
 
-        // 이미 sse연결이 되었을시 해제하고 재연결함
+//        // 이미 sse연결이 되었을시 해제하고 재연결함
+//        if (chatEmitterMap.containsKey(userId)) {
+//            log.info("chat SSE 연결 존재");
+//            removeChatSseEmitter(userId);
+//        }
+
         if (chatEmitterMap.containsKey(userId)) {
-            log.info("chat SSE 연결 존재");
-            removeChatSseEmitter(userId);
+            SseEmitter emitter = chatEmitterMap.get(userId);
+            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+            return emitter;
         }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+
+        emitter.onTimeout(()-> {
+            removeChatSseEmitter(userId);
+        });
+
         chatEmitterMap.put(userId, emitter);
 
         print("chat SSE 연결완료");

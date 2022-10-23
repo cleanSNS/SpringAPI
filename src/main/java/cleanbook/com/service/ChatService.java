@@ -37,7 +37,7 @@ public class ChatService {
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
 
         // 해당 채팅방에 속하지 않은 유저가 채팅을 보낼시 에러 발생
-        if (userChatroomRepository.findByUser_IdAndChatroom_Id(user.getId(), chatroomId).isEmpty()) {
+        if (userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).isEmpty()) {
             throw new MyException("해당 채팅방에 속하지 않는 유저입니다.");
         }
 
@@ -47,7 +47,7 @@ public class ChatService {
             // 채팅 생성 알림, 마지막 채팅 트리거를 위해
             notificationService.sendChatNotification(targetUser.getId());
             // 읽지 않은 채팅수 & 읽지 않은 전체 채팅수 + 1
-            if (!targetUser.getId().equals(user.getId())) {
+            if (!targetUser.getId().equals(userId)) {
                 userChatroom.addUncheckedChatCount();
                 notificationService.sendUncheckedChatCount(targetUser.getId(), getTotalUncheckedChatCount(targetUser.getId()));
             }

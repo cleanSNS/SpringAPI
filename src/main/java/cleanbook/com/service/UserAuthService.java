@@ -13,6 +13,7 @@ import cleanbook.com.repository.UserActiveRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
@@ -35,7 +36,7 @@ import static cleanbook.com.entity.user.authority.UserAuthority.createUserAuthor
 @Slf4j
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserAuthService {
 
     private final UserRepository userRepository;
@@ -47,8 +48,8 @@ public class UserAuthService {
     private final UserActiveRepository userActiveRepository;
     private final AwsS3Service awsS3Service;
 
-    @Value("${s3.default.profile.img}")
-    private final String DEFAULT_PROFILE_IMG_URL;
+    @Value("${s3.default.profile.imgurl}")
+    private String DEFAULT_PROFILE_IMG_URL;
 
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
