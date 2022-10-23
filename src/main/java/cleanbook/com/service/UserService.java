@@ -29,6 +29,7 @@ import cleanbook.com.repository.user.report.ReportPageRepository;
 import cleanbook.com.repository.user.report.ReportUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +74,8 @@ public class UserService {
     private final NotificationService notificationService;
     private final AwsS3Service awsS3Service;
 
+    @Value("${s3.default.profile.img}")
+    private final String DEFAULT_PROFILE_IMG_URL;
 
     // 팔로우하기
     public Follow followUser(Long userId, Long targetUserId) {
@@ -343,7 +346,7 @@ public class UserService {
     public void changeUserProfile(Long userId, UserProfile userProfile) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         // 프로필 이미지가 변경 되었을시 기존 이미지 s3에서 삭제
-        if (user.getUserProfile().getImgUrl() != null && !user.getUserProfile().getImgUrl().equals(userProfile.getImgUrl())) {
+        if (!user.getUserProfile().getImgUrl().equals(DEFAULT_PROFILE_IMG_URL) && !user.getUserProfile().getImgUrl().equals(userProfile.getImgUrl())) {
             awsS3Service.deleteFiles(Collections.singletonList(user.getUserProfile().getImgUrl()));
         }
         user.changeUserProfile(userProfile);

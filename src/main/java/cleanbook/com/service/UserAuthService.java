@@ -14,6 +14,7 @@ import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,9 @@ public class UserAuthService {
     private final UserActiveRepository userActiveRepository;
     private final AwsS3Service awsS3Service;
 
+    @Value("${s3.default.profile.img}")
+    private final String DEFAULT_PROFILE_IMG_URL;
+
     // 회원가입
     public UserSignUpDto signUp(UserSignUpDto userSignupDto) {
 
@@ -69,6 +73,7 @@ public class UserAuthService {
                         .gender(userSignupDto.getGender())
                         .ageVisible(userSignupDto.isAgeVisible())
                         .genderVisible(userSignupDto.isGenderVisible())
+                        .imgUrl(DEFAULT_PROFILE_IMG_URL)
                         .build())
                 .userSetting(UserSetting.builder()
                         .userNotificationSetting(UserNotificationSetting.builder().build())
