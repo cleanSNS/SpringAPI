@@ -4,6 +4,7 @@ import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatDto;
 import cleanbook.com.entity.chat.Chat;
 import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.entity.chat.UserChatroom;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.MyException;
 import cleanbook.com.exception.exceptions.NotFoundException;
@@ -28,6 +29,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final UserChatroomRepository userChatroomRepository;
+    private final NotificationService notificationService;
 
     // 채팅 생성
     public Chat createChat(Long chatroomId, Long userId, String message, LocalDateTime createdDate) {
@@ -37,6 +39,18 @@ public class ChatService {
         // 해당 채팅방에 속하지 않은 유저가 채팅을 보낼시 에러 발생
         if (userChatroomRepository.findByUser_IdAndChatroom_Id(user.getId(), chatroomId).isEmpty()) {
             throw new MyException("해당 채팅방에 속하지 않는 유저입니다.");
+        }
+
+        // 해당 채팅방에 속한 유저들에게 알림, 읽지 않은 채팅수 & 읽지 않은 전체 채팅수 + 1
+        for (UserChatroom userChatroom : chatroom.getUserChatroomList()) {
+            User targetUser = userChatroom.getUser();
+            // 채팅 생성 알림, 마지막 채팅 트리거를 위해
+            notificationService.sendChatNotification(targetUser.getId());
+            // 읽지 않은 채팅수 & 읽지 않은 전체 채팅수 + 1
+            if (!targetUser.getId().equals(user.getId())) {
+                userChatroom.addUncheckedChatCount();
+                notificationService.sendUncheckedChatCount(targetUser.getId(), getTotalUncheckedChatCount(targetUser.getId()));
+            }
         }
 
         return chatRepository.save(Chat.createChat(chatroom, user, message, createdDate));
@@ -51,4 +65,12 @@ public class ChatService {
         return chatRepository.readChatList(chatroomId, startId, 100);
     }
 
+    public Long getTotalUncheckedChatCount(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Long uncheckedChatCount = 0L;
+        for (UserChatroom chatroom : user.getUserChatroomList()) {
+            uncheckedChatCount += chatroom.getUncheckedChatCount();
+        }
+        return uncheckedChatCount;
+    }
 }

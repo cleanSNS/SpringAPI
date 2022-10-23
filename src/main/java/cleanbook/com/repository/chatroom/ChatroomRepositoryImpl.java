@@ -4,6 +4,8 @@ import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatroomDto;
 import cleanbook.com.entity.chat.Chat;
 import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.entity.chat.UserChatroom;
+import cleanbook.com.exception.exceptions.NotFoundException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -22,6 +24,7 @@ import static cleanbook.com.entity.chat.QUserChatroom.userChatroom;
 public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom.ChatroomRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final UserChatroomRepository userChatroomRepository;
 
     @Transactional
     public ResultDto<List<ChatroomDto>> readChatroomList(Long userId) {
@@ -34,7 +37,6 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
                 .orderBy(chatroom.modifedDate.desc())
                 .fetch();
 
-
         List<ChatroomDto> chatroomDtoList = new ArrayList<>();
         for (Chatroom chatroom : chatroomList) {
             List<String> userImgUrlList = chatroom.getUserChatroomList().stream()
@@ -42,7 +44,10 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
                     .collect(Collectors.toList());
             int headCount = chatroom.getUserChatroomList().size();
 
-            chatroomDtoList.add(new ChatroomDto(chatroom.getId(), chatroom.getName(), userImgUrlList, headCount, getLastChat(chatroom.getId())));
+            UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroom.getId())
+                                                                .orElseThrow(() -> new NotFoundException("채팅방"));
+            chatroomDtoList.add(new ChatroomDto(chatroom.getId(), chatroom.getName(), userImgUrlList, headCount,
+                                                getLastChat(chatroom.getId()), userChatroom.getUncheckedChatCount()));
         }
 
         return new ResultDto<>(chatroomDtoList);

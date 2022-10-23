@@ -3,13 +3,11 @@ package cleanbook.com.service;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
-import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.*;
-import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.notification.NotificationRepository;
 import cleanbook.com.repository.page.PageRepository;
@@ -58,8 +56,8 @@ public class CommentService {
                 // 알림 저장
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
                 // SSE 송신
-                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
-                notificationService.sendNotificationCount(targetUser, count);
+                Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser.getId(), count);
             }
             // 본인이 작성한 글이 아니고 댓글 알림 허용했을 경우 알림 발송
             else if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
@@ -67,8 +65,8 @@ public class CommentService {
                 // 알림 저장
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, page.getId()));
                 // SSE 송신
-                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
-                notificationService.sendNotificationCount(targetUser, count);
+                Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser.getId(), count);
             }
 
         } else { // 댓글일시
@@ -88,8 +86,8 @@ public class CommentService {
                 // 알림 저장
                 notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
                 // SSE 송신
-                Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
-                notificationService.sendNotificationCount(targetUser, count);
+                Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
+                notificationService.sendNotificationCount(targetUser.getId(), count);
             }
         }
 

@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface NotificationRepositoryCustom {
     ResultDto<List<NotificationDto>> readNotificationList(Long userId, Long startId, int pageSize);
-    ResultDto<CountDto> notcheckedNotificationCount(Long userId);
+    ResultDto<CountDto> uncheckedNotificationCount(Long userId);
 }

@@ -15,4 +15,5 @@ public class ChatroomDto {
     private List<String> userImgUrlList;
     private int headCount;
     private String lastChat;
+    private int uncheckedChatCount;
 }

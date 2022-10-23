@@ -3,8 +3,6 @@ package cleanbook.com.service;
 import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationDto;
 import cleanbook.com.dto.ResultDto;
-import cleanbook.com.dto.page.MainPageDto;
-import cleanbook.com.dto.page.UserPageDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
@@ -92,8 +90,8 @@ public class UserService {
         // 알림 저장
         notificationRepository.save(createNotification(user, targetUser,NotificationType.FOLLOW, null));
         // SSE 송신
-        Long count = notificationRepository.notcheckedNotificationCount(targetUser.getId()).getData().getCount();
-        notificationService.sendNotificationCount(targetUser, count);
+        Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
+        notificationService.sendNotificationCount(targetUser.getId(), count);
 
         return follow;
     }
@@ -473,7 +471,7 @@ public class UserService {
 
     // 확인하지 않은 알림 갯수
     public ResultDto<CountDto> notcheckedNotificationCount(Long userId) {
-        return notificationRepository.notcheckedNotificationCount(userId);
+        return notificationRepository.uncheckedNotificationCount(userId);
     }
 
 

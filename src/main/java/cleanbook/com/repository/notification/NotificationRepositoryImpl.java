@@ -47,7 +47,19 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
     }
 
     // 확인하지 않은 알림 갯수
-    public ResultDto<CountDto> notcheckedNotificationCount(Long userId) {
+    public ResultDto<CountDto> uncheckedNotificationCount(Long userId) {
+
+        Long count = queryFactory.query()
+                .select(notification.count())
+                .from(notification)
+                .where(notification.targetUser.id.eq(userId), notification.checked.isFalse())
+                .fetchOne();
+
+        return new ResultDto<>(new CountDto(count));
+    }
+
+    // 확인하지 않은 채팅 갯수
+    public ResultDto<CountDto> uncheckedChatCount(Long userId) {
 
         Long count = queryFactory.query()
                 .select(notification.count())

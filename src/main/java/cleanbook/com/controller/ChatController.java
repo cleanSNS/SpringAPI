@@ -8,10 +8,13 @@ import cleanbook.com.service.ChatService;
 import cleanbook.com.util.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,10 +46,5 @@ public class ChatController {
                                                  @PathVariable Long chatroomId,@RequestParam Long startId) {
         Long userId = tokenProvider.getUserId(token);
         return chatService.readChatList(userId, chatroomId, startId);
-    }
-
-    @MessageMapping("/hello")
-    public void message(Message message) {
-        simpMessageSendingOperations.convertAndSend("/sub/" + message.getChannelId(), message);
     }
 }

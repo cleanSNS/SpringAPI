@@ -1,6 +1,8 @@
 package cleanbook.com.service;
 
 import cleanbook.com.dto.CountDto;
+import cleanbook.com.dto.NotificationCountDto;
+import cleanbook.com.dto.chat.ChatCountDto;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
@@ -13,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,33 +28,52 @@ import static cleanbook.com.entity.notification.Notification.createNotification;
 @Slf4j
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
-
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 30;
 
-    private final Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+    private final Map<Long, SseEmitter> notificationEmitterMap = new ConcurrentHashMap<>();
+    private final Map<Long, SseEmitter> chatEmitterMap = new ConcurrentHashMap<>();
 
     void print(String process) {
         log.info(process);
-        for (Map.Entry<Long, SseEmitter> entrySet : emitterMap.entrySet()) {
+        for (Map.Entry<Long, SseEmitter> entrySet : notificationEmitterMap.entrySet()) {
             log.info("userId {}: emitter {}", entrySet.getKey(), entrySet.getValue());
         }
         log.info("");
     }
 
-    public SseEmitter subscribe(Long userId) {
-//        print("SSE 연결시작");
+    public SseEmitter subscribeNotification(Long userId) {
+        print("notification SSE 연결시작");
 
         // 이미 sse연결이 되었을시 해제하고 재연결함
-        if (emitterMap.containsKey(userId)) {
-//            log.info("SSE 연결 존재");
+        if (notificationEmitterMap.containsKey(userId)) {
+            log.info("notification SSE 연결 존재");
             removeSseEmitter(userId);
         }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-        emitterMap.put(userId, emitter);
+        notificationEmitterMap.put(userId, emitter);
 
-//        print("SSE 연결완료");
+        print("notification SSE 연결완료");
+
+        // 503 에러를 방지하기 위한 더미 이벤트 전송
+        sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+
+        return emitter;
+    }
+
+    public SseEmitter subscribeChat(Long userId) {
+        print("chat SSE 연결시작");
+
+        // 이미 sse연결이 되었을시 해제하고 재연결함
+        if (chatEmitterMap.containsKey(userId)) {
+            log.info("chat SSE 연결 존재");
+            removeChatSseEmitter(userId);
+        }
+
+        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+        chatEmitterMap.put(userId, emitter);
+
+        print("chat SSE 연결완료");
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
         sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
@@ -63,10 +82,17 @@ public class NotificationService {
     }
 
     public void removeSseEmitter(Long userId) {
-        SseEmitter emitter = emitterMap.get(userId);
+        SseEmitter emitter = notificationEmitterMap.get(userId);
         emitter.complete();
-        emitterMap.remove(userId);
-//        print("SSE 삭제완료");
+        notificationEmitterMap.remove(userId);
+        print("notification SSE 삭제완료");
+    }
+
+    public void removeChatSseEmitter(Long userId) {
+        SseEmitter emitter = chatEmitterMap.get(userId);
+        emitter.complete();
+        chatEmitterMap.remove(userId);
+        print("chat SSE 삭제완료");
     }
 
     private void sendToClient(SseEmitter emitter, Object data) {
@@ -79,38 +105,27 @@ public class NotificationService {
         }
     }
 
-    private void sendToClient(SseEmitter emitter, String id, Object data) {
-        try {
-            emitter.send(SseEmitter.event()
-                    .id(id)
-                    .name("sse")
-                    .data(data));
-        } catch (IOException exception) {
-            throw new MyException("SSE 연결 오류!");
-        }
-    }
-
-    public void send(User sender, User receiver, NotificationType type, Long resourceId) {
-        Notification notification = createNotification(sender, receiver, type, resourceId);
-        notificationRepository.save(notification);
-
-        String id = receiver.getId() + "_" + notification.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"));;
-
-        SseEmitter emitter = emitterMap.get(receiver.getId());
+    public void sendNotificationCount(Long receiver, Long count) {
+        SseEmitter emitter = notificationEmitterMap.get(receiver);
 
         if (emitter != null) {
-            sendToClient(emitter, id, createNotificationDto(notification));
+            sendToClient(emitter, new NotificationCountDto(count));
         }
     }
 
-    public void sendNotificationCount(User receiver, Long count) {
-
-        SseEmitter emitter = emitterMap.get(receiver.getId());
+    public void sendUncheckedChatCount(Long receiver, Long count) {
+        SseEmitter emitter = notificationEmitterMap.get(receiver);
 
         if (emitter != null) {
-            sendToClient(emitter, new CountDto(count));
+            sendToClient(emitter, new ChatCountDto(count));
         }
     }
 
+    public void sendChatNotification(Long receiver) {
+        SseEmitter emitter = chatEmitterMap.get(receiver);
 
+        if (emitter != null) {
+            sendToClient(emitter, true);
+        }
+    }
 }

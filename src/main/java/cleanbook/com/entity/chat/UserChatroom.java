@@ -5,6 +5,7 @@ import cleanbook.com.entity.user.User;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,11 +23,27 @@ public class UserChatroom {
     @JoinColumn(name = "chat_room_id")
     private Chatroom chatroom;
 
+    private int uncheckedChatCount;
+    private LocalDateTime lastReadDate;
+
     public static UserChatroom createUserChatroom(User user, Chatroom chatroom) {
         UserChatroom userChatroom = new UserChatroom();
         userChatroom.user = user;
         userChatroom.chatroom = chatroom;
         user.getUserChatroomList().add(userChatroom);
         return userChatroom;
+    }
+
+    public void addUncheckedChatCount() {
+        this.uncheckedChatCount++;
+    }
+
+    public void resetUncheckedChatCount() {
+        this.uncheckedChatCount = 0;
+        lastReadDate = LocalDateTime.now();
+    }
+
+    public void updateLastReadDate() {
+        this.lastReadDate = LocalDateTime.now();
     }
 }

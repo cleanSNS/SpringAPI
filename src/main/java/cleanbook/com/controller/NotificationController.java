@@ -20,10 +20,18 @@ public class NotificationController {
     }
 
     // SSE 연결
-    @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public SseEmitter subscribe(@CookieValue(value = "X-AUTH-TOKEN") String token) {
+    @GetMapping(value = "/subscribe/notification", produces = "text/event-stream")
+    public SseEmitter subscribeNotification(@CookieValue(value = "X-AUTH-TOKEN") String token) {
 
         Long userId = tokenProvider.getUserId(token);
-        return notificationService.subscribe(userId);
+        return notificationService.subscribeNotification(userId);
+    }
+
+    // SSE 연결
+    @GetMapping(value = "/subscribe/chat", produces = "text/event-stream")
+    public SseEmitter subscribeChat(@CookieValue(value = "X-AUTH-TOKEN") String token) {
+
+        Long userId = tokenProvider.getUserId(token);
+        return notificationService.subscribeChat(userId);
     }
 }

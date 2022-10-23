@@ -8,8 +8,6 @@ import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.entity.user.UserProfile;
-import cleanbook.com.exception.exceptions.MyException;
-import cleanbook.com.exception.exceptions.NoMoreCommentException;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +19,7 @@ import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
-import static cleanbook.com.dto.NotificationDto.createNotificationDto;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Import(QuerydslConfig.class)
@@ -115,7 +111,7 @@ class NotificationRepositoryImplTest {
 
 
         // when
-        Long count = notificationRepository.notcheckedNotificationCount(myUser.getId()).getData().getCount();
+        Long count = notificationRepository.uncheckedNotificationCount(myUser.getId()).getData().getCount();
 
 
         // then

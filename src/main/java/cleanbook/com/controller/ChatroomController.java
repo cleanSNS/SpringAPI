@@ -52,12 +52,19 @@ public class ChatroomController {
 
     // 채팅방 삭제
     @DeleteMapping("/chat/chatroom/{chatroomId}")
-    public ResponseEntity<Response> deleteChatroom(@CookieValue("X-AUTH-TOKEN") String token, @PathVariable Long chatroomId){
+    public ResponseEntity<Response> deleteChatroom(@CookieValue("X-AUTH-TOKEN") String token, @PathVariable Long chatroomId) {
         Long userId = tokenProvider.getUserId(token);
         chatroomService.deleteChatroom(userId, chatroomId);
         return ResponseEntity.ok(new Response("success"));
     }
 
-
-
+//    // 채팅방 접속 -> 읽지않은 채팅 개수 초기화
+//    @PostMapping("/chat/chatroom/{chatroomId}/read")
+//    public ResponseEntity<Response> resetUncheckedChat(@CookieValue("X-AUTH-TOKEN") String token,
+//                                                       @PathVariable Long chatroomId) {
+//        Long userId = tokenProvider.getUserId(token);
+//        chatroomService.resetUncheckedChat(userId, chatroomId);
+//
+//        return ResponseEntity.ok(new Response("success"));
+//    }
 }

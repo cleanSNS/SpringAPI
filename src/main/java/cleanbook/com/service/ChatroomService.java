@@ -84,4 +84,10 @@ public class ChatroomService {
                 .map(u -> createUserDto(u.getUser())).collect(Collectors.toList());
         return new ResultDto<>(new ChatroomNameAndUserDto(chatroom.getName(), userDtoList));
     }
+//
+//    // 읽지않은 채팅 개수 초기화
+//    public void resetUncheckedChat(Long userId, Long chatroomId) {
+//        UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
+//        userChatroom.resetUncheckedChatCount();
+//    }
 }

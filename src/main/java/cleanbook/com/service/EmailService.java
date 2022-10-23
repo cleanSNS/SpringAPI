@@ -17,7 +17,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private static final String LOCAL = "http://localhost:8080/local";
-    private static final String SERVER = "http://api.cleanbook.site";
+    private static final String SERVER = "https://cleanbook.site";
 
     @Async
     public void sendServer(String email, String authToken) throws MessagingException {
@@ -28,7 +28,7 @@ public class EmailService {
                 "<h1>메일인증</h1>" +
                         "<br/>CleanBook에 회원가입해주셔서 감사합니다."+
                         "<br/>아래 [이메일 인증 확인]을 눌러주세요."+
-                        "<br/><a href=" + SERVER + "/user/auth/signup/confirm?email="+email+"&authToken="+authToken+
+                        "<br/><a href=" + SERVER + "?email="+email+"&authToken="+authToken+
                         " target='_blenk'>이메일 인증 확인</a>");
 
         smm.send();
