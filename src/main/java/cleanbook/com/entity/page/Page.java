@@ -4,6 +4,7 @@ import cleanbook.com.dto.page.PageCreateDto;
 import cleanbook.com.dto.page.PageUpdateDto;
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.like.LikePage;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,7 +49,7 @@ public class Page extends Timestamped {
 
     @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
-    private List<PageImgUrl> imgUrlList = new ArrayList<>();
+    private List<PageImgUrl> pageImgUrlList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
@@ -57,6 +58,10 @@ public class Page extends Timestamped {
     @Builder.Default
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
     private List<PageHashtag> pageHashtagList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL)
+    private List<LikePage> likePageList = new ArrayList<>();
 
     public Page(String content) {
         this.content = content;
@@ -121,7 +126,7 @@ public class Page extends Timestamped {
     public void updatePage(PageUpdateDto pageUpdateDto) {
         this.content = pageUpdateDto.getContent();
         this.pageSetting = pageUpdateDto.getPageSetting();
-        this.imgUrlList.clear();
+        this.pageImgUrlList.clear();
         this.pageHashtagList.clear();
         for (String imgUrl : pageUpdateDto.getImgUrlList()) {
             createPageImgUrl(this,imgUrl);

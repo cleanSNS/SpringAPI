@@ -2,10 +2,14 @@ package cleanbook.com.entity.page;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
+import cleanbook.com.entity.user.like.LikeComment;
+import cleanbook.com.entity.user.like.LikePage;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,6 +53,10 @@ public class Comment extends Timestamped {
 
     @Builder.Default
     private int likeCount = 0;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<LikeComment> likeCommentList = new ArrayList<>();
 
     public static Comment createComment(User user, Page page, String content, int group, boolean nested, boolean visible) {
         Comment comment = Comment.builder()

@@ -13,6 +13,7 @@ import cleanbook.com.repository.notification.NotificationRepository;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 import static cleanbook.com.entity.notification.Notification.createNotification;
 import static cleanbook.com.util.AIUtils.filterContent;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -40,8 +42,12 @@ public class CommentService {
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
 
         // 인공지능 욕설 필터링
-        String filteredContent = filterContent(dto.getContent());
-        comment.updateFilteredContent(filteredContent);
+        try {
+            String filteredContent = filterContent(dto.getContent());
+            comment.updateFilteredContent(filteredContent);
+        } catch (Exception e) {
+            log.info("필터링 실패");
+        }
 
         // 댓글 권한이 없는 게시글
         if (!page.getPageSetting().getCommentAuth()) {
@@ -51,8 +57,6 @@ public class CommentService {
         if (comment.isNested()) { // 대댓글일시
             int order = commentRepository.findFirstByPage_IdAndGroupOrderByOrderDesc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new).getOrder();
             comment.setOrder(order+1);
-
-            // todo SSE 알림+1
 
             // 댓글이 본인 댓글이 아닐시 대댓글 알림
             Comment headComment = commentRepository.findFirstByPage_IdAndGroupOrderByOrderAsc(page.getId(), dto.getGroup()).orElseThrow(CommentNotFoundException::new);

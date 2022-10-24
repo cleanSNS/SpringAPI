@@ -23,7 +23,7 @@ public class PageImgUrl {
         PageImgUrl pageImgUrl = new PageImgUrl();
         pageImgUrl.page = page;
         pageImgUrl.imgUrl = url;
-        page.getImgUrlList().add(pageImgUrl);
+        page.getPageImgUrlList().add(pageImgUrl);
 
         return pageImgUrl;
     }

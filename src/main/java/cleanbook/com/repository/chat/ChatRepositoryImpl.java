@@ -4,7 +4,6 @@ import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.chat.ChatDto;
 import cleanbook.com.dto.user.UserDto;
 import cleanbook.com.entity.chat.Chat;
-import cleanbook.com.entity.chat.QChat;
 import cleanbook.com.exception.exceptions.NoMoreDataException;
 import cleanbook.com.exception.exceptions.NoMorePageException;
 import com.querydsl.jpa.impl.JPAQueryFactory;

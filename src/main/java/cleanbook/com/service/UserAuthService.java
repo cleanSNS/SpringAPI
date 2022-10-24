@@ -12,7 +12,6 @@ import cleanbook.com.repository.RefreshTokenRepository;
 import cleanbook.com.repository.UserActiveRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.email.EmailAuthRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
@@ -287,7 +285,7 @@ public class UserAuthService {
         awsS3Service.deleteFiles(Collections.singletonList(user.getUserProfile().getImgUrl()));
         // page 이미지 삭제
         for (Page page : user.getPageList()) {
-            awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
+            awsS3Service.deleteFiles(page.getPageImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
         }
         userRepository.delete(user);
     }

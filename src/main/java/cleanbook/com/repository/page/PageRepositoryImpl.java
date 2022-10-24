@@ -20,15 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static cleanbook.com.entity.page.QComment.comment;
 import static cleanbook.com.entity.page.QHashtag.hashtag;
 import static cleanbook.com.entity.page.QPage.page;
 import static cleanbook.com.entity.page.QPageHashtag.pageHashtag;
 import static cleanbook.com.entity.page.QPageImgUrl.pageImgUrl;
 import static cleanbook.com.entity.user.follow.QFollow.follow;
 import static cleanbook.com.entity.user.QUser.user;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
 
 @Repository
 @AllArgsConstructor
@@ -49,7 +46,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, page.content, page.filteredContent, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
+                            page.id, page.content, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))
@@ -60,7 +57,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         return queryFactory.query()
                 .select(pageImgUrl.imgUrl)
                 .from(page)
-                .join(page.imgUrlList, pageImgUrl)
+                .join(page.pageImgUrlList, pageImgUrl)
                 .where(page.id.eq(pageId))
                 .fetch();
     }
@@ -191,7 +188,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
         List<UserPageDto> userPageDtoList = pageList.stream()
                     .map(p -> new UserPageDto(p.getId(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
-                                p.getImgUrlList().get(0).getImgUrl()))
+                                p.getPageImgUrlList().get(0).getImgUrl()))
                     .collect(Collectors.toList());
 
         Long nextStartId = pageList.stream()
@@ -230,7 +227,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
         List<UserPageDto> userPageDtoList = pageList.stream()
                         .map(p -> new UserPageDto(p.getId(), p.getLikeCount(), p.getPageSetting().getLikeReadAuth(),
-                                p.getImgUrlList().get(0).getImgUrl()))
+                                p.getPageImgUrlList().get(0).getImgUrl()))
                         .collect(Collectors.toList());
 
         Long nextStartId = pageList.stream()

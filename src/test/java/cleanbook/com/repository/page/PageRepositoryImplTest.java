@@ -10,7 +10,6 @@ import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.repository.FollowRepository;
-import cleanbook.com.repository.comment.CommentRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -93,7 +92,7 @@ class PageRepositoryImplTest {
 
         // then
         assertThat(imgUrlList.size()).isEqualTo(2);
-        assertThat(imgUrlList).isEqualTo(myPage.getImgUrlList().stream().map(imgUrl -> imgUrl.getImgUrl()).collect(Collectors.toList()));
+        assertThat(imgUrlList).isEqualTo(myPage.getPageImgUrlList().stream().map(imgUrl -> imgUrl.getImgUrl()).collect(Collectors.toList()));
 
     }
 

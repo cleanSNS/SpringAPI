@@ -38,8 +38,12 @@ public class PageService {
         Page page = Page.createPage(user, pageCreateDto);
 
         // 인공지능 욕설 필터링
-        String filteredContent = filterContent(pageCreateDto.getContent());
-        page.updateFilteredContent(filteredContent);
+        try {
+            String filteredContent = filterContent(pageCreateDto.getContent());
+            page.updateFilteredContent(filteredContent);
+        } catch (Exception e) {
+            log.info("필터링 실패");
+        }
 
         return pageRepository.save(page);
     }
@@ -97,8 +101,8 @@ public class PageService {
         }
 
         // page 이미지 삭제
-        if (page.getImgUrlList() != null) {
-            awsS3Service.deleteFiles(page.getImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
+        if (page.getPageImgUrlList() != null) {
+            awsS3Service.deleteFiles(page.getPageImgUrlList().stream().map(PageImgUrl::getImgUrl).collect(Collectors.toList()));
         }
         user.getPageList().remove(page);
         pageRepository.delete(page);

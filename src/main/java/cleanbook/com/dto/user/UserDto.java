@@ -4,8 +4,8 @@ import cleanbook.com.entity.user.User;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UserDto {
     private Long userId;
