@@ -23,7 +23,6 @@ public class UserChatroom {
     private Chatroom chatroom;
 
     private Integer uncheckedChatCount = 0;
-    private LocalDateTime lastReadDate;
     private Boolean online = false;
 
     public static UserChatroom createUserChatroom(User user, Chatroom chatroom) {
@@ -42,11 +41,6 @@ public class UserChatroom {
 
     public void resetUncheckedChatCount() {
         this.uncheckedChatCount = 0;
-        lastReadDate = LocalDateTime.now();
-    }
-
-    public void updateLastReadDate() {
-        this.lastReadDate = LocalDateTime.now();
     }
 
     public void subscribeChatroom() {

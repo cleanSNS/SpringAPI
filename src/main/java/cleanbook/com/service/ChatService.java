@@ -46,9 +46,12 @@ public class ChatService {
             User targetUser = userChatroom.getUser();
             // 채팅 생성 알림, 마지막 채팅 트리거를 위해
             notificationService.sendChatNotification(targetUser.getId());
-            // 읽지 않은 채팅수 & 읽지 않은 전체 채팅수 + 1
+            // 채팅방 인원중 본인 제외
             if (!targetUser.getId().equals(userId)) {
-                userChatroom.addUncheckedChatCount();
+                // 오프라인인 유저한정 읽지 않은 채팅수 + 1
+                if (!userChatroom.getOnline()) {
+                    userChatroom.addUncheckedChatCount();
+                }
                 notificationService.sendUncheckedChatCount(targetUser.getId(), getTotalUncheckedChatCount(targetUser.getId()));
             }
         }

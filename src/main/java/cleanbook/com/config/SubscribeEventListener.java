@@ -24,7 +24,6 @@ import java.util.Objects;
 public class SubscribeEventListener implements ApplicationListener<SessionSubscribeEvent> {
 
     private final UserChatroomRepository userChatroomRepository;
-    private final ChatroomRepository chatroomRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
 
@@ -38,7 +37,6 @@ public class SubscribeEventListener implements ApplicationListener<SessionSubscr
         // 읽지 않은 채팅 수 0, 채팅방 입장 시간 업데이트, 읽지 않은 전체 채팅수 감소, 채팅방 입장 boolean true
         UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
         userChatroom.resetUncheckedChatCount();
-        userChatroom.updateLastReadDate();
         userChatroom.subscribeChatroom();
         // 읽지 않은 전체 채팅수 알림
         notificationService.sendUncheckedChatCount(userId, getTotalUncheckedChatCount(userId));

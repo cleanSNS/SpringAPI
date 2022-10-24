@@ -22,9 +22,4 @@ public class LocalHomeController {
         return "hello";
     }
 
-    @GetMapping("/testaa/{userId}")
-    public ResponseEntity<Response> test(@PathVariable Long userId) {
-        notificationService.removeSseEmitter(userId);
-        return ResponseEntity.ok(new Response("success"));
-    }
 }

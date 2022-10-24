@@ -30,12 +30,12 @@ public class StompHandler implements ChannelInterceptor {
         switch (accessor.getCommand()) {
             case CONNECT:
                 log.info("WebSocket Connect");
-                log.info(webSocketMessageBrokerStats.toString());
+//                log.info(webSocketMessageBrokerStats.toString());
                 break;
             case DISCONNECT:
                 // 유저가 Websocket으로 disconnect() 를 한 뒤 호출됨 or 세션이 끊어졌을 때 발생함(페이지 이동~ 브라우저 닫기 등)
                 log.info("WebSocket Disconnect");
-                log.info(webSocketMessageBrokerStats.toString());
+//                log.info(webSocketMessageBrokerStats.toString());
                 break;
             default:
                 break;

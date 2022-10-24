@@ -1,5 +1,6 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.SSEType;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class NotificationController {
     public SseEmitter subscribeNotification(@CookieValue(value = "X-AUTH-TOKEN") String token) {
 
         Long userId = tokenProvider.getUserId(token);
-        return notificationService.subscribeNotification(userId);
+        return notificationService.subscribe(userId, SSEType.NOTIFICATION);
     }
 
     // SSE 연결
@@ -32,6 +33,6 @@ public class NotificationController {
     public SseEmitter subscribeChat(@CookieValue(value = "X-AUTH-TOKEN") String token) {
 
         Long userId = tokenProvider.getUserId(token);
-        return notificationService.subscribeChat(userId);
+        return notificationService.subscribe(userId, SSEType.CHAT);
     }
 }

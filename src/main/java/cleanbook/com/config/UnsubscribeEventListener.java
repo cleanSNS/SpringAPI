@@ -23,16 +23,13 @@ import java.util.Objects;
 @Component
 @Transactional
 @RequiredArgsConstructor
-public class UnsubscribeEventListener implements ApplicationListener<SessionDisconnectEvent> {
+public class UnsubscribeEventListener implements ApplicationListener<SessionUnsubscribeEvent> {
 
     private final UserChatroomRepository userChatroomRepository;
 
     @Override
-    public void onApplicationEvent(SessionDisconnectEvent event) {
+    public void onApplicationEvent(SessionUnsubscribeEvent event) {
         log.info("채팅방 퇴장");
-        System.out.println(event);
-        System.out.println(event.getMessage());
-        System.out.println(event.getUser());
         Long chatroomId = getchatroomIdFromEvent(event);
         Long userId = Long.valueOf(event.getUser().getName());
         System.out.println("chatroomId = " + chatroomId);
@@ -44,7 +41,7 @@ public class UnsubscribeEventListener implements ApplicationListener<SessionDisc
     }
 
     // subscribe로부터 채팅방 ID 가져오기
-    public Long getchatroomIdFromEvent(SessionDisconnectEvent event) {
+    public Long getchatroomIdFromEvent(SessionUnsubscribeEvent event) {
         String string = (Objects.requireNonNull(event.getMessage().getHeaders().get("nativeHeaders"))).toString();
         String roomIdStr = "";
         for (int i = string.lastIndexOf('/') + 1; i < string.length(); i++) {

@@ -2,6 +2,7 @@ package cleanbook.com.service;
 
 import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.NotificationCountDto;
+import cleanbook.com.dto.SSEType;
 import cleanbook.com.dto.chat.ChatCountDto;
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;
@@ -20,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static cleanbook.com.dto.NotificationDto.*;
+import static cleanbook.com.dto.SSEType.CHAT;
+import static cleanbook.com.dto.SSEType.NOTIFICATION;
 import static cleanbook.com.entity.notification.Notification.createNotification;
 
 @Service
@@ -28,7 +31,7 @@ import static cleanbook.com.entity.notification.Notification.createNotification;
 @Slf4j
 public class NotificationService {
 
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 30;
+    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 5;
 
     private final Map<Long, SseEmitter> notificationEmitterMap = new ConcurrentHashMap<>();
     private final Map<Long, SseEmitter> chatEmitterMap = new ConcurrentHashMap<>();
@@ -41,61 +44,97 @@ public class NotificationService {
         log.info("");
     }
 
-    public SseEmitter subscribeNotification(Long userId) {
-        print("notification SSE 연결시작");
-
-//        // 이미 sse연결이 되었을시 해제하고 재연결함
+//    public SseEmitter subscribeNotification(Long userId) {
+//        print("notification SSE 연결시작");
+//
+////        // 이미 sse연결이 되었을시 해제하고 재연결함
+////        if (notificationEmitterMap.containsKey(userId)) {
+////            log.info("notification SSE 연결 존재");
+////            removeSseEmitter(userId);
+////        }
+//
 //        if (notificationEmitterMap.containsKey(userId)) {
-//            log.info("notification SSE 연결 존재");
+//            SseEmitter emitter = notificationEmitterMap.get(userId);
+//            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+//            return emitter;
+//        }
+//
+//        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+//
+//        emitter.onTimeout(()-> {
 //            removeSseEmitter(userId);
-//        }
-
-        if (notificationEmitterMap.containsKey(userId)) {
-            SseEmitter emitter = notificationEmitterMap.get(userId);
-            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
-            return emitter;
-        }
-
-        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-
-        emitter.onTimeout(()-> {
-            removeSseEmitter(userId);
-        });
-
-        notificationEmitterMap.put(userId, emitter);
-
-        print("notification SSE 연결완료");
-
-        // 503 에러를 방지하기 위한 더미 이벤트 전송
-        sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
-
-        return emitter;
-    }
-
-    public SseEmitter subscribeChat(Long userId) {
-        print("chat SSE 연결시작");
-
-//        // 이미 sse연결이 되었을시 해제하고 재연결함
+//        });
+//
+//        notificationEmitterMap.put(userId, emitter);
+//
+//        print("notification SSE");
+//
+//        // 503 에러를 방지하기 위한 더미 이벤트 전송
+//        sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+//
+//        return emitter;
+//    }
+//
+//    public SseEmitter subscribeChat(Long userId) {
+//        print("connect start chat SSE");
+//
+////        // 이미 sse연결이 되었을시 해제하고 재연결함
+////        if (chatEmitterMap.containsKey(userId)) {
+////            log.info("chat SSE 연결 존재");
+////            removeChatSseEmitter(userId);
+////        }
+//
 //        if (chatEmitterMap.containsKey(userId)) {
-//            log.info("chat SSE 연결 존재");
-//            removeChatSseEmitter(userId);
+//            SseEmitter emitter = chatEmitterMap.get(userId);
+//            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+//            return emitter;
 //        }
+//
+//        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+//
+//        emitter.onTimeout(()-> {
+//            removeChatSseEmitter(userId);
+//        });
+//
+//        chatEmitterMap.put(userId, emitter);
+//
+//        print("connect complete chat SSE");
+//
+//        // 503 에러를 방지하기 위한 더미 이벤트 전송
+//        sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
+//
+//        return emitter;
+//    }
 
-        if (chatEmitterMap.containsKey(userId)) {
-            SseEmitter emitter = chatEmitterMap.get(userId);
-            sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
-            return emitter;
+    public SseEmitter subscribe(Long userId, SSEType sseType) {
+        print(sseType.name() + " SSE connect start");
+
+        Map<Long, SseEmitter> emitterMap = getEmitterMap(sseType);
+
+        // 이미 sse연결이 되었을시 해제하고 재연결함
+        if (emitterMap.containsKey(userId)) {
+            log.info("{} SSE exist", sseType.name());
+            removeSseEmitter(userId, sseType);
         }
+
+//        if (emitterMap.containsKey(userId)) {
+//            log.info("{} SSE exist", sseType.name());
+//            SseEmitter emitter = emitterMap.get(userId);
+//            return emitter;
+//        }
 
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
         emitter.onTimeout(()-> {
-            removeChatSseEmitter(userId);
+            removeSseEmitter(userId, sseType);
+        });
+        emitter.onCompletion(()-> {
+            removeSseEmitter(userId, sseType);
         });
 
-        chatEmitterMap.put(userId, emitter);
+        emitterMap.put(userId, emitter);
 
-        print("chat SSE 연결완료");
+        print(sseType.name() + " SSE connect complete");
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
         sendToClient(emitter, "EventStream Created. [userId=" + userId + "]");
@@ -103,18 +142,28 @@ public class NotificationService {
         return emitter;
     }
 
-    public void removeSseEmitter(Long userId) {
-        SseEmitter emitter = notificationEmitterMap.get(userId);
-        emitter.complete();
-        notificationEmitterMap.remove(userId);
-        print("notification SSE 삭제완료");
+    private Map<Long, SseEmitter> getEmitterMap(SSEType sseType) {
+        Map<Long, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+        switch (sseType) {
+            case NOTIFICATION:
+                emitterMap = notificationEmitterMap;
+                break;
+            case CHAT:
+                emitterMap = chatEmitterMap;
+                break;
+            default:
+                log.info("SSEType error");
+                break;
+        }
+        return emitterMap;
     }
 
-    public void removeChatSseEmitter(Long userId) {
-        SseEmitter emitter = chatEmitterMap.get(userId);
+    public void removeSseEmitter(Long userId, SSEType sseType) {
+        Map<Long, SseEmitter> emitterMap = getEmitterMap(sseType);
+        SseEmitter emitter = emitterMap.get(userId);
         emitter.complete();
-        chatEmitterMap.remove(userId);
-        print("chat SSE 삭제완료");
+        emitterMap.remove(userId);
+        print(sseType.name() + " SSE delete");
     }
 
     private void sendToClient(SseEmitter emitter, Object data) {
@@ -139,7 +188,10 @@ public class NotificationService {
         SseEmitter emitter = notificationEmitterMap.get(receiver);
 
         if (emitter != null) {
+            log.info("로그인 상태인 사용자 : {}", receiver);
             sendToClient(emitter, new ChatCountDto(count));
+        } else {
+            log.info("로그아웃 상태인 사용자 : {}", receiver);
         }
     }
 
@@ -147,7 +199,10 @@ public class NotificationService {
         SseEmitter emitter = chatEmitterMap.get(receiver);
 
         if (emitter != null) {
+            log.info("로그인 상태인 사용자 : {}", receiver);
             sendToClient(emitter, true);
+        } else {
+            log.info("로그아웃 상태인 사용자 : {}", receiver);
         }
     }
 }
