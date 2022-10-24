@@ -41,23 +41,23 @@ class UserServiceMyPageTest {
         user = new User(1L,"user", "aaa", userProfile, userSetting);
     }
 
-    @Test
-    @DisplayName("프로필_편집")
-    void changeProfileTest() {
-
-        //given
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-
-
-        // when
-        userService.changeUserProfile(user.getId(), newUserProfile);
-
-
-        // then
-        assertThat(user.getUserProfile().getNickname()).isEqualTo("lacram");
-        assertThat(user.getUserProfile().getAge()).isEqualTo(25);
-        assertThat(user.getUserProfile().getGender()).isEqualTo(GenderType.MALE);
-    }
+//    @Test
+//    @DisplayName("프로필_편집")
+//    void changeProfileTest() {
+//
+//        //given
+//        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+//
+//
+//        // when
+//        userService.changeUserProfile(user.getId(), newUserProfile);
+//
+//
+//        // then
+//        assertThat(user.getUserProfile().getNickname()).isEqualTo("lacram");
+//        assertThat(user.getUserProfile().getAge()).isEqualTo(25);
+//        assertThat(user.getUserProfile().getGender()).isEqualTo(GenderType.MALE);
+//    }
 
     @Test
     @DisplayName("푸쉬알림_설정")
