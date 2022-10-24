@@ -1,14 +1,9 @@
 package cleanbook.com.service;
 
-import cleanbook.com.dto.CountDto;
-import cleanbook.com.dto.NotificationCountDto;
+import cleanbook.com.dto.Notification.NotificationCountDto;
 import cleanbook.com.dto.SSEType;
 import cleanbook.com.dto.chat.ChatCountDto;
-import cleanbook.com.entity.notification.Notification;
-import cleanbook.com.entity.notification.NotificationType;
-import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.MyException;
-import cleanbook.com.repository.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,14 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static cleanbook.com.dto.NotificationDto.*;
-import static cleanbook.com.dto.SSEType.CHAT;
-import static cleanbook.com.dto.SSEType.NOTIFICATION;
-import static cleanbook.com.entity.notification.Notification.createNotification;
 
 @Service
 @RequiredArgsConstructor

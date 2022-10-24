@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static cleanbook.com.entity.notification.Notification.createNotification;
+import static cleanbook.com.util.AIUtils.filterContent;
 
 @Service
 @Transactional
@@ -37,6 +38,10 @@ public class CommentService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Page page = pageRepository.findById(dto.getPageId()).orElseThrow(PageNotFoundException::new);
         Comment comment = Comment.createComment(user, page, dto.getContent(), dto.getGroup(), dto.isNested(), dto.isVisible());
+
+        // 인공지능 욕설 필터링
+        String filteredContent = filterContent(dto.getContent());
+        comment.updateFilteredContent(filteredContent);
 
         // 댓글 권한이 없는 게시글
         if (!page.getPageSetting().getCommentAuth()) {

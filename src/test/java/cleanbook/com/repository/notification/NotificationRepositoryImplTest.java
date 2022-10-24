@@ -1,7 +1,7 @@
 package cleanbook.com.repository.notification;
 
 import cleanbook.com.config.QuerydslConfig;
-import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.Notification.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.notification.Notification;

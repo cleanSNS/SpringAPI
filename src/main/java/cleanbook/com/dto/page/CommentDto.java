@@ -15,6 +15,7 @@ public class CommentDto {
     private UserDto userDto;
     private Long commentId;
     private String content;
+    private String filteredContent;
     private int group;
     private int likeCount;
     private boolean like;

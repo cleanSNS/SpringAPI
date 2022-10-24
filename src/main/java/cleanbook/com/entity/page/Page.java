@@ -33,6 +33,8 @@ public class Page extends Timestamped {
     @NotEmpty
     @Column(columnDefinition = "MEDIUMTEXT")
     private String content;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String filteredContent;
 
     @Column(columnDefinition = "bigint default 0")
     private int warningCount;
@@ -128,5 +130,9 @@ public class Page extends Timestamped {
             Hashtag hashtag = new Hashtag(name);
             createPageHashtag(this, hashtag);
         }
+    }
+
+    public void updateFilteredContent(String filteredContent) {
+        this.content = filteredContent;
     }
 }

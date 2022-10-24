@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.util.IOUtils;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,7 +43,11 @@ public class AwsS3Service {
             objectMetadata.setContentType(multipartFile.getContentType());
 
             try (InputStream inputStream = multipartFile.getInputStream()) {
-                amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
+                byte[] bytes = IOUtils.toByteArray(inputStream);
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+                objectMetadata.setContentLength(bytes.length);
+
+                amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 fileUrlList.add(amazonS3Client.getUrl(bucketName, fileName).toString());
             } catch (IOException e) {
@@ -54,7 +60,7 @@ public class AwsS3Service {
 
     public void deleteFiles(List<String> filenameList) {
         for (String filename : filenameList) {
-            filename = filename.substring(filenameList.indexOf(".com"));
+            filename = filename.substring(filename.indexOf(".com"));
             amazonS3Client.deleteObject(new DeleteObjectRequest(bucketName, filename));
         }
     }

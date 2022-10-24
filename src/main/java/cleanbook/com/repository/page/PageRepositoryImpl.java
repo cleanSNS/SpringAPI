@@ -49,7 +49,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, page.content, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
+                            page.id, page.content, page.filteredContent, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))

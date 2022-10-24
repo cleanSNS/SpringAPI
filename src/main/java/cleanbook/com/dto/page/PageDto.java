@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class PageDto {
-
     private UserDto userDto;
     private Long pageId;
     private String content;
+    private String filteredContent;
     private int likeCount;
     private boolean likeReadAuth;
     private LocalDateTime createdDate;

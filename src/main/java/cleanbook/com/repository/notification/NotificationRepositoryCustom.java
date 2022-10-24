@@ -1,7 +1,7 @@
 package cleanbook.com.repository.notification;
 
 import cleanbook.com.dto.CountDto;
-import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.Notification.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 
 import java.util.List;

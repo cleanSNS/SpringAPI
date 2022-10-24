@@ -1,9 +1,8 @@
 package cleanbook.com.controller;
 
 import cleanbook.com.dto.CountDto;
-import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.Notification.NotificationDto;
 import cleanbook.com.dto.ResultDto;
-import cleanbook.com.dto.page.UserPageDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
 import cleanbook.com.jwt.TokenProvider;
@@ -222,7 +221,8 @@ public class UserController {
 
     // 유저 검색
     @GetMapping("/user/search")
-    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token, @RequestParam String nickname) {
+    public ResultDto<List<UserDto>> findUsersStartWithNickname(@CookieValue(value = "X-AUTH-TOKEN", required = false) String token,
+                                                               @RequestParam String nickname) {
         Long userId = tokenProvider.getUserId(token);
         return userService.findUsersStartWithNickname(userId, nickname);
     }
@@ -245,14 +245,16 @@ public class UserController {
 
     // 알림 내역 전체조회
     @GetMapping("/user/notification")
-    public ResultDto<List<NotificationDto>> readNotificationList(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long startId) {
+    public ResultDto<List<NotificationDto>> readNotificationList(@CookieValue("X-AUTH-TOKEN") String token,
+                                                                 @RequestParam Long startId) {
         Long userId = tokenProvider.getUserId(token);
         return userService.readNotificationList(userId, startId);
     }
 
     // 알림 읽음
     @PostMapping("/user/notification")
-    public ResponseEntity<Response> checkNotification(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long notificationId) {
+    public ResponseEntity<Response> checkNotification(@CookieValue("X-AUTH-TOKEN") String token,
+                                                      @RequestParam Long notificationId) {
         Long userId = tokenProvider.getUserId(token);
         userService.checkNotification(userId, notificationId);
         return ResponseEntity.ok(new Response("success"));
@@ -260,7 +262,8 @@ public class UserController {
 
     // 알림 삭제
     @DeleteMapping("/user/notification")
-    public ResponseEntity<Response> deleteNotification(@CookieValue("X-AUTH-TOKEN") String token, @RequestParam Long notificationId) {
+    public ResponseEntity<Response> deleteNotification(@CookieValue("X-AUTH-TOKEN") String token,
+                                                       @RequestParam Long notificationId) {
         Long userId = tokenProvider.getUserId(token);
         userService.deleteNotification(userId, notificationId);
         return ResponseEntity.ok(new Response("success"));

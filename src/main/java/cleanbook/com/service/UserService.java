@@ -1,7 +1,7 @@
 package cleanbook.com.service;
 
 import cleanbook.com.dto.CountDto;
-import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.Notification.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.entity.notification.Notification;

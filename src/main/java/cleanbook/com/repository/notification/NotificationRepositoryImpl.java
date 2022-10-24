@@ -1,10 +1,9 @@
 package cleanbook.com.repository.notification;
 
 import cleanbook.com.dto.CountDto;
-import cleanbook.com.dto.NotificationDto;
+import cleanbook.com.dto.Notification.NotificationDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.notification.Notification;
-import cleanbook.com.exception.exceptions.MyException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package cleanbook.com.dto;
+package cleanbook.com.dto.Notification;
 
 import cleanbook.com.entity.notification.Notification;
 import cleanbook.com.entity.notification.NotificationType;

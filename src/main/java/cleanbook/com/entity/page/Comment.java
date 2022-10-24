@@ -29,6 +29,8 @@ public class Comment extends Timestamped {
     @NotEmpty
     private String content;
 
+    private String filteredContent;
+
     @Builder.Default
     private boolean nested = false;
 
@@ -99,4 +101,7 @@ public class Comment extends Timestamped {
         this.group = group;
     }
 
+    public void updateFilteredContent(String filteredContent) {
+        this.filteredContent = filteredContent;
+    }
 }

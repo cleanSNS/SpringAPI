@@ -6,11 +6,11 @@ import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.entity.user.User;
 import cleanbook.com.exception.exceptions.*;
-import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.BlockRepository;
 import cleanbook.com.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cleanbook.com.util.AIUtils.filterContent;
 import static org.springframework.util.StringUtils.hasText;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class PageService {
 
     private final PageRepository pageRepository;
@@ -34,6 +36,11 @@ public class PageService {
     public Page createPage(Long userId ,PageCreateDto pageCreateDto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Page page = Page.createPage(user, pageCreateDto);
+
+        // 인공지능 욕설 필터링
+        String filteredContent = filterContent(pageCreateDto.getContent());
+        page.updateFilteredContent(filteredContent);
+
         return pageRepository.save(page);
     }
 

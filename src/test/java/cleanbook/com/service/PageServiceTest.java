@@ -10,13 +10,12 @@ import cleanbook.com.entity.user.UserProfile;
 import cleanbook.com.exception.exceptions.NoAuthroizationException;
 import cleanbook.com.repository.page.PageRepository;
 import cleanbook.com.repository.user.UserRepository;
+import cleanbook.com.util.AIUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -57,12 +56,18 @@ class PageServiceTest {
 
         User findUser = userRepository.findById(1L).get();
 
-        // when
-        Page findPage = pageService.createPage(findUser.getId(), PageCreateDto.builder().build());
-        findUser = userRepository.findById(1L).get();
 
-        // then
-        assertThat(findUser.getPageList().size()).isEqualTo(1);
+        try (MockedStatic<AIUtils> utilities = Mockito.mockStatic(AIUtils.class)){
+            utilities.when(() -> AIUtils.filterContent(any(String.class))).thenReturn("filteredContent");
+
+            // when
+            Page findPage = pageService.createPage(findUser.getId(), PageCreateDto.builder().build());
+            findUser = userRepository.findById(1L).get();
+
+            // then
+            assertThat(findUser.getPageList().size()).isEqualTo(1);
+        }
+
     }
 
     @Nested
