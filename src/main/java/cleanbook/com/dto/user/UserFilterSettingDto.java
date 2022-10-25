@@ -10,12 +10,10 @@ import javax.persistence.Column;
 @NoArgsConstructor
 public class UserFilterSettingDto {
     private boolean filterAll;
-    private boolean filterFollower;
     private boolean filterFollowee;
 
     public UserFilterSettingDto(UserFilterSetting userFilterSetting) {
         this.filterAll = userFilterSetting.getFilterAll();
-        this.filterFollower = userFilterSetting.getFilterFollower();
         this.filterFollowee = userFilterSetting.getFilterFollowee();
     }
 }

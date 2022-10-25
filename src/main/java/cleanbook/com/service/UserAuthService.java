@@ -73,6 +73,7 @@ public class UserAuthService {
                         .ageVisible(userSignupDto.isAgeVisible())
                         .genderVisible(userSignupDto.isGenderVisible())
                         .imgUrl(DEFAULT_PROFILE_IMG_URL)
+                        .selfIntroduction("")
                         .build())
                 .userSetting(UserSetting.builder()
                         .userNotificationSetting(UserNotificationSetting.builder().build())

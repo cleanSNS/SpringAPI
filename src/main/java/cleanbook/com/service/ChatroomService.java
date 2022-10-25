@@ -56,9 +56,8 @@ public class ChatroomService {
 
     // 채팅방 이름수정
     public void changeName(Long userId, Long chatroomId, String name) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
-        chatroom.changeName(name);
+        UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
+        userChatroom.changeChatroomName(name);
     }
 
     //채팅방 삭제(나가기)
@@ -78,16 +77,14 @@ public class ChatroomService {
     }
 
     // 채팅방 조회
-    public ResultDto<ChatroomNameAndUserDto> getChatroom(Long chatroomId) {
+    public ResultDto<ChatroomNameAndUserDto> getChatroom(Long userId, Long chatroomId) {
+        UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
         Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
         List<UserDto> userDtoList = chatroom.getUserChatroomList().stream()
                 .map(u -> createUserDto(u.getUser())).collect(Collectors.toList());
-        return new ResultDto<>(new ChatroomNameAndUserDto(chatroom.getName(), userDtoList));
+        return new ResultDto<>(new ChatroomNameAndUserDto(userChatroom.getName(), userDtoList));
     }
-//
-//    // 읽지않은 채팅 개수 초기화
-//    public void resetUncheckedChat(Long userId, Long chatroomId) {
-//        UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroomId).orElseThrow(() -> new NotFoundException("채팅방"));
-//        userChatroom.resetUncheckedChatCount();
-//    }
 }
+
+
+

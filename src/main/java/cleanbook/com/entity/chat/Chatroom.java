@@ -2,11 +2,9 @@ package cleanbook.com.entity.chat;
 
 import cleanbook.com.entity.Timestamped;
 import cleanbook.com.entity.user.User;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,8 +23,6 @@ public class Chatroom extends Timestamped {
     @Column(name = "chatroom_id")
     private Long id;
 
-    private String name;
-
     @CreatedDate
     private LocalDateTime modifedDate;
 
@@ -38,15 +34,10 @@ public class Chatroom extends Timestamped {
 
     public static Chatroom createChatroom(String name, List<User> userList) {
         Chatroom chatroom = new Chatroom();
-        chatroom.name = name;
         for (User user : userList) {
-            chatroom.getUserChatroomList().add(createUserChatroom(user, chatroom));
+            chatroom.getUserChatroomList().add(createUserChatroom(user, chatroom, name));
         }
         return chatroom;
-    }
-
-    public void changeName(String name) {
-        this.name = name;
     }
 
     public void modify(LocalDateTime modifedDate) {
@@ -54,8 +45,4 @@ public class Chatroom extends Timestamped {
         this.modifedDate = modifedDate;
     }
 
-
-    public Chatroom(String name) {
-        this.name = name;
-    }
 }

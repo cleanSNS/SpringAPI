@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
+
 @Slf4j
 public class AIUtils {
 
@@ -20,6 +22,7 @@ public class AIUtils {
                 .bodyValue(new AIRequestDto(content))
                 .retrieve()
                 .bodyToMono(AIResponseDto.class)
+                .timeout(Duration.ofSeconds(10))
                 .block();
         String filteredContent = aiResponseDto.getRes();
         log.info("content : {}", content);

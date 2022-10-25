@@ -138,6 +138,6 @@ public class Page extends Timestamped {
     }
 
     public void updateFilteredContent(String filteredContent) {
-        this.content = filteredContent;
+        this.filteredContent = filteredContent;
     }
 }

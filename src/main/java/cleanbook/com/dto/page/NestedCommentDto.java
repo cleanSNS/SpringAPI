@@ -1,7 +1,6 @@
 package cleanbook.com.dto.page;
 
 import cleanbook.com.dto.user.UserDto;
-import cleanbook.com.entity.page.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,24 +8,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static cleanbook.com.dto.user.UserDto.createUserDto;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommentDto {
+public class NestedCommentDto {
 
     private UserDto userDto;
     private Long commentId;
     private String content;
     private int group;
     private int likeCount;
-    private int nestedCommentCount;
     private boolean like;
     private LocalDateTime createdDate;
 
-    public CommentDto(UserDto userDto, Long commentId, String content, int group, int likeCount, LocalDateTime createdDate) {
+    public NestedCommentDto(UserDto userDto, Long commentId, String content, int group, int likeCount, LocalDateTime createdDate) {
         this.userDto = userDto;
         this.commentId = commentId;
         this.content = content;

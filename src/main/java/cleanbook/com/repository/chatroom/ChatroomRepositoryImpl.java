@@ -46,7 +46,7 @@ public class ChatroomRepositoryImpl implements cleanbook.com.repository.chatroom
 
             UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(userId, chatroom.getId())
                                                                 .orElseThrow(() -> new NotFoundException("채팅방"));
-            chatroomDtoList.add(new ChatroomDto(chatroom.getId(), chatroom.getName(), userImgUrlList, headCount,
+            chatroomDtoList.add(new ChatroomDto(chatroom.getId(), userChatroom.getName(), userImgUrlList, headCount,
                                                 getLastChat(chatroom.getId()), userChatroom.getUncheckedChatCount()));
         }
 

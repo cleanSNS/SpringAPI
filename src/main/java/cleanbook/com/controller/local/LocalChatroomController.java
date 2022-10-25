@@ -37,8 +37,10 @@ public class LocalChatroomController {
 
     // 채팅방 조회
     @GetMapping("/chat/chatroom/{chatroomId}")
-    public ResultDto<ChatroomNameAndUserDto> getChatroomName(@PathVariable Long chatroomId) {
-        return chatroomService.getChatroom(chatroomId);
+    public ResultDto<ChatroomNameAndUserDto> getChatroomName(@CookieValue("X-AUTH-TOKEN") String token,
+                                                             @PathVariable Long chatroomId) {
+        Long userId = tokenProvider.getUserId(token);
+        return chatroomService.getChatroom(userId, chatroomId);
     }
 
     // 채팅방 이름 수정

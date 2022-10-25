@@ -3,6 +3,7 @@ package cleanbook.com.service;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
+import cleanbook.com.dto.page.NestedCommentDto;
 import cleanbook.com.entity.notification.NotificationType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
@@ -113,7 +114,7 @@ public class CommentService {
     }
 
     // 대댓글 조회(한 댓글의 댓글 조회, 10개씩)
-    public ResultDto<List<CommentDto>> readNestedCommentList(Long userId, Long pageId, int group, Long startId) {
+    public ResultDto<List<NestedCommentDto>> readNestedCommentList(Long userId, Long pageId, int group, Long startId) {
         Page page = pageRepository.findById(pageId).orElseThrow(PageNotFoundException::new);
         if (!page.getPageSetting().getCommentAuth()) {
             throw new MyException("댓글을 볼 수 없는 게시글입니다.");

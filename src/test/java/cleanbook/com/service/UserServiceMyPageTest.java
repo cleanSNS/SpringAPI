@@ -101,7 +101,7 @@ class UserServiceMyPageTest {
 
         //given
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        UserFilterSetting userFilterSetting = new UserFilterSetting(true, true, true);
+        UserFilterSetting userFilterSetting = new UserFilterSetting(true, true);
 
 
         // when

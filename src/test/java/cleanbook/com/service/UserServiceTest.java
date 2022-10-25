@@ -1,6 +1,7 @@
 package cleanbook.com.service;
 
 import cleanbook.com.config.QuerydslConfig;
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.enums.SettingType;
@@ -10,6 +11,7 @@ import cleanbook.com.entity.page.PageSetting;
 import cleanbook.com.entity.user.*;
 import cleanbook.com.entity.user.block.Block;
 import cleanbook.com.dto.user.BlockedUserDto;
+import cleanbook.com.entity.user.follow.Follow;
 import cleanbook.com.entity.user.like.LikeComment;
 import cleanbook.com.entity.user.like.LikePage;
 import cleanbook.com.entity.user.like.LikeType;
@@ -76,6 +78,8 @@ class UserServiceTest {
     private BlockRepository blockRepository;
     @Mock
     private NotificationRepository notificationRepository;
+//    @Mock
+//    private NotificationService notificationService;
     @Autowired
     private EntityManager em;
 
@@ -91,20 +95,17 @@ class UserServiceTest {
 
     @BeforeEach
     void init() {
-        UserProfile userProfile = new UserProfile("a",1, GenderType.FEMALE);
-        UserProfile userProfile2 = new UserProfile("b",1, GenderType.FEMALE);
-        UserProfile userProfile3 = new UserProfile("c",1, GenderType.FEMALE);
-        user = new User(1L,"user", "aaa", userProfile);
-        targetUser = new User(2L,"targetUser", "aaa", userProfile2);
-        user3 = new User(3L,"user3", "aaa", userProfile3);
-        page = new Page(1L, user, "내용", new PageSetting(true, true, SettingType.ALL, true, true));
-        comment = new Comment(1L, user, page, "내용");
+        user = User.builder().id(1L).email("user").build();
+        targetUser = User.builder().id(2L).email("targetUser").build();
+        user3 = User.builder().id(3L).email("user3").build();
+        page = Page.builder().id(1L).user(user).content("내용").build();
+        comment = new Comment(1L, user, this.page, "내용");
     }
 
-//    @Nested
-//    @DisplayName("팔로우")
-//    class follow{
-//
+    @Nested
+    @DisplayName("팔로우")
+    class follow{
+          //todo
 //        @Test
 //        @DisplayName("팔로우")
 //        void followUserTest() {
@@ -112,6 +113,7 @@ class UserServiceTest {
 //
 //            given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
 //            given(userRepository.findById((targetUser.getId()))).willReturn(Optional.of(targetUser));
+//            given(notificationRepository.uncheckedNotificationCount(any(Long.class))).willReturn(new ResultDto<>(new CountDto(1L)));
 //
 //            // when
 //            userRepository.save(user);
@@ -143,7 +145,7 @@ class UserServiceTest {
 //            // then
 //            assertThat(user.getFolloweeList().size()).isEqualTo(0);
 //        }
-//    }
+    }
 
 
     @Nested
@@ -161,7 +163,7 @@ class UserServiceTest {
                 //given
                 given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
                 given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+                given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(page));
                 given(likePageRepository.findByPage_IdAndUser_Id(any(Long.class), any(Long.class))).willReturn(Optional.empty());
 
 
@@ -180,7 +182,7 @@ class UserServiceTest {
                 //given
                 given(userRepository.findById((user3.getId()))).willReturn(Optional.of(user3));
                 given(userRepository.findById((user.getId()))).willReturn(Optional.of(user));
-                given(pageRepository.findById((page.getId()))).willReturn(Optional.of(page));
+                given(pageRepository.findById(any(Long.class))).willReturn(Optional.of(page));
                 LikePage likePage = new LikePage(user3, page);
 
 
@@ -462,8 +464,6 @@ class UserServiceTest {
         assertThat(blockedUserDtoList.size()).isEqualTo(2);
         assertThat(blockedUserDtoList.get(0).getUserId()).isEqualTo(2L);
         assertThat(blockedUserDtoList.get(1).getUserId()).isEqualTo(3L);
-        assertThat(blockedUserDtoList.get(0).getNickname()).isEqualTo("b");
-        assertThat(blockedUserDtoList.get(1).getNickname()).isEqualTo("c");
     }
 
 

@@ -3,6 +3,7 @@ package cleanbook.com.controller.local;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
+import cleanbook.com.dto.page.NestedCommentDto;
 import cleanbook.com.exception.Response;
 import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.CommentService;
@@ -40,10 +41,10 @@ public class LocalCommentController {
 
     // 대댓글 보기
     @GetMapping("/{pageId}/nested")
-    public ResponseEntity<ResultDto<List<CommentDto>>> readNestedCommentList(@PathVariable Long pageId, @RequestParam int group,
+    public ResponseEntity<ResultDto<List<NestedCommentDto>>> readNestedCommentList(@PathVariable Long pageId, @RequestParam int group,
                                                                              @RequestParam Long startId, @CookieValue(value = "X-AUTH-TOKEN", required = false) String token) {
         Long userId = tokenProvider.getUserId(token);
-        ResultDto<List<CommentDto>> resultDto = commentService.readNestedCommentList(userId, pageId, group, startId);
+        ResultDto<List<NestedCommentDto>> resultDto = commentService.readNestedCommentList(userId, pageId, group, startId);
         return ResponseEntity.ok(resultDto);
     }
 

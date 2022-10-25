@@ -52,12 +52,9 @@ class UserAuthServiceTest {
 
     @BeforeEach
     void init() {
-        UserProfile userProfile = new UserProfile("a",1, GenderType.FEMALE);
-        UserProfile userProfile2 = new UserProfile("b",1, GenderType.FEMALE);
-        UserProfile userProfile3 = new UserProfile("c",1, GenderType.FEMALE);
-        user = new User(1L,"user", "aaa", userProfile);
-        targetUser = new User(2L,"targetUser", "aaa", userProfile2);
-        user3 = new User(3L,"user3", "aaa", userProfile3);
+        user = User.builder().email("user").build();
+        targetUser = User.builder().email("targetUser").build();
+        user3 = User.builder().email("user3").build();
         page = new Page(1L, user, "내용");
         comment = new Comment(1L, user, page, "내용");
     }

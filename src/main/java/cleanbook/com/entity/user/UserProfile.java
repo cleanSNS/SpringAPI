@@ -17,12 +17,10 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class UserProfile {
 
-    @NotBlank
     private String nickname;
     private Integer age;
     private boolean ageVisible;
 
-    @NotBlank
     @Enumerated(EnumType.STRING)
     private GenderType gender;
     private boolean genderVisible;

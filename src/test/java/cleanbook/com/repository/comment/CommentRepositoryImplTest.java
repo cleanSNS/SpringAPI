@@ -3,6 +3,7 @@ package cleanbook.com.repository.comment;
 import cleanbook.com.config.QuerydslConfig;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentDto;
+import cleanbook.com.dto.page.NestedCommentDto;
 import cleanbook.com.entity.enums.GenderType;
 import cleanbook.com.entity.page.Comment;
 import cleanbook.com.entity.page.Page;
@@ -42,7 +43,7 @@ class CommentRepositoryImplTest {
     void init() {
         int group = 0;
         UserProfile userProfile = new UserProfile("name", 25, GenderType.FEMALE);
-        User user = new User("aa", "aa", userProfile);
+        User user = User.builder().userProfile(userProfile).build();
         userRepository.save(user);
         Page page = new Page(user, "글내용");
         Page page2 = new Page(user, "글내용2");
@@ -139,8 +140,8 @@ class CommentRepositoryImplTest {
         void readNestedCommentListTest() {
 
             // when
-            ResultDto<List<CommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 1L, 10);
-            List<CommentDto> commentDtoList = resultDto.getData();
+            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 1L, 10);
+            List<NestedCommentDto> commentDtoList = resultDto.getData();
             Long startPageId = resultDto.getStartId();
 
             // then
@@ -154,8 +155,8 @@ class CommentRepositoryImplTest {
 
             // when
             // then
-            ResultDto<List<CommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 999999L, 10);
-            List<CommentDto> commentDtoList = resultDto.getData();
+            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 999999L, 10);
+            List<NestedCommentDto> commentDtoList = resultDto.getData();
 
             assertThat(commentDtoList.size()).isEqualTo(0);
         }

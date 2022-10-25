@@ -21,22 +21,23 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User extends Timestamped {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
-    @NotEmpty
     private String email;
-    @NotEmpty
     private String password;
 
     @Embedded
-    private UserProfile userProfile;
+    @Builder.Default
+    private UserProfile userProfile = UserProfile.builder().build();
 
     @Embedded
-    private UserSetting userSetting;
+    @Builder.Default
+    private UserSetting userSetting = UserSetting.builder().build();
 
     @Column(columnDefinition = "integer default 0")
     private int warningCount;
@@ -51,30 +52,39 @@ public class User extends Timestamped {
     @Column(columnDefinition = "integer default 0")
     private int followeeCount;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAuthority> userAuthorityList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Page> pageList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "targetUser")
     private List<Follow> followerList = new ArrayList<>(); // 나를 팔로우하는 사람
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Filter> notFilterUserList = new ArrayList<>(); // 내가 필터링하지 않을 사람
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Block> blockedUserList = new ArrayList<>(); // 내가 차단한 사람
 
+    @Builder.Default
     @OneToMany(mappedBy = "targetUser")
     private List<Block> blockUserList = new ArrayList<>(); // 나를 차단한 사람
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<UserChatroom> userChatroomList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "targetUser")
     private List<Notification> notificationList = new ArrayList<>();
 
@@ -100,6 +110,7 @@ public class User extends Timestamped {
         this.userProfile = userProfile;
     }
 
+    @Builder
     public User(Long id, String email, String password, UserProfile userProfile, UserSetting userSetting) {
         this.id = id;
         this.email = email;

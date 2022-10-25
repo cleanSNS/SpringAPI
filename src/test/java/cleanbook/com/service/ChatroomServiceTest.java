@@ -1,8 +1,10 @@
 package cleanbook.com.service;
 
 import cleanbook.com.entity.chat.Chatroom;
+import cleanbook.com.entity.chat.UserChatroom;
 import cleanbook.com.exception.exceptions.NotFoundException;
 import cleanbook.com.repository.chatroom.ChatroomRepository;
+import cleanbook.com.repository.chatroom.UserChatroomRepository;
 import cleanbook.com.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -31,6 +33,8 @@ class ChatroomServiceTest {
     @Autowired
     private ChatroomRepository chatroomRepository;
     @Autowired
+    private UserChatroomRepository userChatroomRepository;
+    @Autowired
     private ChatService chatService;
 
     @Test
@@ -48,7 +52,6 @@ class ChatroomServiceTest {
         // then
         List<Chatroom> chatroomList = chatroomRepository.findAll();
         assertThat(chatroomList.size()).isEqualTo(1);
-        assertThat(chatroomList.get(0).getName()).isEqualTo("내채팅방");
     }
 
     @Nested
@@ -66,11 +69,11 @@ class ChatroomServiceTest {
             // when
             Chatroom chatroom = chatroomService.createChatroom(1L,"내채팅방", Arrays.asList(1L, 2L));
             chatroomService.changeName(1L, chatroom.getId(), "채팅방");
-            Chatroom changedChatroom = chatroomRepository.findById(chatroom.getId()).get();
+            UserChatroom userChatroom = userChatroomRepository.findByUser_IdAndChatroom_Id(1L, chatroom.getId()).get();
 
 
             // then
-            assertThat(changedChatroom.getName()).isEqualTo("채팅방");
+            assertThat(userChatroom.getName()).isEqualTo("채팅방");
         }
 
         @Test

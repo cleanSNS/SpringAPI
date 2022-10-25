@@ -59,10 +59,10 @@ class UserRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("abc", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            userRepository.save(user);
             UserProfile userProfile2 = new UserProfile("def", 5, GenderType.FEMALE);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().userProfile(userProfile).build();
+            User user2 = User.builder().userProfile(userProfile2).build();
+            userRepository.save(user);
             userRepository.save(user2);
 
             blockRepository.save(createBlock(user,user2));
@@ -82,10 +82,10 @@ class UserRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("abc", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            userRepository.save(user);
             UserProfile userProfile2 = new UserProfile("def", 5, GenderType.FEMALE);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().userProfile(userProfile).build();
+            User user2 = User.builder().userProfile(userProfile2).build();
+            userRepository.save(user);
             userRepository.save(user2);
 
             blockRepository.save(createBlock(user2,user));

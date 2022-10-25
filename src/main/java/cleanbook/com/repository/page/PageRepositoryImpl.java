@@ -6,16 +6,23 @@ import cleanbook.com.dto.page.*;
 import cleanbook.com.entity.enums.SettingType;
 import cleanbook.com.entity.page.*;
 import cleanbook.com.dto.user.UserDto;
+import cleanbook.com.entity.user.QUser;
+import cleanbook.com.entity.user.User;
 import cleanbook.com.entity.user.follow.QFollow;
+import cleanbook.com.exception.exceptions.PageNotFoundException;
+import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
+import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,18 +42,51 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
     private final LikePageRepository likePageRepository;
+    private final UserRepository userRepository;
+    private final EntityManager em;
 
     // 게시글 상세보기
     public PageDetailDto readPageDetail(Long userId, Long pageId) {
-        return new PageDetailDto(readPageDto(pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(userId, pageId), isLikePage(userId, pageId));
+        return new PageDetailDto(readPageDto(userId, pageId), readPageImgUrlList(pageId), readPageHashtagList(pageId), readPageCommentList(userId, pageId), isLikePage(userId, pageId));
     }
 
-    public PageDto readPageDto(Long pageId) {
+    // 필터링 조건에 따라 게시글 내용 리턴
+    public StringPath getContentStringPath(Long userId, Long pageId) {
+        if (userId == null) {
+            return page.filteredContent;
+        }
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Page findPage = em.find(Page.class, pageId);
+        Boolean filterAll = user.getUserSetting().getUserFilterSetting().getFilterAll();
+        Boolean filterFollowee = user.getUserSetting().getUserFilterSetting().getFilterFollowee();
+        // 자신의 페이지
+        if (userId.equals(findPage.getUser().getId())) {
+            return page.content;
+        }
+        // 팔로우 관계
+        if (followRepository.findByUser_IdAndTargetUser_Id(userId, findPage.getUser().getId()).isPresent()) {
+            if (filterFollowee) {
+                return page.filteredContent;
+            } else {
+                return page.content;
+            }
+        } else { // 무관계
+            if (filterAll) {
+                return page.filteredContent;
+            } else {
+                return page.content;
+            }
+        }
+    }
+
+    public PageDto readPageDto(Long userId, Long pageId) {
+        StringPath contentStringPath = getContentStringPath(userId, pageId);
+
         return queryFactory.query()
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, page.content, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
+                            page.id, contentStringPath, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))
@@ -107,7 +147,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
         List<MainPageDto> pageAndImgDtoList = new ArrayList<>();
         for (Long pageId : pageIdList) {
-            pageAndImgDtoList.add(new MainPageDto(readPageDto(pageId), readPageImgUrlList(pageId), isLikePage(userId, pageId)));
+            pageAndImgDtoList.add(new MainPageDto(readPageDto(userId, pageId), readPageImgUrlList(pageId), isLikePage(userId, pageId)));
         }
         Long nextStartId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 
@@ -118,49 +158,6 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         return page.pageSetting.readAuth.eq(SettingType.ALL)
         .or(page.pageSetting.readAuth.eq(SettingType.FOLLOW_ONLY).and(follow2.user.id.eq(user.id)).and(follow2.targetUser.id.eq(userId)));
     }
-
-    // 특정 유저 게시글 전체조회(유저페이지)
-    // dto로 바로 조회
-//    public ResultDto<List<UserPageDto>> readUserPageList(Long userId, Long startId, int pageSize) {
-//
-//        // no offset방식
-//        // 페이지 pk 조회 및 페이징
-//        List<Long> pageIdList = queryFactory.query()
-//                .select(page.id)
-//                .from(page)
-//                .where(page.user.id.eq(userId), loePageId(startId))
-//                .orderBy(page.id.desc())
-//                .limit(pageSize)
-//                .fetch();
-//
-//        for (Long aLong : pageIdList) {
-//            System.out.println("aLong = " + aLong);
-//        }
-//
-//        // 조회를 전부 완료했을때
-//        if (pageIdList.isEmpty()) throw new NoMorePageException();
-//
-//        List<UserPageDto> userPageDtoList = queryFactory.query()
-//                .select(page.id, page.title, page.likeCount, pageImgUrl.imgUrl)
-//                .from(page)
-//                .leftJoin(page.imgUrlList, pageImgUrl)
-//                .where(page.id.in(pageIdList))
-//                .orderBy(page.id.desc())
-//                .transform(
-//                        groupBy(page.id).list(
-//                                Projections.constructor(UserPageDto.class,
-//                                        page.id, page.title, page.likeCount,
-//                                        list(pageImgUrl.imgUrl))
-//                        )
-//                );
-//
-//        for (UserPageDto userPageDto : userPageDtoList) {
-//            System.out.println("userPageDto.getPageId() = " + userPageDto.getPageId());
-//        }
-//
-//
-//        return new ResultDto<>(userPageDtoList, getNextPageId(userId, startId, pageSize));
-//    }
 
     // 특정 유저 게시글 전체조회(유저페이지)
     // 엔티티로 조회 후 dto로 변환

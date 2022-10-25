@@ -34,9 +34,9 @@ import static org.mockito.BDDMockito.willDoNothing;
 @ExtendWith(MockitoExtension.class)
 class PageServiceTest {
 
-    @Spy
+    @Mock
     private UserRepository userRepository;
-    @Spy
+    @Mock
     private PageRepository pageRepository;
     @Mock
     private AwsS3Service awsS3Service;
@@ -48,13 +48,12 @@ class PageServiceTest {
     void pageSaveTest() {
 
         //given
-        UserProfile userProfile = new UserProfile("a",1, GenderType.FEMALE);
-        User user = new User(1L,"user", "aaa", userProfile);
+        User user = User.builder().id(1L).build();
 
         given(userRepository.findById(any(Long.class))).willReturn(Optional.of(user));
         given(pageRepository.save(any(Page.class))).willReturn(new Page("bb"));
 
-        User findUser = userRepository.findById(1L).get();
+        User findUser = userRepository.findById(user.getId()).get();
 
 
         try (MockedStatic<AIUtils> utilities = Mockito.mockStatic(AIUtils.class)){
@@ -97,7 +96,7 @@ class PageServiceTest {
         void noAuth() {
 
             //given
-            User user = new User(1L, "email", "password", null);
+            User user = User.builder().id(1L).build();
             Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
@@ -120,7 +119,7 @@ class PageServiceTest {
         void haveAuth() {
 
             //given
-            User user = new User(1L, "email", "password", null);
+            User user = User.builder().id(1L).build();
             Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 
@@ -140,7 +139,7 @@ class PageServiceTest {
         void noAuth() {
 
             //given
-            User user = new User(1L, "email", "password", null);
+            User user = User.builder().id(1L).build();
             Page oldPage = new Page(1L, user, "old");
             userRepository.save(user);
 

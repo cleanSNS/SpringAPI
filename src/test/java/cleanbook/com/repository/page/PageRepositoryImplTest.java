@@ -69,11 +69,12 @@ class PageRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("게시글 기본 DTO")
     void readPageDtoTest() {
 
         // when
         Long pageId = myPage.getId();
-        PageDto pageDto = pageRepository.readPageDto(pageId);
+        PageDto pageDto = pageRepository.readPageDto(1L, pageId);
         System.out.println("pageDto " + pageDto.toString());
 
         // then
@@ -81,6 +82,7 @@ class PageRepositoryImplTest {
     }
 
     @Test
+    @DisplayName("게시글 이미지 테스트")
     void readPageImgUrlListTest() {
 
         // when
@@ -97,26 +99,7 @@ class PageRepositoryImplTest {
     }
 
     @Test
-    void readPageImgUrlListEmptyTest() {
-
-        // given
-        User user = new User("a", "a", new UserProfile());
-        userRepository.save(user);
-        Long pageId = pageRepository.save(new Page(user,  "내용")).getId();
-
-
-        // when
-        List<String> imgUrlList = pageRepository.readPageImgUrlList(pageId);
-        for (String imgUrl : imgUrlList) {
-            System.out.println("imgUrl = " + imgUrl);
-        }
-
-        // then
-        assertThat(imgUrlList.size()).isEqualTo(0);
-
-    }
-
-    @Test
+    @DisplayName("게시글 댓글 테스트")
     void readPageCommentListTest() {
 
         // when
@@ -130,7 +113,7 @@ class PageRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("게시글_상세보기")
+    @DisplayName("게시글 상세보기")
     void readPageDetailTest() {
 
 
@@ -158,9 +141,9 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
-            User user3 = new User("cc", "cc", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
+            User user3 = User.builder().email("cc").password("cc").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
             userRepository.save(user3);
@@ -184,7 +167,7 @@ class PageRepositoryImplTest {
 
             // then
             assertThat(mainPageDtoList.size()).isEqualTo(1);
-            assertThat(mainPageDtoList.get(0).getPageDto().getContent()).isEqualTo("all");
+            assertThat(mainPageDtoList.get(0).getPageDto().getPageId()).isEqualTo(allPage.getId());
         }
 
         @Test
@@ -193,9 +176,9 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
-            User user3 = new User("cc", "cc", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
+            User user3 = User.builder().email("cc").password("cc").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
             userRepository.save(user3);
@@ -227,8 +210,8 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
 
@@ -259,8 +242,8 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
 
@@ -287,8 +270,8 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
 
@@ -318,8 +301,8 @@ class PageRepositoryImplTest {
 
             //given
             UserProfile userProfile = new UserProfile("aa", 5, GenderType.FEMALE);
-            User user = new User("aa", "aa", userProfile);
-            User user2 = new User("bb", "bb", userProfile);
+            User user = User.builder().email("aa").password("aa").userProfile(userProfile).build();
+            User user2 = User.builder().email("bb").password("bb").userProfile(userProfile).build();
             userRepository.save(user);
             userRepository.save(user2);
 

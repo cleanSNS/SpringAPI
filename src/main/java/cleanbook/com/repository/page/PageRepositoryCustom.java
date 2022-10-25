@@ -10,7 +10,7 @@ import java.util.List;
 public interface PageRepositoryCustom {
 
     PageDetailDto readPageDetail(Long userId, Long pageId);
-    PageDto readPageDto(Long pageId);
+    PageDto readPageDto(Long userId, Long pageId);
     List<String> readPageImgUrlList(Long pageId);
     ResultDto<List<CommentDto>> readPageCommentList(Long userId, Long pageId);
     ResultDto<List<MainPageDto>> readFolloweePageList(Long userId, Long startId, int pageSize);

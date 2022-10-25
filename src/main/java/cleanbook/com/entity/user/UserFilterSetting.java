@@ -22,15 +22,11 @@ public class UserFilterSetting {
     private Boolean filterAll = true;
 
     @Builder.Default
-    private Boolean filterFollower = true;
-
-    @Builder.Default
     private Boolean filterFollowee = true;
 
     public static UserFilterSetting createUserFilterSetting(UserFilterSettingDto dto) {
         return UserFilterSetting.builder()
                 .filterAll(dto.isFilterAll())
-                .filterFollower(dto.isFilterFollower())
                 .filterFollowee(dto.isFilterFollowee())
                 .build();
     }

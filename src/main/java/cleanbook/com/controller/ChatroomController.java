@@ -36,8 +36,10 @@ public class ChatroomController {
 
     // 채팅방 조회
     @GetMapping("/chat/chatroom/{chatroomId}")
-    public ResultDto<ChatroomNameAndUserDto> getChatroomName(@PathVariable Long chatroomId) {
-        return chatroomService.getChatroom(chatroomId);
+    public ResultDto<ChatroomNameAndUserDto> getChatroomName(@CookieValue("X-AUTH-TOKEN") String token,
+                                                             @PathVariable Long chatroomId) {
+        Long userId = tokenProvider.getUserId(token);
+        return chatroomService.getChatroom(userId, chatroomId);
     }
 
     // 채팅방 이름 수정
@@ -58,13 +60,4 @@ public class ChatroomController {
         return ResponseEntity.ok(new Response("success"));
     }
 
-//    // 채팅방 접속 -> 읽지않은 채팅 개수 초기화
-//    @PostMapping("/chat/chatroom/{chatroomId}/read")
-//    public ResponseEntity<Response> resetUncheckedChat(@CookieValue("X-AUTH-TOKEN") String token,
-//                                                       @PathVariable Long chatroomId) {
-//        Long userId = tokenProvider.getUserId(token);
-//        chatroomService.resetUncheckedChat(userId, chatroomId);
-//
-//        return ResponseEntity.ok(new Response("success"));
-//    }
 }

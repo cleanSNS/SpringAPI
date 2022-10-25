@@ -10,13 +10,16 @@ import javax.persistence.*;
 @Getter
 @Embeddable
 @NoArgsConstructor
+@Builder
 public class UserSetting {
 
+    @Builder.Default
     @Embedded
-    private UserNotificationSetting userNotificationSetting;
+    private UserNotificationSetting userNotificationSetting = UserNotificationSetting.builder().build();
 
+    @Builder.Default
     @Embedded
-    private UserFilterSetting userFilterSetting;
+    private UserFilterSetting userFilterSetting = UserFilterSetting.builder().build();
 
     public void changeUserNotificationSetting(UserNotificationSetting userNotificationSetting) {
         this.userNotificationSetting = userNotificationSetting;
