@@ -13,4 +13,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     Optional<Comment> findFirstByPage_IdAndGroupOrderByOrderDesc(Long pageId, int group);
     Optional<Comment> findFirstByPage_IdAndGroupOrderByOrderAsc(Long pageId, int group);
     Optional<Comment> findFirstByPage_IdOrderByGroupDesc(Long pageId);
+    int getNestCommentCount(Long pageId, int group);
 }

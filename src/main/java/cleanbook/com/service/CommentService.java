@@ -1,5 +1,6 @@
 package cleanbook.com.service;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
@@ -132,5 +133,10 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    public ResultDto<CountDto> getNestCommentCount(Long pageId, Long commentId) {
+        int group = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("댓글")).getGroup();
+        return new ResultDto<>(new CountDto((long) commentRepository.getNestCommentCount(pageId, group)));
     }
 }

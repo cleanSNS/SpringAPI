@@ -1,5 +1,6 @@
 package cleanbook.com.controller;
 
+import cleanbook.com.dto.CountDto;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.page.CommentCreateDto;
 import cleanbook.com.dto.page.CommentDto;
@@ -54,6 +55,12 @@ public class CommentController {
         Long userId = tokenProvider.getUserId(token);
         commentService.deleteComment(userId,commentId);
         return ResponseEntity.ok(new Response("success"));
+    }
+
+    // 대댓글 개수 조회
+    @GetMapping("/{pageId}/comment/{commentId}/count")
+    public ResultDto<CountDto> readCommentCount(@PathVariable Long pageId, @PathVariable Long commentId) {
+        return commentService.getNestCommentCount(pageId, commentId);
     }
 }
 
