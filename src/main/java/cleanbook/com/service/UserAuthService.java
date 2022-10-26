@@ -272,8 +272,8 @@ public class UserAuthService {
     }
 
     // 회원탈퇴
-    public void delete(UserDeleteDto userDeleteDto, HttpServletResponse response) {
-        User user = userRepository.findById(userDeleteDto.getUserId()).orElseThrow(UserNotFoundException::new);
+    public void delete(Long userId, UserDeleteDto userDeleteDto, HttpServletResponse response) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
             throw new IllegalAccountException();

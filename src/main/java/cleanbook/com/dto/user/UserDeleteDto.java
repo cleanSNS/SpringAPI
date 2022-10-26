@@ -7,8 +7,5 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class UserDeleteDto {
-    @NotNull
-    Long userId;
-    @NotBlank
     String password;
 }

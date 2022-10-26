@@ -3,6 +3,7 @@ package cleanbook.com.controller;
 import cleanbook.com.dto.ResultDto;
 import cleanbook.com.dto.user.*;
 import cleanbook.com.exception.Response;
+import cleanbook.com.jwt.TokenProvider;
 import cleanbook.com.service.EmailService;
 import cleanbook.com.service.UserAuthService;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ import javax.xml.transform.Result;
 public class UserAuthController {
 
     private final UserAuthService userAuthService;
+    private final TokenProvider tokenProvider;
 
     // 회원가입
     @PostMapping("/signup")
@@ -59,8 +61,10 @@ public class UserAuthController {
 
     // 회원탈퇴
     @PostMapping("/delete")
-    public ResponseEntity<Response> delete(@Valid @RequestBody UserDeleteDto userDeleteDto, HttpServletResponse response) {
-        userAuthService.delete(userDeleteDto, response);
+    public ResponseEntity<Response> delete(@CookieValue("X-AUTH-TOKEN") String accessToken,
+                                           @RequestBody UserDeleteDto userDeleteDto, HttpServletResponse response) {
+        Long userId = tokenProvider.getUserId(accessToken);
+        userAuthService.delete(userId, userDeleteDto, response);
         return ResponseEntity.ok(new Response("success"));
     }
 

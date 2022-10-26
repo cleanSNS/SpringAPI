@@ -123,7 +123,7 @@ public class ProviderService {
         if (findUser.isEmpty()) {
             UserSignUpDto signUpDto = UserSignUpDto.builder()
                     .email(socialProfile.getEmail())
-                    .password(passwordEncoder.encode(socialProfile.getEmail()))
+                    .password(socialProfile.getEmail())
                     .nickname(socialProfile.getNickname())
                     .age(null)
                     .gender(socialProfile.getGender())
