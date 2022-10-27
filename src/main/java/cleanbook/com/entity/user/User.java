@@ -61,31 +61,31 @@ public class User extends Timestamped {
     private List<Page> pageList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "targetUser")
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
     private List<Follow> followerList = new ArrayList<>(); // 나를 팔로우하는 사람
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Follow> followeeList = new ArrayList<>(); // 내가 팔로우하는 사람
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Filter> notFilterUserList = new ArrayList<>(); // 내가 필터링하지 않을 사람
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Block> blockedUserList = new ArrayList<>(); // 내가 차단한 사람
 
     @Builder.Default
-    @OneToMany(mappedBy = "targetUser")
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
     private List<Block> blockUserList = new ArrayList<>(); // 나를 차단한 사람
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserChatroom> userChatroomList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "targetUser")
+    @OneToMany(mappedBy = "targetUser", cascade = CascadeType.ALL)
     private List<Notification> notificationList = new ArrayList<>();
 
     public User(String email, String password, UserProfile userProfile) {
