@@ -43,6 +43,7 @@ public class PageService {
             page.updateFilteredContent(filteredContent);
         } catch (Exception e) {
             log.info("필터링 실패");
+            page.updateFilteredContent(pageCreateDto.getContent());
         }
 
         return pageRepository.save(page);

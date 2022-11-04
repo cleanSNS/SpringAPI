@@ -49,6 +49,7 @@ public class CommentService {
             comment.updateFilteredContent(filteredContent);
         } catch (Exception e) {
             log.info("필터링 실패");
+            comment.updateFilteredContent(dto.getContent());
         }
 
         // 댓글 권한이 없는 게시글
