@@ -179,7 +179,6 @@ public class UserAuthService {
 
     public void addCookie(HttpServletResponse response, String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .maxAge(1800)
                 .secure(true)
                 .path("/")
                 .httpOnly(true)
@@ -191,7 +190,6 @@ public class UserAuthService {
 
     public void addCookieLocal(HttpServletResponse response, String name, String value) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .maxAge(1800)
                 .path("/")
                 .httpOnly(true)
                 .build();
@@ -204,7 +202,7 @@ public class UserAuthService {
         // bearer 제거
         refreshToken = refreshToken.substring("bearer".length()+1);
 
-        // accessToken이 만료되지 않았거나 토큰이 비어있을시
+        // accessToken이 만료되지 않았을시
         if (tokenProvider.validateToken(accessToken)) {
             throw new NotExpiredTokenException();
         }
@@ -233,7 +231,7 @@ public class UserAuthService {
         // bearer 제거
         refreshToken = refreshToken.substring("bearer".length()+1);
 
-        // accessToken이 만료되지 않았거나 토큰이 비어있을시
+        // accessToken이 만료되지 않았을시
         if (tokenProvider.validateToken(accessToken)) {
             throw new NotExpiredTokenException();
         }
@@ -272,12 +270,8 @@ public class UserAuthService {
     }
 
     // 회원탈퇴
-    public void delete(Long userId, UserDeleteDto userDeleteDto, HttpServletResponse response) {
+    public void delete(Long userId, HttpServletResponse response) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-
-        if (!passwordEncoder.matches(userDeleteDto.getPassword(), user.getPassword())) {
-            throw new IllegalAccountException();
-        }
 
         logout(response);
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(user.getEmail()).orElseThrow(TokenNotFoundException::new);

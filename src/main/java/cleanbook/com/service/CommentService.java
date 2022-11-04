@@ -65,7 +65,7 @@ public class CommentService {
             if (!userId.equals(headComment.getUser().getId())) {
                 User targetUser = userRepository.findById(headComment.getUser().getId()).orElseThrow(UserNotFoundException::new);
                 // 알림 저장
-                notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, headComment.getId()));
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.NESTED, page.getId()));
                 // SSE 송신
                 Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
                 notificationService.sendNotificationCount(targetUser.getId(), count);
@@ -95,7 +95,7 @@ public class CommentService {
             if (!userId.equals(page.getUser().getId()) && page.getPageSetting().getNotificationComment()) {
                 User targetUser = userRepository.findById(page.getUser().getId()).orElseThrow(UserNotFoundException::new);
                 // 알림 저장
-                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, comment.getId()));
+                notificationRepository.save(createNotification(user, targetUser,NotificationType.COMMENT, page.getId()));
                 // SSE 송신
                 Long count = notificationRepository.uncheckedNotificationCount(targetUser.getId()).getData().getCount();
                 notificationService.sendNotificationCount(targetUser.getId(), count);

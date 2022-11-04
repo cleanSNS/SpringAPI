@@ -77,18 +77,13 @@ public class SecurityConfig {
 
                 .antMatchers("/user/auth/signup/**").permitAll() // 회원가입, 이메일 인증
                 .antMatchers("/user/auth/login").permitAll()
+                .antMatchers("/user/auth/logout").permitAll()
                 .antMatchers("/user/auth/refresh").permitAll()
                 .antMatchers("/social/**").permitAll()
-                .antMatchers("/page/{^[^0]\\d*}/detail").permitAll() // 게시글 상세보기
-                .antMatchers("/page/user/{^[^0]\\d*}").permitAll() // 유저 게시글 조회
-                .antMatchers("/page/search/hashtag/**").permitAll() // 해시태그로 게시글 검색
-                .antMatchers("/user/search").permitAll() // 유저 검색
-                .antMatchers(HttpMethod.GET, "/page/{^[^0]\\d*}/comment").permitAll()
-                .antMatchers("/page/{^[^0]\\d*}/nested").permitAll()
-                .antMatchers("/user/{^[^0]\\d*}/profile").permitAll()
 
                 .antMatchers("/local/user/auth/signup/**").permitAll() // 회원가입, 이메일 인증
                 .antMatchers("/local/user/auth/login").permitAll()
+                .antMatchers("/local/user/auth/logout").permitAll()
                 .antMatchers("/local/user/auth/refresh").permitAll()
                 .antMatchers("/local/social/**").permitAll()
                 .antMatchers("/local/page/{^[^0]\\d*}/detail").permitAll() // 게시글 상세보기

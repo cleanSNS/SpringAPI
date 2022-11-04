@@ -61,11 +61,12 @@ public class LocalUserAuthController {
     // 회원탈퇴
     @PostMapping("/delete")
     public ResponseEntity<Response> delete(@CookieValue("X-AUTH-TOKEN") String accessToken,
-                                           @RequestBody UserDeleteDto userDeleteDto, HttpServletResponse response) {
+                                           HttpServletResponse response) {
         Long userId = tokenProvider.getUserId(accessToken);
-        userAuthService.delete(userId, userDeleteDto, response);
+        userAuthService.delete(userId, response);
         return ResponseEntity.ok(new Response("success"));
     }
+
     // refresh accessToken
     @GetMapping("/refresh")
     public ResponseEntity<Response> refresh(@CookieValue("X-AUTH-TOKEN") String accessToken,
