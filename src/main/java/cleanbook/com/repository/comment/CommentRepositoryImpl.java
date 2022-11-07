@@ -57,6 +57,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Boolean filterAll = user.getUserSetting().getUserFilterSetting().getFilterAll();
         Boolean filterFollowee = user.getUserSetting().getUserFilterSetting().getFilterFollowee();
+        System.out.println("comment.getUser().getId()" + comment.getUser().getId());
         // 자신의 댓글
         if (userId.equals(comment.getUser().getId())) {
             return comment.getContent();
@@ -96,7 +97,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<CommentDto> commentDtoList = commentList.stream()
                 .map(c -> new CommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl()),
-                        c.getId(), getContent(c.getUser().getId(), c), c.getGroup(), c.getLikeCount(),
+                        c.getId(), getContent(userId, c), c.getGroup(), c.getLikeCount(),
                         getNestCommentCount(pageId, c.getGroup()), isLikeComment(userId, c.getId()) , c.getCreatedDate()))
                 .collect(Collectors.toList());
 
@@ -136,7 +137,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
 
         List<NestedCommentDto> commentDtoList = commentList.stream()
                 .map(c -> new NestedCommentDto(new UserDto(c.getUser().getId(), c.getUser().getUserProfile().getNickname(), c.getUser().getUserProfile().getImgUrl())
-                        , c.getId(), getContent(c.getUser().getId(), c), c.getGroup(), c.getLikeCount(), isLikeComment(userId, c.getId()), c.getCreatedDate()))
+                        , c.getId(), getContent(userId, c), c.getGroup(), c.getLikeCount(), isLikeComment(userId, c.getId()), c.getCreatedDate()))
                 .collect(Collectors.toList());
 
         Long nextStartId = commentList.get(commentList.size()-1).getId() + 1;
