@@ -125,7 +125,7 @@ public class ProviderService {
                     .email(socialProfile.getEmail())
                     .password(socialProfile.getEmail())
                     .nickname(socialProfile.getNickname())
-                    .age(null)
+                    .age(0)
                     .gender(socialProfile.getGender())
                     .build();
 

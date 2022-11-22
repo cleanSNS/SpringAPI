@@ -58,6 +58,7 @@ class CommentRepositoryImplTest {
                     .page(page)
                     .visible(true)
                     .content(String.valueOf(j+1))
+                    .filteredContent(String.valueOf(j+1))
                     .nested(false)
                     .group(++group)
                     .build();
@@ -71,6 +72,7 @@ class CommentRepositoryImplTest {
                         .page(page)
                         .visible(true)
                         .content(String.valueOf((j+1)*10+k+1))
+                        .filteredContent(String.valueOf((j+1)*10+k+1))
                         .nested(true)
                         .group(group)
                         .order(order++)
@@ -90,7 +92,7 @@ class CommentRepositoryImplTest {
         public void readCommentListFirstTest() {
 
             // when
-            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(null, pageId, 1L, 10);
+            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(1L, pageId, 1L, 10);
             List<CommentDto> commentDtoList = resultDto.getData();
             Long startPageId = resultDto.getStartId();
 
@@ -104,11 +106,11 @@ class CommentRepositoryImplTest {
         public void readCommentListSecondTest() {
 
             // when
-            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(null, pageId, 1L, 10);
+            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(1L, pageId, 1L, 10);
             List<CommentDto> commentDtoList = resultDto.getData();
             Long startPageId = resultDto.getStartId();
 
-            resultDto = commentRepository.readCommentList(null, pageId, startPageId, 10);
+            resultDto = commentRepository.readCommentList(1L, pageId, startPageId, 10);
             commentDtoList = resultDto.getData();
             startPageId = resultDto.getStartId();
 
@@ -124,7 +126,7 @@ class CommentRepositoryImplTest {
 
             // when
             // then
-            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(null, pageId, 999999L, 10);
+            ResultDto<List<CommentDto>> resultDto = commentRepository.readCommentList(1L, pageId, 999999L, 10);
             List<CommentDto> commentDtoList = resultDto.getData();
 
             assertThat(commentDtoList.size()).isEqualTo(0);
@@ -140,7 +142,7 @@ class CommentRepositoryImplTest {
         void readNestedCommentListTest() {
 
             // when
-            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 1L, 10);
+            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(1L, pageId, 1, 1L, 10);
             List<NestedCommentDto> commentDtoList = resultDto.getData();
             Long startPageId = resultDto.getStartId();
 
@@ -155,7 +157,7 @@ class CommentRepositoryImplTest {
 
             // when
             // then
-            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(null, pageId, 1, 999999L, 10);
+            ResultDto<List<NestedCommentDto>> resultDto = commentRepository.readNestedCommentList(1L, pageId, 1, 999999L, 10);
             List<NestedCommentDto> commentDtoList = resultDto.getData();
 
             assertThat(commentDtoList.size()).isEqualTo(0);

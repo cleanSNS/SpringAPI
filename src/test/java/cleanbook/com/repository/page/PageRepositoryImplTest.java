@@ -104,7 +104,7 @@ class PageRepositoryImplTest {
 
         // when
         Long pageId = myPage.getId();
-        ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(null, pageId);
+        ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(1L, pageId);
         List<CommentDto> commentDtoList = result.getData();
 
         // then
@@ -119,9 +119,9 @@ class PageRepositoryImplTest {
 
         // when
         Long pageId = myPage.getId();
-        PageDetailDto pageDetailDto = pageRepository.readPageDetail(null, pageId);
+        PageDetailDto pageDetailDto = pageRepository.readPageDetail(1L, pageId);
         UserDto userDto = pageDetailDto.getPageDto().getUserDto();
-        ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(null, pageId);
+        ResultDto<List<CommentDto>> result = pageRepository.readPageCommentList(1L, pageId);
         List<CommentDto> commentDtoList = result.getData();
 
         // then

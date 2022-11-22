@@ -35,5 +35,4 @@ public class PageSetting {
 
     @Builder.Default
     private Boolean likeReadAuth = true;
-
 }

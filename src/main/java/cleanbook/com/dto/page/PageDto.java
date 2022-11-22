@@ -17,6 +17,7 @@ public class PageDto {
     private String content;
     private Integer likeCount;
     private Boolean likeReadAuth;
+    private Boolean commentAuth;
     private LocalDateTime createdDate;
 
     public static PageDto createPageDto(Page page) {

@@ -61,7 +61,11 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         Boolean filterFollowee = user.getUserSetting().getUserFilterSetting().getFilterFollowee();
         // 자신의 페이지
         if (userId.equals(findPage.getUser().getId())) {
-            return page.content;
+            if (filterAll) {
+                return page.filteredContent;
+            } else {
+                return page.content;
+            }
         }
         // 팔로우 관계
         if (followRepository.findByUser_IdAndTargetUser_Id(userId, findPage.getUser().getId()).isPresent()) {
@@ -86,7 +90,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 .select(Projections.constructor(PageDto.class,
                             Projections.constructor(UserDto.class,
                                 user.id, user.userProfile.nickname, user.userProfile.imgUrl),
-                            page.id, contentStringPath, page.likeCount, page.pageSetting.likeReadAuth, page.createdDate))
+                            page.id, contentStringPath, page.likeCount, page.pageSetting.likeReadAuth, page.pageSetting.commentAuth, page.createdDate))
                 .from(page)
                 .join(page.user, user)
                 .where(page.id.eq(pageId))
@@ -129,13 +133,26 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
 
         // no offset방식
         // 페이지 pk 조회 및 페이징
+//        List<Long> pageIdList = queryFactory.query()
+//                .select(page.id).distinct()
+//                .from(follow)
+//                .join(follow.targetUser, user)
+//                .join(user.pageList, page)
+//                .leftJoin(page.user.followeeList, follow2)
+//                .where(follow.user.id.eq(userId), loePageId(startId), readAuth(userId, follow2))
+//                .orderBy(page.id.desc())
+//                .limit(pageSize)
+//                .fetch();
+
+        // 졸전용
+        // 자신의 게시글도 메인 피드에 보이게
         List<Long> pageIdList = queryFactory.query()
                 .select(page.id).distinct()
                 .from(follow)
                 .join(follow.targetUser, user)
                 .join(user.pageList, page)
                 .leftJoin(page.user.followeeList, follow2)
-                .where(follow.user.id.eq(userId), loePageId(startId), readAuth(userId, follow2))
+                .where(page.user.id.eq(userId).or(follow.user.id.eq(userId).and(readAuth(userId, follow2))).and(loePageId(startId)))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
@@ -145,13 +162,13 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
             return new ResultDto<>(new ArrayList<>(), 0L);
         }
 
-        List<MainPageDto> pageAndImgDtoList = new ArrayList<>();
+        List<MainPageDto> mainPageDtoList = new ArrayList<>();
         for (Long pageId : pageIdList) {
-            pageAndImgDtoList.add(new MainPageDto(readPageDto(userId, pageId), readPageImgUrlList(pageId), isLikePage(userId, pageId)));
+            mainPageDtoList.add(new MainPageDto(readPageDto(userId, pageId), readPageImgUrlList(pageId), isLikePage(userId, pageId)));
         }
         Long nextStartId = pageIdList.stream().mapToLong(x->x).min().getAsLong()-1;
 
-        return new ResultDto<>(pageAndImgDtoList, nextStartId);
+        return new ResultDto<>(mainPageDtoList, nextStartId);
     }
 
     private BooleanExpression readAuth(Long userId, QFollow follow2) {
