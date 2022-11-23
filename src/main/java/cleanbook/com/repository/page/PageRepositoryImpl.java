@@ -13,6 +13,7 @@ import cleanbook.com.exception.exceptions.PageNotFoundException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.repository.FollowRepository;
 import cleanbook.com.repository.comment.CommentRepository;
+import cleanbook.com.repository.user.FilterRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.like.LikePageRepository;
 import com.querydsl.core.types.Projections;
@@ -43,6 +44,7 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
     private final FollowRepository followRepository;
     private final LikePageRepository likePageRepository;
     private final UserRepository userRepository;
+    private final FilterRepository filterRepository;
     private final EntityManager em;
 
     // 게시글 상세보기
@@ -67,18 +69,23 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
                 return page.content;
             }
         }
-        // 팔로우 관계
-        if (followRepository.findByUser_IdAndTargetUser_Id(userId, findPage.getUser().getId()).isPresent()) {
-            if (filterFollowee) {
-                return page.filteredContent;
-            } else {
-                return page.content;
-            }
-        } else { // 무관계
-            if (filterAll) {
-                return page.filteredContent;
-            } else {
-                return page.content;
+        // 필터링하지 않을 사용자에 추가된 경우
+        if (filterRepository.findByUser_IdAndTargetUser_Id(userId, findPage.getUser().getId()).isPresent()) {
+            return page.content;
+        }  else {
+            // 팔로우 관계
+            if (followRepository.findByUser_IdAndTargetUser_Id(userId, findPage.getUser().getId()).isPresent()) {
+                if (filterFollowee) {
+                    return page.filteredContent;
+                } else {
+                    return page.content;
+                }
+            } else { // 무관계
+                if (filterAll) {
+                    return page.filteredContent;
+                } else {
+                    return page.content;
+                }
             }
         }
     }
@@ -148,11 +155,10 @@ public class PageRepositoryImpl implements PageRepositoryCustom{
         // 자신의 게시글도 메인 피드에 보이게
         List<Long> pageIdList = queryFactory.query()
                 .select(page.id).distinct()
-                .from(follow)
-                .join(follow.targetUser, user)
-                .join(user.pageList, page)
-                .leftJoin(page.user.followeeList, follow2)
-                .where(page.user.id.eq(userId).or(follow.user.id.eq(userId).and(readAuth(userId, follow2))).and(loePageId(startId)))
+                .from(page)
+                .join(page.user, user)
+                .leftJoin(user.followerList, follow)
+                .where(page.user.id.eq(userId).or(follow.user.id.eq(userId).and(follow.targetUser.id.eq(page.user.id).and(readAuth(userId, follow)))).and(loePageId(startId)))
                 .orderBy(page.id.desc())
                 .limit(pageSize)
                 .fetch();
