@@ -14,6 +14,7 @@ import cleanbook.com.entity.user.like.QLikeComment;
 import cleanbook.com.exception.exceptions.NoMoreCommentException;
 import cleanbook.com.exception.exceptions.UserNotFoundException;
 import cleanbook.com.repository.FollowRepository;
+import cleanbook.com.repository.user.FilterRepository;
 import cleanbook.com.repository.user.UserRepository;
 import cleanbook.com.repository.user.like.LikeCommentRepository;
 import com.querydsl.core.types.Projections;
@@ -42,6 +43,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
     private final LikeCommentRepository likeCommentRepository;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final FilterRepository filterRepository;
     private final EntityManager em;
 
     public boolean isLikeComment(Long userId, Long commentId) {
@@ -60,20 +62,28 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom{
         System.out.println("comment.getUser().getId()" + comment.getUser().getId());
         // 자신의 댓글
         if (userId.equals(comment.getUser().getId())) {
-            return comment.getContent();
-        }
-        // 팔로우 관계
-        if (followRepository.findByUser_IdAndTargetUser_Id(userId, comment.getUser().getId()).isPresent()) {
-            if (filterFollowee) {
-                return comment.getFilteredContent();
-            } else {
-                return comment.getContent();
-            }
-        } else { // 무관계
             if (filterAll) {
                 return comment.getFilteredContent();
             } else {
                 return comment.getContent();
+            }
+        }
+        // 팔로우 관계
+        if (filterRepository.findByUser_IdAndTargetUser_Id(userId, comment.getUser().getId()).isPresent()) {
+            return comment.getContent();
+        }  else {
+            if (followRepository.findByUser_IdAndTargetUser_Id(userId, comment.getUser().getId()).isPresent()) {
+                if (filterFollowee) {
+                    return comment.getFilteredContent();
+                } else {
+                    return comment.getContent();
+                }
+            } else { // 무관계
+                if (filterAll) {
+                    return comment.getFilteredContent();
+                } else {
+                    return comment.getContent();
+                }
             }
         }
     }
