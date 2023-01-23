@@ -60,23 +60,23 @@
 
 ------
 
-<h4>1. 배포자동화 </h4>
+<h4> 1. 배포자동화 </h4>
 
 제 프로젝트에 CI/CD를 적용하던 과정에서 수많은 트러블 슈팅이 있었습니다. 
 
-1. webhook 설정 오류
+<h5> 1. webhook 설정 오류 </h5>
 먼저 Github repository에 코드가 푸쉬 될 때 이를 감지하기 위해선 webhook설정을 해주어야 합니다. 하지만 여기서 제 Jenkis 서버 주소를 입력했을 때 오류가 났습니다. 제가 Jenkis 서버를 로컬환경(window)에 구축해 payload url을 localhost로 입력했는데 이때 Github의 localhost와 연결되어 발생하는 오류였습니다. Ngrok을 통해 해당 주소를 포트포워딩을 시켜 문제를 해결했습니다. 
 
-2. Java 버전 오류
+<h5> 2. Java 버전 오류 </h5>
 이후 설정을 마치고 build하는 과정에서 invalid source release: 11 에러가 발생하였습니다. 프로젝트는 Java 11을 사용하고 있는데 Jenkins는 Java 8로 build하고 있어 해당 오류가 발생했다는 것을 깨닫고 환경변수를 업데이트하고 Jenkins 설정을 추가해 해결할 수 있었습니다. 
 
-3. .gitignore 관련 설정파일 오류
+<h5> 3. .gitignore 관련 설정파일 오류</h5>
 하지만 build 과정에서 일부 테스트 케이스를 계속 실패했습니다. 로컬환경이나 운영환경에서는 아무 이상 없이 모든 테스트 케이스를 성공해서 원인을 찾아내기가 쉽지 않았습니다. 실패하는 테스트 케이스가 전부 설정파일과 관련되어 있다는 것을 알아채고 .gitignore에 의해 Github repository에는 설정파일이 담기지 않았으니 당연히 실패할 수밖에 없었다라는 결론에 이르렀습니다. Jenkins는 이런 상황에 대비에 설정 파일을 미리 저장해두고 build전 추가해주는 시스템을 갖고 있었고 문제를 해결할 수 있었습니다. 빌드를 성공시킨 이후에도 문제는 이어졌습니다. 
 
-4. freestyle project에서 Jenkins pipeline으로의 전환
+<h5> 4. freestyle project에서 Jenkins pipeline으로의 전환</h5>
 freestyle project로 publish over ssh 플러그인을 통해 SSH 송신을 해 jar파일을 server로 보내려 했지만 최근에 해당 플러그인이 보안 이슈로 지원 종료를 하여 jar파일 전달을 위해선 Jenkins pipeline으로 프로젝트를 새로 만들어야 했습니다. script로 명령을 작성해야 해서 모든 과정이 새로웠고 공부해야 할 것투성이였습니다. 낙심하지 않고 여러 기술 블로그를 참고하며 script를 채워나갔습니다. 
 
-5. 윈도우 환경과 리눅스 환경의 차이를 고려하지 못한 명령어 작성
+<h5> 5. 윈도우 환경과 리눅스 환경의 차이를 고려하지 못한 명령어 작성</h5>
 그 과정에서 윈도우 환경과 리눅스 환경의 차이를 고려하지 못해 bat 대신 sh로 명령어를 작성해 여러 차례의 빌드 실패를 겪었습니다. 또한 kill -9 {PID}와 같이 server에서는 이상 없이 수행되는 명령이 pipeline script에서는 동작하지 않았습니다. -9 옵션을 제거하니 정상적으로 수행되었습니다. 
 
 
